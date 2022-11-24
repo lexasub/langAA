@@ -3,6 +3,8 @@ package org.lexasub.frontend.langosVisitors;
 import org.lexasub.frontend.langosParser;
 import org.lexasub.frontend.utils.FrontendBaseBlock;
 
+import java.util.function.Function;
+
 public interface myLangosVisitorInterface {
     default Object visitImport_(langosParser.Import_Context ctx) {
         return null;
@@ -12,7 +14,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitFun_name(langosParser.Fun_nameContext ctx) {
+    default Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
 
@@ -44,7 +46,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitFunction(langosParser.FunctionContext ctx) {
+    default Object visitFunction(langosParser.FunctionContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
 
@@ -84,7 +86,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitFunction_call(langosParser.Function_callContext ctx) {
+    default Object visitFunction_call(langosParser.Function_callContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
 
@@ -92,7 +94,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitFunction_call2(langosParser.Function_call2Context ctx) {
+    default Object visitFunction_call2(langosParser.Function_call2Context ctx, FrontendBaseBlock myblock) {
         return null;
     }
 
@@ -128,9 +130,8 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitWithArg(langosParser.WithArgContext ctx, FrontendBaseBlock myblock) {
-        return null;
-    }
+
+    Object visitWithArg(langosParser.WithArgContext ctx, FrontendBaseBlock myblock);
 
     default Object visitDeclare_member(langosParser.Declare_memberContext ctx) {
         return null;
@@ -148,7 +149,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitParened_expr_list(langosParser.Parened_expr_listContext ctx) {
+    default Object visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
 

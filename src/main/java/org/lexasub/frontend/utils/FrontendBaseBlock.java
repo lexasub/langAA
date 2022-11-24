@@ -6,7 +6,7 @@ public class FrontendBaseBlock {
     public void addChild(FrontendBaseBlock newblock) {
     }
 
-    public enum TYPE {LAMBDA};
+    public enum TYPE {FUNC, LAMBDA};
     public TYPE type;
 
     public Object CONTINUE() {
@@ -14,8 +14,10 @@ public class FrontendBaseBlock {
     }
 
     public Object BREAK() {
+        return null;
     }
 
     public Object RETURN() {
+        return null;
     }
 }
