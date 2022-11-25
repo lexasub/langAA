@@ -10,12 +10,7 @@ import java.util.stream.Stream;
 
 public class myLangosVisitor  implements myLangosVisitorInterface {
     @Override
-    public Object visitImport_(langosParser.Import_Context ctx) {
-        return null;
-    }
-
-    @Override
-    public Object visitId_strong(langosParser.Id_strongContext ctx) {
+    public FrontendBaseBlock visitImport_(langosParser.Import_Context ctx) {
         return null;
     }
 
@@ -25,11 +20,6 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         if(ctx.IF() != null) return FunctionGenerators.IF(myBlock);
         if(ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock);
         if(ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock);
-        return null;
-    }
-
-    @Override
-    public Object visitId_list(langosParser.Id_listContext ctx) {
         return null;
     }
 
@@ -64,7 +54,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     }
 
     @Override
-    public Object visitFunction(langosParser.FunctionContext ctx, FrontendBaseBlock myBlock) {
+    public FrontendBaseBlock visitFunction(langosParser.FunctionContext ctx, final FrontendBaseBlock myBlock) {
         //func spec
         //type
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
@@ -72,15 +62,14 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         newBlock.name = visitVar_name(ctx.var_name());
         newBlock.parent = myBlock;
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
-        Stream body = visitBody(ctx.body(), newBlock);
-        body.count();
-        myBlock.addChild(newBlock);
+        visitBody(ctx.body(), newBlock)
+                .forEach(i->newBlock.addChild((FrontendBaseBlock)i));
         //createFunc
         return newBlock;
     }
 
     @Override
-    public FrontendBaseBlock visitExpr(langosParser.ExprContext ctx, FrontendBaseBlock myBlock) {
+    public FrontendBaseBlock visitExpr(langosParser.ExprContext ctx, final FrontendBaseBlock myBlock) {
         //with_
         if(ctx.flow_control() != null) return visitFlow_control(ctx.flow_control(), myBlock);
         if(ctx.function_call_() != null) return  visitFunction_call_(ctx.function_call_(), myBlock);
@@ -173,8 +162,8 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         if(ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        myBlock.addChild(newBlock);
-        return myBlock;
+        body.forEach(i->newBlock.addChild((FrontendBaseBlock) i));
+        return newBlock;
     }
 
     public Object visitLambdaAsArgumentOfCall(langosParser.LambdaContext ctx, FrontendBaseBlock myBlock) {
@@ -187,21 +176,22 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         if(ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        //TODO
-        return body;
+        body.forEach(i->newBlock.addChild((FrontendBaseBlock) i));
+        return newBlock;
     }
 
     @Override
     public FrontendBaseBlock visitReturn_expr(langosParser.Return_exprContext ctx, FrontendBaseBlock myBlock) {
         if (ctx == null) return myBlock.RETURN();
-        //getMember, char,string, id
-        if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);
-        if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);
+        //getMember, char,string
+        if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);//thenReturn
+        if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);//thenReturn
+        if (ctx.ID() != null) return new FrontendBaseBlock();//std::kostyl'//thenReturn
         return null;
     }
 
     @Override
-    public Object visitElement(langosParser.ElementContext ctx, FrontendBaseBlock myBlock) {
+    public FrontendBaseBlock visitElement(langosParser.ElementContext ctx, final FrontendBaseBlock myBlock) {
         if(ctx.function() != null) return visitFunction(ctx.function(), myBlock);
         return visitExpr(ctx.expr(), myBlock);
     }
@@ -237,14 +227,13 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     }
 
     @Override
-    public Object visitProgram(langosParser.ProgramContext ctx, FrontendBaseBlock myBlock) {
+    public FrontendBaseBlock visitProgram(langosParser.ProgramContext ctx, FrontendBaseBlock myBlock) {
         if(ctx.import_() != null) return visitImport_(ctx.import_());
         return visitElement(ctx.element(), myBlock);
     }
 
     @Override
-    public Stream visitEntry_point(langosParser.Entry_pointContext ctx) {
-        FrontendBaseBlock myBlock = new FrontendBaseBlock();
+    public Stream visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
         return ctx.program().stream().map(ctx1 -> visitProgram(ctx1, myBlock));//TODO
     }
     @Override
@@ -252,6 +241,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         //getMember, char,string, id
         if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);
         if (ctx.lambda() != null) return visitLambdaAsArgumentOfCall(ctx.lambda(), myBlock);
+        if (ctx.ID() != null) return new FrontendBaseBlock();//std::kostyl'
         return null;
     }
     @Override
@@ -262,6 +252,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     @Override
     public Stream visitLambdaArgs(langosParser.LambdaArgsContext ctx) {
         if(ctx.ID() != null) return Stream.of(ctx.ID().getText());
-        return ctx.id_list().ID().stream().map(i->i.getText());
+        if(ctx.id_list() != null) return ctx.id_list().ID().stream().map(i->i.getText());
+        return Stream.of();
     }
 }

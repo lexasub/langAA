@@ -10,15 +10,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitId_strong(langosParser.Id_strongContext ctx) {
-        return null;
-    }
-
     default Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myblock) {
-        return null;
-    }
-
-    default Object visitId_list(langosParser.Id_listContext ctx) {
         return null;
     }
 
@@ -46,7 +38,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitFunction(langosParser.FunctionContext ctx, FrontendBaseBlock myblock) {
+    default Object visitFunction(langosParser.FunctionContext ctx, final FrontendBaseBlock myblock) {
         return null;
     }
 
@@ -139,7 +131,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitEntry_point(langosParser.Entry_pointContext ctx) {
+    default Object visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
         return null;
     }
     default Object visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myblock) {

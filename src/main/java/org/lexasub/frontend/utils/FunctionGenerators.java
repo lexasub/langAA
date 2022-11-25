@@ -9,6 +9,7 @@ public class FunctionGenerators {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
             FrontendBaseBlock newIf = new FrontendBaseBlock();
+            newIf.type = FrontendBaseBlock.TYPE.BLOCK;
             FrontendBaseBlock expr = v.next();
             expr.parent = newIf;
             FrontendBaseBlock trueBranch = v.next();
@@ -37,13 +38,18 @@ public class FunctionGenerators {
     public static Function WHILE(FrontendBaseBlock myBlock) {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
+
             FrontendBaseBlock newWhile = new FrontendBaseBlock();
+            newWhile.type = FrontendBaseBlock.TYPE.BLOCK;
             FrontendBaseBlock expr = v.next();
+            expr.type = FrontendBaseBlock.TYPE.BLOCK;
             expr.parent = newWhile;
             FrontendBaseBlock expr1 = new FrontendBaseBlock(expr);//TODO check deep copy
             expr1.parent = newWhile;
+            expr1.type = FrontendBaseBlock.TYPE.BLOCK;
             FrontendBaseBlock body = v.next();
             body.parent = newWhile;
+            body.type = FrontendBaseBlock.TYPE.BLOCK;
 
             newWhile.addChild(expr);
             newWhile.addChild(Asm.jmp(expr.returnRes(), body.begin(), newWhile.end()));
@@ -65,6 +71,10 @@ public class FunctionGenerators {
     }
 
     public static Function ID(String text, FrontendBaseBlock myBlock) {
-        return null;
+        return (s) -> {
+            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
+            FrontendBaseBlock newFunCall = new FrontendBaseBlock();
+            return newFunCall;
+        };
     }
 }

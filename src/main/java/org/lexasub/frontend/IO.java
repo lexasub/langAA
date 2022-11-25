@@ -4,18 +4,21 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.lexasub.frontend.langosVisitors.myLangosVisitor;
+import org.lexasub.frontend.utils.FrontendBaseBlock;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
+
 
 public class IO {
     public static void main(String[] args) throws IOException {
 
         //Asm.pretty = true;//Set output with tabs
         //Asm.print(
-        visit(getParser("test"));
-        System.out.println("test");
+        FrontendBaseBlock block = visit(getParser("test"));
+        StringBuilder sb = new StringBuilder();
+        block.dump("", sb);
+        System.out.println(sb);
     }
 
     public static langosParser getParser(String filemame) throws IOException {
@@ -26,8 +29,11 @@ public class IO {
         return parser;
     }
 
-    public static Stream visit(langosParser parser) {
+    public static FrontendBaseBlock visit(langosParser parser) {
         myLangosVisitor visitor = new myLangosVisitor();
-        return visitor.visitEntry_point(parser.entry_point());
+        FrontendBaseBlock myBlock = new FrontendBaseBlock();
+        visitor.visitEntry_point(parser.entry_point(), myBlock)
+                .forEach(i->myBlock.addChild((FrontendBaseBlock) i));
+        return myBlock;
     }
 }
