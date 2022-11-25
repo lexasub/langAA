@@ -1,23 +1,59 @@
 package org.lexasub.frontend.utils;
 
-public class FrontendBaseBlock {
-    public FrontendBaseBlock parent;
+import java.util.LinkedList;
 
-    public void addChild(FrontendBaseBlock newblock) {
+public class FrontendBaseBlock  implements Cloneable {
+    public FrontendBaseBlock parent;
+    LinkedList<FrontendBaseBlock> childs = new LinkedList<>();
+    public String name;
+    public FrontendBaseBlock(){
+        
+    }
+    public FrontendBaseBlock(FrontendBaseBlock obj){
+        this.parent = obj.parent;
+        this.name = obj.name;
+        this.childs = (LinkedList<FrontendBaseBlock>) childs.stream().map(i->new FrontendBaseBlock(i)).toList();
+    }
+    public FrontendBaseBlock(FrontendBaseBlock parent, LinkedList<FrontendBaseBlock> childs, String name){
+        this.parent = parent;
+        this.name = name;
+        this.childs = (LinkedList<FrontendBaseBlock>) childs.stream().map(i->new FrontendBaseBlock(i)).toList();
+    }
+
+    public void addChild(FrontendBaseBlock child) {
+        childs.add(child);
+    }
+
+    public void declareVariable(String type, String name) {
+    }
+
+    public Object returnRes() {
+        return null;
+    }
+
+    public Object begin() {
+        return null;
+    }
+
+    public Object end() {
+        return null;
     }
 
     public enum TYPE {FUNC, LAMBDA};
     public TYPE type;
 
-    public Object CONTINUE() {
+    public FrontendBaseBlock CONTINUE() {
+        return null;
+    }
+    public Object declareVariable(Object i) {
         return null;
     }
 
-    public Object BREAK() {
+    public FrontendBaseBlock BREAK() {
         return null;
     }
 
-    public Object RETURN() {
+    public FrontendBaseBlock RETURN() {
         return null;
     }
 }

@@ -22,11 +22,11 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitType_name(langosParser.Type_nameContext ctx) {
+    default String visitType_name(langosParser.Type_nameContext ctx) {
         return null;
     }
 
-    default Object visitVar_name(langosParser.Var_nameContext ctx) {
+    default String visitVar_name(langosParser.Var_nameContext ctx) {
         return null;
     }
 
@@ -62,13 +62,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitExpr_list(langosParser.Expr_listContext ctx) {
-        return null;
-    }
-
-    default Object visitFunc_args(langosParser.Func_argsContext ctx) {
-        return null;
-    }
+    default void visitFunc_args(langosParser.Func_argsContext ctx, FrontendBaseBlock newBlock) {  }
 
     default Object visitMethod_call_(langosParser.Method_call_Context ctx) {
         return null;
@@ -141,14 +135,16 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Object visitProgram(langosParser.ProgramContext ctx) {
+    default Object visitProgram(langosParser.ProgramContext ctx, FrontendBaseBlock myBlock) {
         return null;
     }
 
     default Object visitEntry_point(langosParser.Entry_pointContext ctx) {
         return null;
     }
-
+    default Object visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myblock) {
+        return null;
+    }
     default Object visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myblock) {
         return null;
     }

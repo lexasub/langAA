@@ -75,7 +75,6 @@ expr : (with_ | flow_control |  function_call_ | class_ | lambda| get_member | C
 get_member : class_name DOT member_name;
 
 body: RBRACE element* LBRACE;
-expr_list: expr?  (COMA expr )*;
 func_args: RPAREN (type_name var_name)? (COMA type_name var_name)* LPAREN;
 
 method_call_ : fun_name callArgs;
@@ -109,7 +108,7 @@ class_ : CLASS class_name RBRACE (declare_member | element)* LBRACE;
 program : import_ | element;
 entry_point : program* EOF;
 
-
-callArgs: RPAREN expr_list? LPAREN;
+callArg : (function_call_ | lambda| get_member | CHAR | STRING | ID);
+callArgs: RPAREN callArg?  (COMA callArg )* LPAREN;
 lambdaArgs : (RPAREN id_list? LPAREN) | ID;
 
