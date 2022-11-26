@@ -19,6 +19,15 @@ public class IO {
         StringBuilder sb = new StringBuilder();
         block.dump("", sb);
         System.out.println(sb);
+
+        StringBuilder sb1 = new StringBuilder();
+        block.serialize(sb1);
+        System.out.println(sb1);
+
+        FrontendBaseBlock newBlock = FrontendBaseBlock.deserialize(sb1.toString().split("\n \n"));
+        StringBuilder sb2 = new StringBuilder();
+        newBlock.dump("", sb2);
+        System.out.println(sb2);
     }
 
     public static langosParser getParser(String filemame) throws IOException {
@@ -33,7 +42,10 @@ public class IO {
         myLangosVisitor visitor = new myLangosVisitor();
         FrontendBaseBlock myBlock = new FrontendBaseBlock();
         visitor.visitEntry_point(parser.entry_point(), myBlock)
-                .forEach(i->myBlock.addChild((FrontendBaseBlock) i));
+                .forEach(i->{
+                    ((FrontendBaseBlock) i).parent = myBlock;
+                    myBlock.addChild((FrontendBaseBlock) i);
+                });
         return myBlock;
     }
 }

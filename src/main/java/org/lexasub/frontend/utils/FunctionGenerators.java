@@ -9,6 +9,7 @@ public class FunctionGenerators {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
             FrontendBaseBlock newIf = new FrontendBaseBlock();
+            newIf.parent = myBlock;
             newIf.type = FrontendBaseBlock.TYPE.BLOCK;
             FrontendBaseBlock expr = v.next();
             expr.parent = newIf;
@@ -20,11 +21,16 @@ public class FunctionGenerators {
                 falseBranch.parent = newIf;
             }
             newIf.addChild(expr);
-            if(falseBranch != null)
-                newIf.addChild(Asm.jmp(expr.returnRes(), trueBranch.begin(), falseBranch.begin()));
+            if(falseBranch != null) {
+                FrontendBaseBlock jmp = Asm.jmp(expr.returnRes(), trueBranch.begin(), falseBranch.begin());
+                jmp.parent = newIf;
+                newIf.addChild(jmp);
+            }
             newIf.addChild(trueBranch);
             if(falseBranch != null){
-                newIf.addChild(Asm.jmp(newIf.end()));
+                FrontendBaseBlock jmp = Asm.jmp(newIf.end());
+                jmp.parent = newIf;
+                newIf.addChild(jmp);
                 newIf.addChild(falseBranch);
             }
             return newIf;
@@ -40,6 +46,7 @@ public class FunctionGenerators {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
 
             FrontendBaseBlock newWhile = new FrontendBaseBlock();
+            newWhile.parent = myBlock;
             newWhile.type = FrontendBaseBlock.TYPE.BLOCK;
             FrontendBaseBlock expr = v.next();
             expr.type = FrontendBaseBlock.TYPE.BLOCK;
@@ -52,10 +59,14 @@ public class FunctionGenerators {
             body.type = FrontendBaseBlock.TYPE.BLOCK;
 
             newWhile.addChild(expr);
-            newWhile.addChild(Asm.jmp(expr.returnRes(), body.begin(), newWhile.end()));
+            FrontendBaseBlock jmp = Asm.jmp(expr.returnRes(), body.begin(), newWhile.end());
+            jmp.parent = newWhile;
+            newWhile.addChild(jmp);
             newWhile.addChild(body);
             newWhile.addChild(expr1);
-            newWhile.addChild(Asm.jmp(expr1.returnRes(), body.begin(), newWhile.end()));
+            FrontendBaseBlock jmp1 = Asm.jmp(expr1.returnRes(), body.begin(), newWhile.end());
+            jmp1.parent = newWhile;
+            newWhile.addChild(jmp1);
 
             return newWhile;
             /*
@@ -70,10 +81,18 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function ID(String text, FrontendBaseBlock myBlock) {
+    public static Function ID(String funcName, FrontendBaseBlock myBlock) {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
             FrontendBaseBlock newFunCall = new FrontendBaseBlock();
+            while (v.hasNext()) newFunCall.addChild(v.next());
+            newFunCall.childs.forEach(i->i.parent = newFunCall);
+            Stream<String> args = newFunCall.childs.stream().map(FrontendBaseBlock::returnRes);
+            newFunCall.parent = myBlock;
+            FrontendBaseBlock call = Asm.call(funcName, args);
+            call.parent = newFunCall;
+            newFunCall.addChild(call);
+
             return newFunCall;
         };
     }

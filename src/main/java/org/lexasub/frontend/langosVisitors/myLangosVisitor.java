@@ -1,6 +1,7 @@
 package org.lexasub.frontend.langosVisitors;
 
 import org.lexasub.frontend.langosParser;
+import org.lexasub.frontend.utils.Asm;
 import org.lexasub.frontend.utils.FrontendBaseBlock;
 import org.lexasub.frontend.utils.FunctionGenerators;
 
@@ -63,8 +64,10 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         newBlock.parent = myBlock;
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
         visitBody(ctx.body(), newBlock)
-                .forEach(i->newBlock.addChild((FrontendBaseBlock)i));
-        //createFunc
+                .forEach(i->{
+                    ((FrontendBaseBlock) i).parent = newBlock;
+                    newBlock.addChild((FrontendBaseBlock)i);
+                });
         return newBlock;
     }
 
@@ -157,36 +160,26 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         Stream body;
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
         newBlock.type = FrontendBaseBlock.TYPE.LAMBDA;
-        args.map(i->newBlock.declareVariable(i));
+        args.forEach(i->newBlock.declareVariable((String) i));
         newBlock.parent = myBlock;
         if(ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        body.forEach(i->newBlock.addChild((FrontendBaseBlock) i));
+        body.forEach(i->{
+            ((FrontendBaseBlock) i).parent = newBlock;
+            newBlock.addChild((FrontendBaseBlock) i);
+        });
         return newBlock;
     }
 
-    public Object visitLambdaAsArgumentOfCall(langosParser.LambdaContext ctx, FrontendBaseBlock myBlock) {
-        Stream args = visitLambdaArgs(ctx.lambdaArgs());
-        Stream body;
-        FrontendBaseBlock newBlock = new FrontendBaseBlock();
-        newBlock.type = FrontendBaseBlock.TYPE.LAMBDA;
-        args.map(i->newBlock.declareVariable(i));
-        newBlock.parent = myBlock;
-        if(ctx.body() != null)
-            body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
-        else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        body.forEach(i->newBlock.addChild((FrontendBaseBlock) i));
-        return newBlock;
-    }
 
     @Override
     public FrontendBaseBlock visitReturn_expr(langosParser.Return_exprContext ctx, FrontendBaseBlock myBlock) {
-        if (ctx == null) return myBlock.RETURN();
+        if (ctx == null) return Asm.RETURN();
         //getMember, char,string
         if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);//thenReturn
         if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);//thenReturn
-        if (ctx.ID() != null) return new FrontendBaseBlock();//std::kostyl'//thenReturn
+        if (ctx.ID() != null) return Asm.RETURN(ctx.ID().getText());
         return null;
     }
 
@@ -212,8 +205,8 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     }
 
     @Override
-    public Object visitWithArg(langosParser.WithArgContext ctx, FrontendBaseBlock myblock) {
-        return visitExpr(ctx.expr(), myblock);
+    public Object visitWithArg(langosParser.WithArgContext ctx, FrontendBaseBlock myBlock) {
+        return visitExpr(ctx.expr(), myBlock);
     }
 
     @Override
@@ -234,14 +227,14 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
 
     @Override
     public Stream visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
-        return ctx.program().stream().map(ctx1 -> visitProgram(ctx1, myBlock));//TODO
+        return ctx.program().stream().map(ctx1 -> visitProgram(ctx1, myBlock));
     }
     @Override
-    public Object visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myBlock) {
-        //getMember, char,string, id
+    public FrontendBaseBlock visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myBlock) {
+        //getMember, char,string
         if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);
-        if (ctx.lambda() != null) return visitLambdaAsArgumentOfCall(ctx.lambda(), myBlock);
-        if (ctx.ID() != null) return new FrontendBaseBlock();//std::kostyl'
+        if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);
+        if (ctx.ID() != null) return FrontendBaseBlock.spawnID(ctx.ID().getText(), myBlock);
         return null;
     }
     @Override
