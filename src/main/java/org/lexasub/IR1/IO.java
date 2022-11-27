@@ -5,6 +5,7 @@ import org.lexasub.IR1.utils.IR1BaseBlock;
 import org.lexasub.frontend.utils.FrontendBaseBlock;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import static org.lexasub.frontend.IO.getParser;
 import static org.lexasub.frontend.IO.visit;
@@ -23,7 +24,7 @@ public class IO {
 
 
         StringBuilder sb1 = new StringBuilder();
-        newBlock.serialize(sb1);
+       // newBlock.serialize(sb1);
         System.out.println(sb1);
 
         //newBlock.deserialize()

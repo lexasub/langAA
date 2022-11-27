@@ -80,7 +80,7 @@ public class FrontendBaseBlock {
     }
 
     public String returnRes() {
-        //if (type == TYPE.ID) return name;//MayBeBad
+        if (type == TYPE.ID) return name;//MayBeBad
         return "res_" + blockId;
     }
 

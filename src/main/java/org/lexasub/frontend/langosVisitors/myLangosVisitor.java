@@ -21,6 +21,8 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         if(ctx.IF() != null) return FunctionGenerators.IF(myBlock);
         if(ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock);
         if(ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock);
+        if(ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock);//kostyl'
+        if(ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock);//kostyl'
         return null;
     }
 
