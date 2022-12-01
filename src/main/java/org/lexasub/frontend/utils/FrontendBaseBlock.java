@@ -135,7 +135,7 @@ public class FrontendBaseBlock {
                     if(l != null)
                         l.forEach(j -> {
                             FrontendBaseBlock v = blocks.stream().filter(k -> Objects.equals(k.blockId, j)).findFirst().get();
-                            i.childs.add(v);
+                            i.addChild(v);
                             v.parent = i;
                         });
                 }
