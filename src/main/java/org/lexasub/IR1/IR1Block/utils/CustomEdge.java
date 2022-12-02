@@ -1,10 +1,12 @@
-package org.lexasub.IR1.utils;
+package org.lexasub.IR1.IR1Block.utils;
 
+
+import java.util.Objects;
 
 public class CustomEdge {
 
     public String src, tgt;
-    CustomEdge(String s, String t){
+    public CustomEdge(String s, String t){
         src = s;
         tgt = t;
     }
@@ -17,6 +19,6 @@ public class CustomEdge {
     }
 
     public String toString() {
-        return /*"(" + this.getSource() + " : " + this.getTarget() + ")"*/ "";
+        return (Objects.equals(src, "s"))?"before":"part"/*"(" + this.getSource() + " : " + this.getTarget() + ")"*/ ;
     }
 }

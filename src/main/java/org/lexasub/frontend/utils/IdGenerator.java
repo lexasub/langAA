@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class IdGenerator {
-    private static final Random random = new Random(25);
+    private static final Random random = new Random(25);//25
     static LinkedList<String> lambdas = new LinkedList<>();
     static LinkedList<String> elems = new LinkedList<>();
     static LinkedList<String> function_name = new LinkedList<>();

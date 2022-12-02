@@ -177,11 +177,11 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
 
     @Override
     public FrontendBaseBlock visitReturn_expr(langosParser.Return_exprContext ctx, FrontendBaseBlock myBlock) {
-        if (ctx == null) return Asm.RETURN();
+        if (ctx == null) return Asm.RETURN(myBlock);
         //getMember, char,string
-        if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);//thenReturn
-        if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);//thenReturn
-        if (ctx.ID() != null) return Asm.RETURN(ctx.ID().getText());
+        if (ctx.function_call_() != null) return Asm.RETURN(visitFunction_call_(ctx.function_call_(), myBlock), myBlock);
+        if (ctx.lambda() != null) return Asm.RETURN(visitLambda(ctx.lambda(), myBlock), myBlock);//thenReturn
+        if (ctx.ID() != null) return Asm.RETURN(ctx.ID().getText(), myBlock);
         return null;
     }
 

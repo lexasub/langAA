@@ -1,13 +1,11 @@
 package org.lexasub.IR1;
 
 
-import org.lexasub.IR1.utils.IR1BaseBlock;
-import org.lexasub.frontend.utils.FrontendBaseBlock;
+import org.lexasub.IR1.IR1Block.IR1BaseBlock;
+import org.lexasub.IR1.IR1Block.IR1BaseBlockIO;
+import org.lexasub.frontend.utils.FBBView;
 
 import java.io.IOException;
-
-import static org.lexasub.frontend.IO.getParser;
-import static org.lexasub.frontend.IO.visit;
 
 
 public class IO {
@@ -15,10 +13,8 @@ public class IO {
 
         //Asm.pretty = true;//Set output with tabs
         //Asm.print(
-        FrontendBaseBlock block = visit(getParser("test"));
-        IR1BaseBlock newBlock = IR1BaseBlock.makeFromFrontendBaseBlock(block);
-        StringBuilder sb = new StringBuilder();
-        newBlock.dump();
+        IR1BaseBlock newBlock = IR1BaseBlock.makeFromFrontendBaseBlock(FBBView.visit(FBBView.getParser("test")));
+        IR1BaseBlockIO.dump(newBlock);
        // newBlock.serialize(sb);
        // System.out.println(sb);
 

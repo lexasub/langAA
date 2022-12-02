@@ -10,29 +10,30 @@ public class FunctionGenerators {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
             FrontendBaseBlock newIf = new FrontendBaseBlock();
             newIf.parent = myBlock;
-            newIf.type = FrontendBaseBlock.TYPE.BLOCK;
-            FrontendBaseBlock expr = v.next();
+            newIf.type = FrontendBaseBlock.TYPE.IF;
+            FrontendBaseBlock expr = v.next().childs.get(0);//todo convert lambda to block
+            FrontendBaseBlock trueBranch = v.next().childs.get(0);//todo convert lambda to block
+            System.out.println(trueBranch.childs.size());
             expr.parent = newIf;
-            FrontendBaseBlock trueBranch = v.next();
-            trueBranch.parent = newIf;
-            FrontendBaseBlock falseBranch = null;
-            if(v.hasNext()){
-                falseBranch = v.next();
-                falseBranch.parent = newIf;
-            }
             newIf.addChild(expr);
-            if(falseBranch != null) {
+            trueBranch.parent = newIf;
+            newIf.addChild(trueBranch);
+            if(v.hasNext()){
+                FrontendBaseBlock falseBranch = v.next().childs.get(0);//todo convert lambda to block
+                falseBranch.parent = newIf;
+                newIf.addChild(falseBranch);
+            }
+           /* if(falseBranch != null) {
                 FrontendBaseBlock jmp = Asm.jmp(expr.returnRes(), trueBranch.begin(), falseBranch.begin());
                 jmp.parent = newIf;
                 newIf.addChild(jmp);
-            }
-            newIf.addChild(trueBranch);
-            if(falseBranch != null){
+            }*/
+            /*if(falseBranch != null){
                 FrontendBaseBlock jmp = Asm.jmp(newIf.end());
                 jmp.parent = newIf;
                 newIf.addChild(jmp);
                 newIf.addChild(falseBranch);
-            }
+            }*/
             return newIf;
             /*
             expr Asm.jmp(expr.returnRes(), trueBranch.begin(), falseBranch.begin()) trueBranch Asm.jmp(endIf) falseBranch (virtual Asm.lbl(endIf))
@@ -47,27 +48,19 @@ public class FunctionGenerators {
 
             FrontendBaseBlock newWhile = new FrontendBaseBlock();
             newWhile.parent = myBlock;
-            newWhile.type = FrontendBaseBlock.TYPE.BLOCK;
-            FrontendBaseBlock expr = v.next();
-            expr.type = FrontendBaseBlock.TYPE.BLOCK;
+            newWhile.type = FrontendBaseBlock.TYPE.WHILE;
+            FrontendBaseBlock expr = v.next().childs.get(0);//todo convert lambda to block
+            FrontendBaseBlock body = v.next();//todo convert lambda to block
             expr.parent = newWhile;
-            FrontendBaseBlock expr1 = new FrontendBaseBlock(expr);//TODO check deep copy
-            expr1.parent = newWhile;
-            expr1.type = FrontendBaseBlock.TYPE.BLOCK;
-            FrontendBaseBlock body = v.next();
-            body.parent = newWhile;
-            body.type = FrontendBaseBlock.TYPE.BLOCK;
-
             newWhile.addChild(expr);
-            FrontendBaseBlock jmp = Asm.jmp(expr.returnRes(), body.begin(), newWhile.end());
-            jmp.parent = newWhile;
-            newWhile.addChild(jmp);
+            body.parent = newWhile;
             newWhile.addChild(body);
-            newWhile.addChild(expr1);
-            FrontendBaseBlock jmp1 = Asm.jmp(expr1.returnRes(), body.begin(), newWhile.end());
-            jmp1.parent = newWhile;
-            newWhile.addChild(jmp1);
 
+            //  expr.type = FrontendBaseBlock.TYPE.BLOCK;
+           /* FrontendBaseBlock expr1 = new FrontendBaseBlock(expr);//TODO check deep copy
+            expr1.parent = newWhile;
+            expr1.type = FrontendBaseBlock.TYPE.BLOCK;*/
+            // body.type = FrontendBaseBlock.TYPE.BLOCK;
             return newWhile;
             /*
             (virtual Asm.lbl(beginWhile))
@@ -92,11 +85,11 @@ public class FunctionGenerators {
             Stream<String> args = newFunCall.childs.stream().map(FrontendBaseBlock::returnRes);
             FrontendBaseBlock call = Asm.call(funcName, args);
             call.parent = newFunCall;
+            newFunCall.addChild(call);
             Iterator<FrontendBaseBlock> it = newFunCall.childs.iterator();
             while (it.hasNext())
                 if (it.next().type == FrontendBaseBlock.TYPE.ID)//skip additional variable declare
                     it.remove();
-            newFunCall.addChild(call);
 
             return newFunCall;
         };
