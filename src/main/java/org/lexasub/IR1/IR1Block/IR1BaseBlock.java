@@ -5,13 +5,13 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class IR1BaseBlock {
-    protected String name;
-    protected String code;
-    protected String blockId;
+    public String name;
+    public String code;
+    public String blockId;
     public FrontendBaseBlock.TYPE type;
-    LinkedList<IR1BaseBlock> nodesIn = new LinkedList<>();
+    public LinkedList<IR1BaseBlock> nodesIn = new LinkedList<>();
     public LinkedList<IR1BaseBlock> nodesOut = new LinkedList<>();
-    LinkedList<IR1BaseBlock> nodesInChilds = new LinkedList<>();
+    public LinkedList<IR1BaseBlock> nodesInParents = new LinkedList<>();
     public LinkedList<IR1BaseBlock> nodesOutChilds = new LinkedList<>();
     public IR1BaseBlock(){}
     public IR1BaseBlock(FrontendBaseBlock v) {
@@ -88,7 +88,7 @@ public class IR1BaseBlock {
 
     public static void connectToChilds(IR1BaseBlock to, IR1BaseBlock from) {
         from.nodesOutChilds.add(to);
-        to.nodesInChilds.add(from);
+        to.nodesInParents.add(from);
     }
     private static void connectTo(IR1BaseBlock to, IR1BaseBlock from) {
         from.nodesOut.add(to);
