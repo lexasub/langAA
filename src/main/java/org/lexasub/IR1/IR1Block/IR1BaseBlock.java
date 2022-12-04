@@ -1,14 +1,16 @@
 package org.lexasub.IR1.IR1Block;
 
 import org.lexasub.frontend.utils.FrontendBaseBlock;
+import org.lexasub.frontend.utils.IdGenerator;
+
 import java.util.*;
 import java.util.stream.Stream;
 
 public class IR1BaseBlock {
     public String name;
     public String code;
-    public String blockId;
-    public FrontendBaseBlock.TYPE type;
+    public String blockId = IdGenerator.id();
+    public FrontendBaseBlock.TYPE type = FrontendBaseBlock.TYPE.BLOCK;
     public LinkedList<IR1BaseBlock> nodesIn = new LinkedList<>();
     public LinkedList<IR1BaseBlock> nodesOut = new LinkedList<>();
     public LinkedList<IR1BaseBlock> nodesInParents = new LinkedList<>();
@@ -90,7 +92,7 @@ public class IR1BaseBlock {
         from.nodesOutChilds.add(to);
         to.nodesInParents.add(from);
     }
-    private static void connectTo(IR1BaseBlock to, IR1BaseBlock from) {
+    public static void connectTo(IR1BaseBlock to, IR1BaseBlock from) {
         from.nodesOut.add(to);
         to.nodesIn.add(from);
     }
