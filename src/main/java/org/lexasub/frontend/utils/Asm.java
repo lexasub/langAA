@@ -17,20 +17,34 @@ public class Asm {
         return fbb;
     }*/
 
-    public static FrontendBaseBlock call(String funcName, Stream<String> args) {
+    public static void call(String funcName, Stream<FrontendBaseBlock> args, FrontendBaseBlock newFunCall) {
+        FrontendBaseBlock name_ = new FrontendBaseBlock();
+        name_.type = FrontendBaseBlock.TYPE.ID;
+        name_.name = funcName;
+        FrontendBaseBlock v = introduceCodeBlock(Stream.concat(Stream.of(name_), args), "call");
+        v.parent = newFunCall;
+        newFunCall.addChild(v);
+    }
+
+    private static FrontendBaseBlock introduceCodeBlock(Stream<FrontendBaseBlock> args, String nameOp) {
         FrontendBaseBlock fbb = new FrontendBaseBlock();
         fbb.type = FrontendBaseBlock.TYPE.CODE;
-        String args_ = args.map(i -> " " + i + " , ").reduce("", String::concat);
-        fbb.code = "call " + funcName + "(" + args_.substring(0, args_.length()-2) + ")";
+        FrontendBaseBlock nameOP = new FrontendBaseBlock();
+        nameOP.type = FrontendBaseBlock.TYPE.ID;
+        nameOP.name = nameOp;
+        fbb.childs.add(nameOP);
+        nameOP.parent = fbb;
+        args.forEach(i->{fbb.childs.add(i);i.parent=fbb;});
         return fbb;
     }
 
     public static FrontendBaseBlock RETURN(String arg, FrontendBaseBlock myBlock) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        fbb.code = "ret " + arg;
-        fbb.parent = myBlock;
-        return fbb;
+        FrontendBaseBlock name_ = new FrontendBaseBlock();
+        name_.type = FrontendBaseBlock.TYPE.ID;
+        name_.name = arg;
+        FrontendBaseBlock v = introduceCodeBlock(Stream.of(name_), "ret");
+        v.parent = myBlock;
+        return v;
     }
 
     public static FrontendBaseBlock RETURN(FrontendBaseBlock _parent) {
@@ -42,9 +56,12 @@ public class Asm {
     }
 
     public static FrontendBaseBlock RETURN(FrontendBaseBlock expr, FrontendBaseBlock _parent) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        fbb.code = "ret " + "res_" + expr.blockId;
+        FrontendBaseBlock fbb = introduceCodeBlock(Stream.of(), "ret");
+        FrontendBaseBlock i = new FrontendBaseBlock();
+        i.type = FrontendBaseBlock.TYPE.ID;
+        i.name = "res_" + expr.blockId;//todo link with expr
+        fbb.childs.add(i);
+        i.parent=fbb;
         FrontendBaseBlock newFbb = new FrontendBaseBlock();
         fbb.parent = newFbb;
         expr.parent = newFbb;
@@ -52,5 +69,6 @@ public class Asm {
         newFbb.addChild(fbb);
         newFbb.parent = _parent;
         return newFbb;
+
     }
 }

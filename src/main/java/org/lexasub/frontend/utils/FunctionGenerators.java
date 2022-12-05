@@ -76,21 +76,9 @@ public class FunctionGenerators {
 
     public static Function ID(String funcName, FrontendBaseBlock myBlock) {
         return (s) -> {
-            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
             FrontendBaseBlock newFunCall = new FrontendBaseBlock();
-            while (v.hasNext())
-                newFunCall.addChild(v.next());
-            newFunCall.childs.forEach(i->i.parent = newFunCall);
             newFunCall.parent = myBlock;
-            Stream<String> args = newFunCall.childs.stream().map(FrontendBaseBlock::returnRes);
-            FrontendBaseBlock call = Asm.call(funcName, args);
-            call.parent = newFunCall;
-            newFunCall.addChild(call);
-            Iterator<FrontendBaseBlock> it = newFunCall.childs.iterator();
-            while (it.hasNext())
-                if (it.next().type == FrontendBaseBlock.TYPE.ID)//skip additional variable declare
-                    it.remove();
-
+            Asm.call(funcName, (Stream<FrontendBaseBlock>)s, newFunCall);
             return newFunCall;
         };
     }

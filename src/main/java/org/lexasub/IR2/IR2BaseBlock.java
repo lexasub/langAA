@@ -92,40 +92,47 @@ public class IR2BaseBlock {
             //TODO if each from nondesO is only reader - then no phi func
             //also check parent (may ~ while(set(a, add(a,1))) )
             //nodesO.stream().map(i->i.blockId) -> phi res, name0 bid0, name1 bid1, ..
-            List<String> blocks = new ArrayList<>(parent.nodesOut.stream().map(i -> i.blockId).toList());
-            for(ListIterator<String> it = blocks.listIterator(); it.hasNext();){
-                int id = it.nextIndex();
-                it.next();
-                blocks.set(id, text  + "_" + id + " " + blocks.get(id));
-            }
-            for(int id = 0; id<parent.nodesOut.size(); ++id)
-                if(parent.nodesOut.contains(child)){
-                    System.out.println(parent.nodesOut.size());
-
-                    IR1BaseBlock blockScope = new IR1BaseBlock(FrontendBaseBlock.TYPE.BLOCK);
-                    IR1BaseBlock phiBlock = new IR1BaseBlock(FrontendBaseBlock.TYPE.CODE);
-                    String newReplacement = " " + text + "_" + id + " ";
-                    phiBlock.code = "phi " + newReplacement + blocks.stream().map(i -> " , " + i).reduce("", String::concat);
-                    blockScope.blockId = child.blockId + "_scope";
-                    //remove link parent , child
-                    if(child.type != FrontendBaseBlock.TYPE.CODE)
-                        System.out.println("bad");
-                    child.code = child.code.replaceAll(" " + text + " ", newReplacement);//smart replace(with spaces)
-                    parent.nodesOut.remove(child);
-                    child.nodesIn.remove(parent);
-                    //child.nodesInParents -> blockScope.nodesInParents
-                    moveParentToOtherBlock(child, blockScope);
-                    moveDependenceToOtherBlock(child, blockScope);
-
-                    IR1BaseBlock.connectTo(child,blockScope);//connectToChilds
-                    IR1BaseBlock.connectTo(phiBlock,blockScope);//connectToChilds
-                    IR1BaseBlock.connectTo(blockScope, parent);
-               }
-         //  IR1BaseBlockIO.dump(ir1Block);
+            introducePhis(parent, child, text, getPhiDependences(parent, text));
+            //  IR1BaseBlockIO.dump(ir1Block);
         }
         else
             text = "res_" + parent.blockId;//пока тут ниче не делаем
         return null;
+    }
+
+    private static void introducePhis(IR1BaseBlock parent, IR1BaseBlock child, String text, String blockList) {
+        for(int id = 0; id< parent.nodesOut.size(); ++id)
+            if(parent.nodesOut.contains(child)){
+                System.out.println(parent.nodesOut.size());
+
+                IR1BaseBlock blockScope = new IR1BaseBlock(FrontendBaseBlock.TYPE.BLOCK);
+                IR1BaseBlock phiBlock = new IR1BaseBlock(FrontendBaseBlock.TYPE.CODE);
+                String newReplacement = " " + text + "_" + id + " ";
+                phiBlock.code = "phi " + newReplacement + blockList;
+                blockScope.blockId = child.blockId + "_scope";
+                //remove link parent , child
+                if(child.type != FrontendBaseBlock.TYPE.CODE)
+                    System.out.println("bad");
+                child.code = child.code.replaceAll(" " + text + " ", newReplacement);//smart replace(with spaces)
+                parent.nodesOut.remove(child);
+                child.nodesIn.remove(parent);
+                //child.nodesInParents -> blockScope.nodesInParents
+                moveParentToOtherBlock(child, blockScope);
+                moveDependenceToOtherBlock(child, blockScope);
+
+                IR1BaseBlock.connectTo(child,blockScope);//connectToChilds
+                IR1BaseBlock.connectTo(phiBlock,blockScope);//connectToChilds
+                IR1BaseBlock.connectTo(blockScope, parent);
+           }
+    }
+
+    private static String getPhiDependences(IR1BaseBlock parent, String text) {
+        List<String> blocks = new ArrayList<>(parent.nodesOut.stream().map(i -> i.blockId).toList());
+        for(ListIterator<String> it = blocks.listIterator(); it.hasNext();){
+            int id = it.nextIndex();
+            blocks.set(id, " , " + text + "_" + id + " " + it.next());
+        }
+        return blocks.stream().reduce("", String::concat);
     }
 
     private static void moveParentToOtherBlock(IR1BaseBlock child, IR1BaseBlock blockScope) {
@@ -155,9 +162,25 @@ public class IR2BaseBlock {
         }
         //генерация для каждой переменной фи функций??
         for (int id = 0; id < ir1Block.nodesIn.size(); ++id) {
-            eeee(ir1Block.nodesIn.get(0), ir1Block);
+            //eeee(ir1Block.nodesIn.get(0), ir1Block);
+            vvvv(ir1Block.nodesIn.get(0), ir1Block);
         }
     }
+
+    private void vvvv(IR1BaseBlock parent, IR1BaseBlock child) {
+        String text;
+        if(parent.type == FrontendBaseBlock.TYPE.ID) {//variable
+            text = parent.name;
+            //else == block || code
+            //TODO if each from nondesO is only reader - then no phi func
+            //also check parent (may ~ while(set(a, add(a,1))) )
+            //nodesO.stream().map(i->i.blockId) -> phi res, name0 bid0, name1 bid1, ..
+
+        }
+        else
+            text = "res_" + parent.blockId;//пока тут ниче не делаем
+    }
+
     private void ifConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
         eee(ir1Block);
         Iterator<IR1BaseBlock> it = ir1Block.nodesOutChilds.iterator();

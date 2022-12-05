@@ -43,8 +43,9 @@ public class IR1BaseBlock {
         HashMap<String, IR1BaseBlock> decls = (HashMap<String, IR1BaseBlock>) _decls.clone();
         LinkedList<FrontendBaseBlock> fbChilds = frontendBlock.childs;
         int cnt = addFuncArgs(ir1BB, decls, fbChilds.iterator());
-        autoDeclare(ir1BB, decls);
-        Stream<IR1BaseBlock> ir1BaseBlockStream = fbChilds.stream().skip(cnt) //skip funcArgs
+        autoDeclare(ir1BB, decls, fbChilds);
+     //   if (ir1BB.type == FrontendBaseBlock.TYPE.CODE) cnt+=2;
+            Stream<IR1BaseBlock> ir1BaseBlockStream = fbChilds.stream().skip(cnt) //skip funcArgs
                 .map(i -> {
                     IR1BaseBlock ir1BaseBlock = makeFromFrontendBaseBlock(i, decls);
                     if (Objects.equals(ir1BaseBlock.type, FrontendBaseBlock.TYPE.BLOCK))
@@ -55,18 +56,24 @@ public class IR1BaseBlock {
         return new LinkedList<>(ir1BaseBlockStream.toList());
     }
 
-    private static void autoDeclare(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls) {
-        if (!Objects.equals(ir1BB.code, "")) {
+    private static void autoDeclare(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, LinkedList<FrontendBaseBlock> args) {
+          if (ir1BB.type == FrontendBaseBlock.TYPE.CODE) {
             //TODO
             //extract from code ids and maybe add to nodesIn, nodesOut
-            Arrays.stream(ir1BB.code.split(" |\\(|\\)|,")).forEach(i->{
-                IR1BaseBlock ir1BaseBlock = decls.get(i);
+            connectTo(ir1BB, new IR1BaseBlock(args.get(0)));
+            connectTo(ir1BB, new IR1BaseBlock(args.get(1)));
+            //skip (ex: call, name)
+            args.stream().skip(2).forEach(i->{
+                IR1BaseBlock ir1BaseBlock = decls.get(i.name);
                 if(ir1BaseBlock==null)
                     return;
+
                 //ok on read variable, on write to variable-it's wrong
                 //if == "res_...." -> вроде всегда получаем read.
                 // write на данном этапе в дереве не будет.(т.к.) auto-return(ex return last expr) not applyed
-                connectTo(ir1BB, ir1BaseBlock);//mb_swap
+               // ir1BB.nodesOutChilds.remove(ir1BaseBlock);
+                //connectToChilds(ir1BB, ir1BaseBlock);//mb_swap
+                //connectTo(ir1BB, ir1BaseBlock);//mb_swap
             });
         }
     }
