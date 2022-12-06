@@ -236,7 +236,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         //getMember, char,string
         if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);
         if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);
-        if (ctx.ID() != null) return FrontendBaseBlock.spawnID(ctx.ID().getText(), myBlock);
+        if (ctx.ID() != null) return FrontendBaseBlock.spawnID(ctx.ID().getText(), myBlock);//or find??
         return null;
     }
     @Override

@@ -29,11 +29,10 @@ public class IR1BaseBlock {
 
 
     public static IR1BaseBlock makeFromFrontendBaseBlock(FrontendBaseBlock frontendBlock) {
-        return makeFromFrontendBaseBlock(frontendBlock, new HashMap<>());
+        return makeFromFrontendBaseBlock(frontendBlock, new HashMap<>(), new IR1BaseBlock(frontendBlock));
     }
-    private static IR1BaseBlock makeFromFrontendBaseBlock(FrontendBaseBlock frontendBlock, HashMap<String, IR1BaseBlock> decls) {
+    private static IR1BaseBlock makeFromFrontendBaseBlock(FrontendBaseBlock frontendBlock, HashMap<String, IR1BaseBlock> decls, IR1BaseBlock ir1BB) {
         //clone for cancel local modification(mb scopes)(ex local variables)//TODO check
-        IR1BaseBlock ir1BB = new IR1BaseBlock(frontendBlock);
         getIr1BaseBlock(frontendBlock, decls, ir1BB).forEach(ir1BaseBlock -> connectToChilds(ir1BaseBlock, ir1BB));
         return ir1BB;
     }
@@ -47,7 +46,8 @@ public class IR1BaseBlock {
      //   if (ir1BB.type == FrontendBaseBlock.TYPE.CODE) cnt+=2;
             Stream<IR1BaseBlock> ir1BaseBlockStream = fbChilds.stream().skip(cnt) //skip funcArgs
                 .map(i -> {
-                    IR1BaseBlock ir1BaseBlock = makeFromFrontendBaseBlock(i, decls);
+                    IR1BaseBlock ir1BaseBlock;
+                    ir1BaseBlock = makeFromFrontendBaseBlock(i, decls, new IR1BaseBlock(i));
                     if (Objects.equals(ir1BaseBlock.type, FrontendBaseBlock.TYPE.BLOCK))
                         decls.put("res_" + ir1BaseBlock.blockId, ir1BaseBlock);
                     return ir1BaseBlock;
@@ -65,13 +65,14 @@ public class IR1BaseBlock {
             //skip (ex: call, name)
             args.stream().skip(2).forEach(i->{
                 IR1BaseBlock ir1BaseBlock = decls.get(i.name);
+
                 if(ir1BaseBlock==null)
                     return;
-
+                System.out.println(i.name + " " + i.blockId + " " + ir1BaseBlock.blockId);
                 //ok on read variable, on write to variable-it's wrong
                 //if == "res_...." -> вроде всегда получаем read.
                 // write на данном этапе в дереве не будет.(т.к.) auto-return(ex return last expr) not applyed
-               // ir1BB.nodesOutChilds.remove(ir1BaseBlock);
+                // ir1BB.nodesOutChilds.remove(ir1BaseBlock);
                 //connectToChilds(ir1BB, ir1BaseBlock);//mb_swap
                 //connectTo(ir1BB, ir1BaseBlock);//mb_swap
             });
@@ -80,6 +81,7 @@ public class IR1BaseBlock {
 
     private static int addFuncArgs(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, Iterator<FrontendBaseBlock> childsIt) {
         int cnt = 0;
+        //System.out.println(ir1BB.name + " " + ir1BB.blockId + " " + ir1BB.blockId);
         if(ir1BB.type == FrontendBaseBlock.TYPE.FUNC) {
             while (childsIt.hasNext()){
                 FrontendBaseBlock v = childsIt.next();
