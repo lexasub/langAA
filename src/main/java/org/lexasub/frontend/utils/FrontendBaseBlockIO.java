@@ -11,8 +11,9 @@ import java.util.function.Function;
 
 public class FrontendBaseBlockIO {
     static boolean jsonize = false;
-    private static String r(String a){
-        return (jsonize)?('"' + a + '"'):a;
+
+    private static String r(String a) {
+        return (jsonize) ? ('"' + a + '"') : a;
     }
 
     public static void dump(String t, StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 public class FunctionGenerators {
     public static Function IF(FrontendBaseBlock myBlock) {
         return (s) -> {
-            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
+            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
             FrontendBaseBlock newIf = new FrontendBaseBlock();
             newIf.parent = myBlock;
             newIf.type = FrontendBaseBlock.TYPE.IF;
@@ -18,7 +18,7 @@ public class FunctionGenerators {
             newIf.addChild(expr);
             trueBranch.parent = newIf;
             newIf.addChild(trueBranch);
-            if(v.hasNext()){
+            if (v.hasNext()) {
                 FrontendBaseBlock falseBranch = v.next().childs.get(0);//todo convert lambda to block
                 falseBranch.parent = newIf;
                 newIf.addChild(falseBranch);
@@ -44,7 +44,7 @@ public class FunctionGenerators {
 
     public static Function WHILE(FrontendBaseBlock myBlock) {
         return (s) -> {
-            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>)s).iterator();
+            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
 
             FrontendBaseBlock newWhile = new FrontendBaseBlock();
             newWhile.parent = myBlock;
@@ -78,7 +78,7 @@ public class FunctionGenerators {
         return (s) -> {
             FrontendBaseBlock newFunCall = new FrontendBaseBlock();
             newFunCall.parent = myBlock;
-            Asm.call(funcName, (Stream<FrontendBaseBlock>)s, newFunCall);
+            Asm.call(funcName, (Stream<FrontendBaseBlock>) s, newFunCall);
             return newFunCall;
         };
     }

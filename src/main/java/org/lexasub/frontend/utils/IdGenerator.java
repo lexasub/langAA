@@ -46,9 +46,11 @@ public class IdGenerator {
     public static String label() {
         return getString(lbl_name, "lbl_");
     }
+
     public static String id() {
         return getString(lbl_name, "");
     }
+
     public static String lblCollBegin() {
         return "MAP_ARGUMENT_" + label();
     }

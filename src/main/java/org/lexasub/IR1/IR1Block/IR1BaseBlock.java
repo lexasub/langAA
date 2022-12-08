@@ -48,8 +48,8 @@ public class IR1BaseBlock {
             cnt = addFuncArgs(ir1BB, decls, fbChilds.iterator());
         if (ir1BB.type == FrontendBaseBlock.TYPE.CODE)
             codeBlock(ir1BB, decls, fbChilds);
-      //  else
-            getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(ir1BaseBlock -> connectToChilds(ir1BaseBlock, ir1BB));
+        //  else
+        getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(ir1BaseBlock -> connectToChilds(ir1BaseBlock, ir1BB));
         return ir1BB;
     }
 

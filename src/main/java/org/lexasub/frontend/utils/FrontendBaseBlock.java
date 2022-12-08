@@ -9,6 +9,7 @@ public class FrontendBaseBlock {
     public FrontendBaseBlock.TYPE type = TYPE.BLOCK;
     public LinkedList<FrontendBaseBlock> childs = new LinkedList<>();
     public String blockId = IdGenerator.id();
+
     public FrontendBaseBlock() {
 
     }
@@ -25,7 +26,7 @@ public class FrontendBaseBlock {
         this.name = name;
         this.code = code;
         this.blockId = blockId;
-        if(!Objects.equals(type, "null"))
+        if (!Objects.equals(type, "null"))
             this.type = TYPE.valueOf(type);
     }
 
@@ -36,7 +37,6 @@ public class FrontendBaseBlock {
         fbb.parent = myBlock;
         return fbb;
     }
-
 
 
     public void addChild(FrontendBaseBlock child) {

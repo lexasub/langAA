@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class myLangosVisitor  implements myLangosVisitorInterface {
+public class myLangosVisitor implements myLangosVisitorInterface {
     @Override
     public FrontendBaseBlock visitImport_(langosParser.Import_Context ctx) {
         return null;
@@ -18,11 +18,11 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     @Override
     public Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myBlock) {
         //pairmap,map,set,swap
-        if(ctx.IF() != null) return FunctionGenerators.IF(myBlock);
-        if(ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock);
-        if(ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock);
-        if(ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock);//kostyl'
-        if(ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock);//kostyl'
+        if (ctx.IF() != null) return FunctionGenerators.IF(myBlock);
+        if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock);
+        if (ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock);
+        if (ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock);//kostyl'
+        if (ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock);//kostyl'
         return null;
     }
 
@@ -66,9 +66,9 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         newBlock.parent = myBlock;
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
         visitBody(ctx.body(), newBlock)
-                .forEach(i->{
+                .forEach(i -> {
                     ((FrontendBaseBlock) i).parent = newBlock;
-                    newBlock.addChild((FrontendBaseBlock)i);
+                    newBlock.addChild((FrontendBaseBlock) i);
                 });
         return newBlock;
     }
@@ -76,10 +76,10 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     @Override
     public FrontendBaseBlock visitExpr(langosParser.ExprContext ctx, final FrontendBaseBlock myBlock) {
         //with_
-        if(ctx.flow_control() != null) return visitFlow_control(ctx.flow_control(), myBlock);
-        if(ctx.function_call_() != null) return  visitFunction_call_(ctx.function_call_(), myBlock);
+        if (ctx.flow_control() != null) return visitFlow_control(ctx.flow_control(), myBlock);
+        if (ctx.function_call_() != null) return visitFunction_call_(ctx.function_call_(), myBlock);
         //class_
-        if(ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);
+        if (ctx.lambda() != null) return visitLambda(ctx.lambda(), myBlock);
         //get_member
         //char, string, id
         return null;
@@ -94,14 +94,16 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     public void visitFunc_args(langosParser.Func_argsContext ctx, FrontendBaseBlock newBlock) {
         Iterator<String> names = ctx.var_name().stream().map(this::visitVar_name).iterator();
         Iterator<String> types = ctx.type_name().stream().map(this::visitType_name).iterator();
-        while (names.hasNext()){
+        while (names.hasNext()) {
             newBlock.declareVariable(types.next(), names.next());
         }
     }
+
     @Override
     public Stream visitBody(langosParser.BodyContext ctx, FrontendBaseBlock newBlock) {
-        return ctx.element().stream().map(i->visitElement(i, newBlock));
+        return ctx.element().stream().map(i -> visitElement(i, newBlock));
     }
+
     @Override
     public Object visitMethod_call_(langosParser.Method_call_Context ctx) {
         return null;
@@ -137,21 +139,21 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     @Override
     public FrontendBaseBlock visitFunction_call2(langosParser.Function_call2Context ctx, FrontendBaseBlock myBlock) {
         //function_call_helper
-        if(ctx.function_call() != null) return visitFunction_call(ctx.function_call(), myBlock);
+        if (ctx.function_call() != null) return visitFunction_call(ctx.function_call(), myBlock);
         return null;
     }
 
     @Override
     public FrontendBaseBlock visitFunction_call_(langosParser.Function_call_Context ctx, FrontendBaseBlock myBlock) {
         //method_Call
-        if(ctx.function_call2() != null) return visitFunction_call2(ctx.function_call2(), myBlock);
+        if (ctx.function_call2() != null) return visitFunction_call2(ctx.function_call2(), myBlock);
         return null;
     }
 
     @Override
     public FrontendBaseBlock visitFlow_control(langosParser.Flow_controlContext ctx, FrontendBaseBlock myBlock) {
-        if(ctx.CONTINUE() != null) return myBlock.CONTINUE();
-        if(ctx.BREAK() != null) return myBlock.BREAK();
+        if (ctx.CONTINUE() != null) return myBlock.CONTINUE();
+        if (ctx.BREAK() != null) return myBlock.BREAK();
         //else return
         return visitReturn_expr(ctx.return_expr(), myBlock);
     }
@@ -162,12 +164,12 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         Stream body;
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
         newBlock.type = FrontendBaseBlock.TYPE.LAMBDA;
-        args.forEach(i->newBlock.declareVariable((String) i));
+        args.forEach(i -> newBlock.declareVariable((String) i));
         newBlock.parent = myBlock;
-        if(ctx.body() != null)
+        if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        body.forEach(i->{
+        body.forEach(i -> {
             ((FrontendBaseBlock) i).parent = newBlock;
             newBlock.addChild((FrontendBaseBlock) i);
         });
@@ -179,7 +181,8 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     public FrontendBaseBlock visitReturn_expr(langosParser.Return_exprContext ctx, FrontendBaseBlock myBlock) {
         if (ctx == null) return Asm.RETURN(myBlock);
         //getMember, char,string
-        if (ctx.function_call_() != null) return Asm.RETURN(visitFunction_call_(ctx.function_call_(), myBlock), myBlock);
+        if (ctx.function_call_() != null)
+            return Asm.RETURN(visitFunction_call_(ctx.function_call_(), myBlock), myBlock);
         if (ctx.lambda() != null) return Asm.RETURN(visitLambda(ctx.lambda(), myBlock), myBlock);//thenReturn
         if (ctx.ID() != null) return Asm.RETURN(ctx.ID().getText(), myBlock);
         return null;
@@ -187,7 +190,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
 
     @Override
     public FrontendBaseBlock visitElement(langosParser.ElementContext ctx, final FrontendBaseBlock myBlock) {
-        if(ctx.function() != null) return visitFunction(ctx.function(), myBlock);
+        if (ctx.function() != null) return visitFunction(ctx.function(), myBlock);
         return visitExpr(ctx.expr(), myBlock);
     }
 
@@ -223,7 +226,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
 
     @Override
     public FrontendBaseBlock visitProgram(langosParser.ProgramContext ctx, FrontendBaseBlock myBlock) {
-        if(ctx.import_() != null) return visitImport_(ctx.import_());
+        if (ctx.import_() != null) return visitImport_(ctx.import_());
         return visitElement(ctx.element(), myBlock);
     }
 
@@ -231,6 +234,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
     public Stream visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
         return ctx.program().stream().map(ctx1 -> visitProgram(ctx1, myBlock));
     }
+
     @Override
     public FrontendBaseBlock visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myBlock) {
         //getMember, char,string
@@ -239,6 +243,7 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
         if (ctx.ID() != null) return FrontendBaseBlock.spawnID(ctx.ID().getText(), myBlock);//or find??
         return null;
     }
+
     @Override
     public Stream visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myBlock) {
         return ctx.callArg().stream().map(ctx1 -> visitCallArg(ctx1, myBlock));
@@ -246,8 +251,8 @@ public class myLangosVisitor  implements myLangosVisitorInterface {
 
     @Override
     public Stream visitLambdaArgs(langosParser.LambdaArgsContext ctx) {
-        if(ctx.ID() != null) return Stream.of(ctx.ID().getText());
-        if(ctx.id_list() != null) return ctx.id_list().ID().stream().map(i->i.getText());
+        if (ctx.ID() != null) return Stream.of(ctx.ID().getText());
+        if (ctx.id_list() != null) return ctx.id_list().ID().stream().map(i -> i.getText());
         return Stream.of();
     }
 }

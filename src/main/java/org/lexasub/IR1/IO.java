@@ -15,12 +15,12 @@ public class IO {
         //Asm.print(
         IR1BaseBlock newBlock = IR1BaseBlock.makeFromFrontendBaseBlock(FBBView.visit(FBBView.getParser("test")));
         IR1BaseBlockIO.dump(newBlock);
-       // newBlock.serialize(sb);
-       // System.out.println(sb);
+        // newBlock.serialize(sb);
+        // System.out.println(sb);
 
 
-       // StringBuilder sb1 = new StringBuilder();
-       // newBlock.serialize(sb1);
+        // StringBuilder sb1 = new StringBuilder();
+        // newBlock.serialize(sb1);
         //System.out.println(sb1);
 
         //newBlock.deserialize()

@@ -54,7 +54,8 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default void visitFunc_args(langosParser.Func_argsContext ctx, FrontendBaseBlock newBlock) {  }
+    default void visitFunc_args(langosParser.Func_argsContext ctx, FrontendBaseBlock newBlock) {
+    }
 
     default Object visitMethod_call_(langosParser.Method_call_Context ctx) {
         return null;
@@ -134,9 +135,11 @@ public interface myLangosVisitorInterface {
     default Object visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
         return null;
     }
+
     default Object visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
+
     default Object visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myblock) {
         return null;
     }
