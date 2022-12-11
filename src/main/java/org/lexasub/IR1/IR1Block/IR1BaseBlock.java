@@ -48,8 +48,8 @@ public class IR1BaseBlock {
             cnt = addFuncArgs(ir1BB, decls, fbChilds.iterator());
         if (ir1BB.type == FrontendBaseBlock.TYPE.CODE)
             codeBlock(ir1BB, decls, fbChilds);
-        //  else
-        getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(ir1BaseBlock -> connectToChilds(ir1BaseBlock, ir1BB));
+        else
+            getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(i -> connectToChilds(i, ir1BB));
         return ir1BB;
     }
 
@@ -77,10 +77,10 @@ public class IR1BaseBlock {
         //TODO
         //extract from code ids and maybe add to nodesIn, nodesOut
         FrontendBaseBlock v = args.get(0);
-        connectTo(ir1BB, new IR1BaseBlock(v));
+        connectToChilds(new IR1BaseBlock(v), ir1BB);
         int n;
         if (Objects.equals(v.name, "call")) {
-            connectTo(ir1BB, new IR1BaseBlock(args.get(1)));
+            connectToChilds(new IR1BaseBlock(args.get(1)), ir1BB);
             n = 2;
         } else n = 1;
         //skip (ex: call, name)
@@ -89,6 +89,7 @@ public class IR1BaseBlock {
             IR1BaseBlock ir1BaseBlock = findOrCreateBlock(decls, i);
             if (Objects.equals(ir1BaseBlock.type, FrontendBaseBlock.TYPE.BLOCK))
                 decls.put("res_" + ir1BaseBlock.blockId, ir1BaseBlock);
+            connectTo(ir1BB, ir1BaseBlock);
             //System.out.println(i.name + " " + i.blockId + " " + ir1BaseBlock.blockId);
             //ok on read variable, on write to variable-it's wrong
             //if == "res_...." -> вроде всегда получаем read.

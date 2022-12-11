@@ -73,5 +73,5 @@ public class FrontendBaseBlock {
     }
 
 
-    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, LAMBDA}//ID or variable??//TODO
+    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, PHI_PART, PHI, LAMBDA}//ID or variable??//TODO
 }
