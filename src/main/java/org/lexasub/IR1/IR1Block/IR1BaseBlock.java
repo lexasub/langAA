@@ -29,6 +29,7 @@ public class IR1BaseBlock {
     public IR1BaseBlock(FrontendBaseBlock.TYPE type) {
         this.type = type;
     }
+
     public IR1BaseBlock(FrontendBaseBlock.TYPE type, String name) {
         this.type = type;
         this.name = name;

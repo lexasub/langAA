@@ -17,10 +17,9 @@ public class FrontendBaseBlockIO {
     }
 
     public static void dump(String t, StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {
-        BiFunction<String, String, StringBuilder> v = (String a, String b) -> sb.append(
-                t.concat(r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n")
-        );
-        if (jsonize) sb.append(t.concat("{" + "\n"));
+        BiFunction<String, String, StringBuilder> v = (String a, String b) ->
+                append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");
+        if (jsonize) append(sb, t, "{" + "\n");
         v.apply("name", frontendBaseBlock.name);
         v.apply("code", frontendBaseBlock.code);
         v.apply("blockId", frontendBaseBlock.blockId);
@@ -28,20 +27,23 @@ public class FrontendBaseBlockIO {
         // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
         if (!frontendBaseBlock.childs.isEmpty()) {
             if (jsonize)
-                sb.append(t.concat("\"childs\":[\n"));
+                append(sb, t, "\"childs\":[\n");
             else
-                sb.append(t.concat("childs:{\n"));
+                append(sb, t, "childs:{\n");
             frontendBaseBlock.childs.forEach(i -> dump(t + "\t", sb, i));
-            if (jsonize) sb.append(t.concat( "\t" + "{}" + "\n"));
-            if (jsonize)  sb.append(t.concat( "]" + "\n"));
-            if (!jsonize) sb.append(t.concat("}" + "\n"));
+            if (jsonize) append(sb, t, "\t" + "{}" + "\n");
+            append(sb, t, (jsonize) ? "]" : "}" + "\n");
         } else {
             if (jsonize)
-                sb.append(t.concat("\"childs\":{}\n"));
+                append(sb, t, "\"childs\":{}\n");
             else
-                sb.append(t.concat("childs:{}\n"));
+                append(sb, t, "childs:{}\n");
         }
-        if (jsonize) sb.append(t.concat("}" +  ((jsonize) ? "," : "") + "\n"));
+        if (jsonize) append(sb, t, "}" + "," + "\n");
+    }
+
+    private static StringBuilder append(StringBuilder sb, String t, String str) {
+        return sb.append(t.concat(str));
     }
 
     public static void serialize(StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {

@@ -41,14 +41,14 @@ public class IR1BaseBlockIO {
 
     private static void dump(LinkedList<String> visitedNodes, Graph<String, CustomEdge> graph, IR1BaseBlock newBlock, boolean deps, boolean parts) {
         if (visitedNodes.contains(newBlock.blockId)) return;//уже обошли
-        if(deps) {
+        if (deps) {
             newBlock.nodesOut.forEach(i -> {
-            graph.addVertex(getMyDumpForGraph(i));
-            graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("s", "s"));
+                graph.addVertex(getMyDumpForGraph(i));
+                graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("s", "s"));
             });
             newBlock.nodesOut.forEach(i -> dump(visitedNodes, graph, i, deps, parts));
         }
-        if(parts) {
+        if (parts) {
             newBlock.nodesOutChilds.forEach(i -> {
                 graph.addVertex(getMyDumpForGraph(i));
                 graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("v", "v"));
