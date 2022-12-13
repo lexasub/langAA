@@ -14,7 +14,7 @@ public class IO {
         //Asm.pretty = true;//Set output with tabs
         //Asm.print(
         IR1BaseBlock newBlock = IR1BaseBlock.makeFromFrontendBaseBlock(FBBView.visit(FBBView.getParser("test")));
-        IR1BaseBlockIO.dump(newBlock);
+        IR1BaseBlockIO.dump(newBlock, true, true);
         // newBlock.serialize(sb);
         // System.out.println(sb);
 

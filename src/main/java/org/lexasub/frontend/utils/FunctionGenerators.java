@@ -5,21 +5,20 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FunctionGenerators {
-    public static Function IF(FrontendBaseBlock myBlock) {
+    public static Function IF(FrontendBaseBlock myBlock, FrontendBaseBlock newIf) {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
-            FrontendBaseBlock newIf = new FrontendBaseBlock();
             newIf.parent = myBlock;
             newIf.type = FrontendBaseBlock.TYPE.IF;
-            FrontendBaseBlock expr = v.next().childs.get(0);//todo convert lambda to block
-            FrontendBaseBlock trueBranch = v.next().childs.get(0);//todo convert lambda to block
+            FrontendBaseBlock expr = v.next();//.childs.get(0)//todo convert lambda to block
+            FrontendBaseBlock trueBranch = v.next();//todo convert lambda to block
             System.out.println(trueBranch.childs.size());
             expr.parent = newIf;
             newIf.addChild(expr);
             trueBranch.parent = newIf;
             newIf.addChild(trueBranch);
             if (v.hasNext()) {
-                FrontendBaseBlock falseBranch = v.next().childs.get(0);//todo convert lambda to block
+                FrontendBaseBlock falseBranch = v.next();//todo convert lambda to block
                 falseBranch.parent = newIf;
                 newIf.addChild(falseBranch);
             }
@@ -42,14 +41,13 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function WHILE(FrontendBaseBlock myBlock) {
+    public static Function WHILE(FrontendBaseBlock myBlock, FrontendBaseBlock newWhile) {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
 
-            FrontendBaseBlock newWhile = new FrontendBaseBlock();
             newWhile.parent = myBlock;
             newWhile.type = FrontendBaseBlock.TYPE.WHILE;
-            FrontendBaseBlock expr = v.next().childs.get(0);//todo convert lambda to block
+            FrontendBaseBlock expr = v.next();//.childs.get(0)//todo convert lambda to block
             FrontendBaseBlock body = v.next();//todo convert lambda to block
             expr.parent = newWhile;
             newWhile.addChild(expr);
@@ -74,9 +72,8 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function ID(String funcName, FrontendBaseBlock myBlock) {
+    public static Function ID(String funcName, FrontendBaseBlock myBlock, FrontendBaseBlock newFunCall) {
         return (s) -> {
-            FrontendBaseBlock newFunCall = new FrontendBaseBlock();
             newFunCall.parent = myBlock;
             Asm.call(funcName, (Stream<FrontendBaseBlock>) s, newFunCall);
             return newFunCall;

@@ -10,7 +10,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    default Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myblock) {
+    default Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myblock, FrontendBaseBlock newPart) {
         return null;
     }
 

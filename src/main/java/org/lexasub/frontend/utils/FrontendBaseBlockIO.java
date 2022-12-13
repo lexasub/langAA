@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class FrontendBaseBlockIO {
-    static boolean jsonize = false;
+    public static boolean jsonize = false;
 
     private static String r(String a) {
         return (jsonize) ? ('"' + a + '"') : a;
@@ -20,7 +20,7 @@ public class FrontendBaseBlockIO {
         BiFunction<String, String, StringBuilder> v = (String a, String b) -> sb.append(
                 t.concat(r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n")
         );
-
+        if (jsonize) sb.append(t.concat("{" + "\n"));
         v.apply("name", frontendBaseBlock.name);
         v.apply("code", frontendBaseBlock.code);
         v.apply("blockId", frontendBaseBlock.blockId);
@@ -28,17 +28,20 @@ public class FrontendBaseBlockIO {
         // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
         if (!frontendBaseBlock.childs.isEmpty()) {
             if (jsonize)
-                sb.append(t.concat("\"childs\":{\n"));
+                sb.append(t.concat("\"childs\":[\n"));
             else
                 sb.append(t.concat("childs:{\n"));
             frontendBaseBlock.childs.forEach(i -> dump(t + "\t", sb, i));
-            sb.append(t.concat("}" + ((jsonize) ? "," : "") + "\n"));
+            if (jsonize) sb.append(t.concat( "\t" + "{}" + "\n"));
+            if (jsonize)  sb.append(t.concat( "]" + "\n"));
+            if (!jsonize) sb.append(t.concat("}" + "\n"));
         } else {
             if (jsonize)
-                sb.append(t.concat("\"childs\":{},\n"));
+                sb.append(t.concat("\"childs\":{}\n"));
             else
                 sb.append(t.concat("childs:{}\n"));
         }
+        if (jsonize) sb.append(t.concat("}" +  ((jsonize) ? "," : "") + "\n"));
     }
 
     public static void serialize(StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {

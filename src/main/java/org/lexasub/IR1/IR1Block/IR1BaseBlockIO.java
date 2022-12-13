@@ -5,7 +5,7 @@ import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.lexasub.IR1.IR1Block.utils.CustomEdge;
+import org.lexasub.utils.CustomEdge;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,10 +18,10 @@ public class IR1BaseBlockIO {
 
     static boolean jsonize = false;
 
-    public static void dump(IR1BaseBlock newBlock) {//TODO
+    public static void dump(IR1BaseBlock newBlock, boolean deps, boolean parts) {//TODO
         Graph<String, CustomEdge> graph = new DefaultDirectedGraph<>(CustomEdge.class);//DirectedPseudograph//DefaultDirectedGraph
         graph.addVertex(getMyDumpForGraph(newBlock));
-        dump(new LinkedList<>(), graph, newBlock);
+        dump(new LinkedList<>(), graph, newBlock, deps, parts);
         /*
            mxgraph.layout.mxCompactTreeLayout;//good
            mxgraph.layout.mxOrganicLayout;//need some modifications
@@ -39,18 +39,22 @@ public class IR1BaseBlockIO {
         }
     }
 
-    private static void dump(LinkedList<String> visitedNodes, Graph<String, CustomEdge> graph, IR1BaseBlock newBlock) {
+    private static void dump(LinkedList<String> visitedNodes, Graph<String, CustomEdge> graph, IR1BaseBlock newBlock, boolean deps, boolean parts) {
         if (visitedNodes.contains(newBlock.blockId)) return;//уже обошли
-        newBlock.nodesOut.forEach(i -> {
+        if(deps) {
+            newBlock.nodesOut.forEach(i -> {
             graph.addVertex(getMyDumpForGraph(i));
             graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("s", "s"));
-        });
-        newBlock.nodesOut.forEach(i -> dump(visitedNodes, graph, i));
-        newBlock.nodesOutChilds.forEach(i -> {
-            graph.addVertex(getMyDumpForGraph(i));
-            graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("v", "v"));
-        });
-        newBlock.nodesOutChilds.forEach(i -> dump(visitedNodes, graph, i));
+            });
+            newBlock.nodesOut.forEach(i -> dump(visitedNodes, graph, i, deps, parts));
+        }
+        if(parts) {
+            newBlock.nodesOutChilds.forEach(i -> {
+                graph.addVertex(getMyDumpForGraph(i));
+                graph.addEdge(getMyDumpForGraph(newBlock), getMyDumpForGraph(i), new CustomEdge("v", "v"));
+            });
+            newBlock.nodesOutChilds.forEach(i -> dump(visitedNodes, graph, i, deps, parts));
+        }
         /*(newBlock.nodesIn.forEach(i->{
             String myDumpForGraph = getMyDumpForGraph(i);
             if(!graph.containsVertex(myDumpForGraph))

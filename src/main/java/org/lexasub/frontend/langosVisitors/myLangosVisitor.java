@@ -16,13 +16,13 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     }
 
     @Override
-    public Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myBlock) {
+    public Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myBlock, FrontendBaseBlock newPart) {
         //pairmap,map,set,swap
-        if (ctx.IF() != null) return FunctionGenerators.IF(myBlock);
-        if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock);
-        if (ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock);
-        if (ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock);//kostyl'
-        if (ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock);//kostyl'
+        if (ctx.IF() != null) return FunctionGenerators.IF(myBlock, newPart);
+        if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock, newPart);
+        if (ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock, newPart);
+        if (ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock, newPart);//kostyl'
+        if (ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock, newPart);//kostyl'
         return null;
     }
 
@@ -126,8 +126,9 @@ public class myLangosVisitor implements myLangosVisitorInterface {
 
     @Override
     public FrontendBaseBlock visitFunction_call(langosParser.Function_callContext ctx, FrontendBaseBlock myBlock) {
-        Function funName = visitFun_name(ctx.fun_name(), myBlock);//->lambda
-        Stream args = visitCallArgs(ctx.callArgs(), myBlock);
+        FrontendBaseBlock newPart = new FrontendBaseBlock();
+        Function funName = visitFun_name(ctx.fun_name(), myBlock, newPart);//->lambda
+        Stream args = visitCallArgs(ctx.callArgs(), newPart);//newPart or myBlock??
         return (FrontendBaseBlock) funName.apply(args);
     }
 
