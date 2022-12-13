@@ -93,14 +93,13 @@ public class IR1BaseBlock {
             IR1BaseBlock ir1BB_ = findOrCreateBlock(decls, i);
             if (ir1BB_.typeIs(FrontendBaseBlock.TYPE.BLOCK))
                 decls.put("res_" + ir1BB_.blockId, ir1BB_);
-            connectTo(ir1BB, ir1BB_);
+            //connectTo(ir1BB, ir1BB_);
+            connectToChilds(ir1BB_, ir1BB);
             //System.out.println(i.name + " " + i.blockId + " " + ir1BB_.blockId);
             //ok on read variable, on write to variable-it's wrong
             //if == "res_...." -> вроде всегда получаем read.
             // write на данном этапе в дереве не будет.(т.к.) auto-return(ex return last expr) not applyed
             // ir1BB.nodesOutChilds.remove(ir1BB_);
-            //connectToChilds(ir1BB, ir1BB_);//mb_swap
-            //connectTo(ir1BB, ir1BB_);//mb_swap
         });
     }
 

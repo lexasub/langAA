@@ -78,20 +78,20 @@ public class IR2BaseBlockNew {
         } else if (block.typeIs(FrontendBaseBlock.TYPE.IF)) {
             ifConvert(block, visitedBlocks);
         }
-        block.nodesOut.forEach(i -> replaceVarsWith(i, visitedBlocks));
-        block.nodesOutChilds.forEach(i -> replaceVarsWith(i, visitedBlocks));
+        block.nodesOut.forEach(i -> replaceVarsWith(i, visitedBlocks));//nodesIn???
+        block.nodesOutChilds.forEach(i -> replaceVarsWith(i, visitedBlocks));//nodesInChilds???
     }
 
-    private void replaceVarArg(IR1BaseBlock parent, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
-        IR1BaseBlock phi = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI, parent.name + "_" + id);
-       /* ch.nodesIn.set(ch.nodesIn.indexOf(parent), phi);//mb change to nodesInParent??
-        phi.nodesOut.add(ch);*/
-        ch.nodesIn.set(ch.nodesIn.indexOf(parent), phi);
-        ch.nodesIn.remove(parent);
+    private void replaceVarArg(IR1BaseBlock idNode, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
+        //id - it's number of phi reg
+        IR1BaseBlock phi = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI, idNode.name + "_" + id);
+
+        ch.nodesIn.set(ch.nodesIn.indexOf(idNode), phi);//TODO change to nodesOut ??
+        ch.nodesIn.remove(idNode);
 
         connectToChilds(phi, ch);
 
-        parent.nodesOut.set(id, phi);
+        idNode.nodesOut.set(id, phi);//change to nodesIn??
 
         connectTo(phiPart, phi);
         connectTo(phiPart, ch);
