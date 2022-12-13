@@ -6,6 +6,7 @@ import org.lexasub.frontend.utils.FrontendBaseBlock;
 import org.lexasub.frontend.utils.FunctionGenerators;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -170,7 +171,8 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        body.forEach(i -> {
+        LinkedList bodyList = new LinkedList (body.toList());
+        bodyList.forEach(i -> {
             ((FrontendBaseBlock) i).parent = newBlock;
             newBlock.addChild((FrontendBaseBlock) i);
         });

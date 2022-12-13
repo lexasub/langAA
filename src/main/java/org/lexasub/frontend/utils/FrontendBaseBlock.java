@@ -14,13 +14,13 @@ public class FrontendBaseBlock {
 
     }
 
-    public FrontendBaseBlock(FrontendBaseBlock obj) {//blockId
+ /*   public FrontendBaseBlock(FrontendBaseBlock obj) {//blockId
         this.parent = obj.parent;
         this.name = obj.name;
         this.code = obj.code;
         this.type = obj.type;
-        this.childs = new LinkedList<>(childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
-    }
+        this.childs = new LinkedList<>(obj.childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
+    }*/
 
     public FrontendBaseBlock(String name, String code, String blockId, String type) {
         this.name = name;
@@ -28,6 +28,7 @@ public class FrontendBaseBlock {
         this.blockId = blockId;
         if (!Objects.equals(type, "null"))
             this.type = TYPE.valueOf(type);
+        //may be - add childs
     }
 
     public static FrontendBaseBlock spawnID(String id, FrontendBaseBlock myBlock) {
@@ -46,7 +47,7 @@ public class FrontendBaseBlock {
     public void declareVariable(String type, String name) {
         addChild(spawnID(name, this));//todo add type
     }
-
+/*
     public String returnRes() {
         if (type == TYPE.ID) return name;//MayBeBad
         return "res_" + blockId;
@@ -59,7 +60,7 @@ public class FrontendBaseBlock {
     public String end() {
         return "end_" + blockId;
     }
-
+*/
     public FrontendBaseBlock CONTINUE() {//TODO
         return null;
     }

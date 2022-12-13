@@ -19,6 +19,23 @@ public class IR1BaseBlock {
     public IR1BaseBlock() {
     }
 
+    public ListIterator<IR1BaseBlock> nodesOutChildsListIterator(){
+        return nodesOutChilds.listIterator();
+    }
+    public ListIterator<IR1BaseBlock> nodesOutListIterator(){
+        return nodesOut.listIterator();
+    }
+
+    public void copyNodesInsFrom(IR1BaseBlock ir1Block) {
+        nodesIn = ir1Block.nodesIn;
+        nodesInParents = ir1Block.nodesInParents;
+    }
+
+    public boolean typeIs(FrontendBaseBlock.TYPE type_) {
+        return type == type_;
+    }
+
+
     public IR1BaseBlock(FrontendBaseBlock v) {
         name = v.name;
         code = v.code;
@@ -48,12 +65,13 @@ public class IR1BaseBlock {
         /* if (Objects.equals(frontendBlock.blockId, "zlJ5kusc6q")) {
             System.out.println(frontendBlock.name);
         }*/
-        if (ir1BB.type == FrontendBaseBlock.TYPE.FUNC)
-            cnt = addFuncArgs(ir1BB, decls, fbChilds.iterator());
-        if (ir1BB.type == FrontendBaseBlock.TYPE.CODE)
+        if (ir1BB.typeIs(FrontendBaseBlock.TYPE.CODE)){
             codeBlock(ir1BB, decls, fbChilds);
-        else
-            getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(i -> connectToChilds(i, ir1BB));
+            return ir1BB;
+        }
+        if (ir1BB.typeIs(FrontendBaseBlock.TYPE.FUNC))
+            cnt = addFuncArgs(ir1BB, decls, fbChilds.iterator());//cnt - how much skip blocks
+        getIr1BaseBlock(decls, fbChilds.stream().skip(cnt)).forEach(i -> connectToChilds(i, ir1BB));
         return ir1BB;
     }
 
@@ -66,12 +84,12 @@ public class IR1BaseBlock {
     }
 
     private static LinkedList<IR1BaseBlock> getIr1BaseBlock(HashMap<String, IR1BaseBlock> decls, Stream<FrontendBaseBlock> blocks) {
-        return new LinkedList<>(blocks //skip blocks
-                .map(i -> {
-                    IR1BaseBlock ir1BaseBlock = findOrCreateBlock(decls, i);
-                    if (Objects.equals(ir1BaseBlock.type, FrontendBaseBlock.TYPE.BLOCK))
-                        decls.put("res_" + ir1BaseBlock.blockId, ir1BaseBlock);
-                    return ir1BaseBlock;
+        return new LinkedList<>(
+                blocks.map(i -> {
+                    IR1BaseBlock ir1BB = findOrCreateBlock(decls, i);
+                    if (ir1BB.typeIs(FrontendBaseBlock.TYPE.BLOCK))
+                        decls.put("res_" + ir1BB.blockId, ir1BB);
+                    return ir1BB;
                 }).toList());
         //may be last expr - it's return if blockId != ""
     }
@@ -90,20 +108,19 @@ public class IR1BaseBlock {
         //skip (ex: call, name)
 
         args.stream().skip(n).forEach(i -> {
-            IR1BaseBlock ir1BaseBlock = findOrCreateBlock(decls, i);
-            if (Objects.equals(ir1BaseBlock.type, FrontendBaseBlock.TYPE.BLOCK))
-                decls.put("res_" + ir1BaseBlock.blockId, ir1BaseBlock);
-            connectTo(ir1BB, ir1BaseBlock);
-            //System.out.println(i.name + " " + i.blockId + " " + ir1BaseBlock.blockId);
+            IR1BaseBlock ir1BB_ = findOrCreateBlock(decls, i);
+            if (ir1BB_.typeIs(FrontendBaseBlock.TYPE.BLOCK))
+                decls.put("res_" + ir1BB_.blockId, ir1BB_);
+            connectTo(ir1BB, ir1BB_);
+            //System.out.println(i.name + " " + i.blockId + " " + ir1BB_.blockId);
             //ok on read variable, on write to variable-it's wrong
             //if == "res_...." -> вроде всегда получаем read.
             // write на данном этапе в дереве не будет.(т.к.) auto-return(ex return last expr) not applyed
-            // ir1BB.nodesOutChilds.remove(ir1BaseBlock);
-            //connectToChilds(ir1BB, ir1BaseBlock);//mb_swap
-            //connectTo(ir1BB, ir1BaseBlock);//mb_swap
+            // ir1BB.nodesOutChilds.remove(ir1BB_);
+            //connectToChilds(ir1BB, ir1BB_);//mb_swap
+            //connectTo(ir1BB, ir1BB_);//mb_swap
         });
     }
-
 
     private static int addFuncArgs(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, Iterator<FrontendBaseBlock> childsIt) {
         int cnt = 0;

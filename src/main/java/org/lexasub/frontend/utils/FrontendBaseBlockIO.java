@@ -16,23 +16,23 @@ public class FrontendBaseBlockIO {
         return (jsonize) ? ('"' + a + '"') : a;
     }
 
-    public static void dump(String t, StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {
+    public static void dump(String t, StringBuilder sb, FrontendBaseBlock fbb) {
         BiFunction<String, String, StringBuilder> v = (String a, String b) ->
                 append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");
         if (jsonize) append(sb, t, "{" + "\n");
-        v.apply("name", frontendBaseBlock.name);
-        v.apply("code", frontendBaseBlock.code);
-        v.apply("blockId", frontendBaseBlock.blockId);
-        v.apply("type", String.valueOf(frontendBaseBlock.type));
+        v.apply("name", fbb.name);
+        v.apply("code", fbb.code);
+        v.apply("blockId", fbb.blockId);
+        v.apply("type", String.valueOf(fbb.type));
         // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
-        if (!frontendBaseBlock.childs.isEmpty()) {
+        if (!fbb.childs.isEmpty()) {
             if (jsonize)
                 append(sb, t, "\"childs\":[\n");
             else
                 append(sb, t, "childs:{\n");
-            frontendBaseBlock.childs.forEach(i -> dump(t + "\t", sb, i));
+            fbb.childs.forEach(i -> dump(t + "\t", sb, i));
             if (jsonize) append(sb, t, "\t" + "{}" + "\n");
-            append(sb, t, (jsonize) ? "]" : "}" + "\n");
+            append(sb, t, ((jsonize) ? "]" : "}") + "\n");
         } else {
             if (jsonize)
                 append(sb, t, "\"childs\":{}\n");
@@ -46,9 +46,10 @@ public class FrontendBaseBlockIO {
         return sb.append(t.concat(str));
     }
 
-    public static void serialize(StringBuilder sb, FrontendBaseBlock frontendBaseBlock) {
+    public static void serialize(StringBuilder sb, FrontendBaseBlock fbb) {
         Function<String, StringBuilder> v = (String s) -> sb.append(s + "\n");
-        frontendBaseBlock.childs.forEach(i -> {
+        LinkedList<FrontendBaseBlock> childs = fbb.childs;
+        childs.forEach(i -> {
             v.apply(i.name);
             v.apply(i.code);
             v.apply(i.blockId);
@@ -56,7 +57,7 @@ public class FrontendBaseBlockIO {
             v.apply((i.parent == null) ? "" : i.parent.blockId);
             v.apply(" ");
         });
-        frontendBaseBlock.childs.forEach(i -> serialize(sb, i));
+        childs.forEach(i -> serialize(sb, i));
     }
 
     public static FrontendBaseBlock deserialize(String[] split) {

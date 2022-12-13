@@ -1,4 +1,4 @@
-package org.lexasub.IR2.IR2Block;
+package org.lexasub.IR2.IR2Block.old;
 
 import org.lexasub.IR1.IR1Block.IR1BaseBlock;
 import org.lexasub.frontend.utils.FrontendBaseBlock;

@@ -32,10 +32,10 @@ public class Asm {
         FrontendBaseBlock nameOP = new FrontendBaseBlock();
         nameOP.type = FrontendBaseBlock.TYPE.ID;
         nameOP.name = nameOp;
-        fbb.childs.add(nameOP);
+        fbb.addChild(nameOP);
         nameOP.parent = fbb;
         args.forEach(i -> {
-            fbb.childs.add(i);
+            fbb.addChild(i);
             i.parent = fbb;
         });
         return fbb;
@@ -63,7 +63,7 @@ public class Asm {
         FrontendBaseBlock i = new FrontendBaseBlock();
         i.type = FrontendBaseBlock.TYPE.ID;
         i.name = "res_" + expr.blockId;//todo link with expr
-        fbb.childs.add(i);
+        fbb.addChild(i);
         i.parent = fbb;
         FrontendBaseBlock newFbb = new FrontendBaseBlock();
         fbb.parent = newFbb;

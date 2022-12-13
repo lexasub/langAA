@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectTo;
 import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectToChilds;
 
 public class IR2BaseBlockNew {
@@ -18,7 +19,7 @@ public class IR2BaseBlockNew {
 
     private static void relinkNodeIn(IR1BaseBlock ir1Block, IR1BaseBlock ifScope) {
         ifScope.nodesIn.forEach(i -> {
-            ListIterator<IR1BaseBlock> il = i.nodesOut.listIterator();
+            ListIterator<IR1BaseBlock> il = i.nodesOutListIterator();
             while (il.hasNext())
                 if (il.next() == ir1Block) {
                     il.previous();
@@ -26,7 +27,7 @@ public class IR2BaseBlockNew {
                 }
         });
         ifScope.nodesInParents.forEach(i -> {
-            ListIterator<IR1BaseBlock> il = i.nodesOutChilds.listIterator();
+            ListIterator<IR1BaseBlock> il = i.nodesOutChildsListIterator();
             while (il.hasNext())
                 if (il.next() == ir1Block) {
                     il.previous();
@@ -45,8 +46,7 @@ public class IR2BaseBlockNew {
         connectToChilds(condJmp, condScope);
         connectToChilds(trueExpr, trueScope);
         connectToChilds(jmp1, trueScope);//jmp to ...
-        ifScope.nodesIn = ir1Block.nodesIn;
-        ifScope.nodesInParents = ir1Block.nodesInParents;
+        ifScope.copyNodesInsFrom(ir1Block);
         connectToChilds(condScope, ifScope);
         connectToChilds(trueScope, ifScope);
     }
@@ -59,7 +59,7 @@ public class IR2BaseBlockNew {
     private void replaceVarsWith(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
         if (visitedBlocks.contains(block)) return;
         visitedBlocks.add(block);
-        if (block.type == FrontendBaseBlock.TYPE.ID && block.nodesIn.size() == 0) {
+        if (block.typeIs(FrontendBaseBlock.TYPE.ID) && block.nodesIn.size() == 0) {//maybe TODO check ID && size=0
            /* switch (block.name){
                 case "call":
                 case "set":
@@ -68,14 +68,14 @@ public class IR2BaseBlockNew {
                     return;
             }*/
             IR1BaseBlock phiPart = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI_PART);
-            ListIterator<IR1BaseBlock> it = block.nodesOut.listIterator();
+            ListIterator<IR1BaseBlock> it = block.nodesOutListIterator();
             while (it.hasNext()) {
                 int id = it.nextIndex();
                 replaceVarArg(block, id, it.next(), phiPart);
             }
             //  block.nodesOut.forEach(i->i.nodesOut.add(0, phiPart));
             return;
-        } else if (block.type == FrontendBaseBlock.TYPE.IF) {
+        } else if (block.typeIs(FrontendBaseBlock.TYPE.IF)) {
             ifConvert(block, visitedBlocks);
         }
         block.nodesOut.forEach(i -> replaceVarsWith(i, visitedBlocks));
@@ -88,19 +88,17 @@ public class IR2BaseBlockNew {
         phi.nodesOut.add(ch);*/
         ch.nodesIn.set(ch.nodesIn.indexOf(parent), phi);
         ch.nodesIn.remove(parent);
-        phi.nodesInParents.add(ch);
-        ch.nodesOutChilds.add(phi);
+
+        connectToChilds(phi, ch);
 
         parent.nodesOut.set(id, phi);
-        phi.nodesOut.add(phiPart);
-        phiPart.nodesIn.add(phi);
 
-        ch.nodesOut.add(phiPart);
-        phiPart.nodesIn.add(ch);
+        connectTo(phiPart, phi);
+        connectTo(phiPart, ch);
     }
 
     private void whileConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
-        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChilds.iterator();
+        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
         IR1BaseBlock cond = it.next();
         //doJob(cond, visitedBlocks);
         IR1BaseBlock expr = it.next();
@@ -140,7 +138,7 @@ public class IR2BaseBlockNew {
     private void ifConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
         // replaceVarArg(ir1Block);
         //return;
-        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChilds.iterator();
+        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
         IR1BaseBlock cond = it.next();
         //  replaceVarsWith(cond, visitedBlocks);
         IR1BaseBlock trueExpr = it.next();

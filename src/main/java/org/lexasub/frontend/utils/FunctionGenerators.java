@@ -12,7 +12,6 @@ public class FunctionGenerators {
             newIf.type = FrontendBaseBlock.TYPE.IF;
             FrontendBaseBlock expr = v.next();//.childs.get(0)//todo convert lambda to block
             FrontendBaseBlock trueBranch = v.next();//todo convert lambda to block
-            System.out.println(trueBranch.childs.size());
             expr.parent = newIf;
             newIf.addChild(expr);
             trueBranch.parent = newIf;
