@@ -66,8 +66,7 @@ public class FrontendBaseBlockIO {
                 .map(i -> i.split("\n"))
                 .map(i ->
                         {
-                            if (parentChild.get(i[4]) == null)
-                                parentChild.put(i[4], new LinkedList());
+                            parentChild.computeIfAbsent(i[4], k -> new LinkedList<>());
                             parentChild.get(i[4]).add(i[2]);
                             return new FrontendBaseBlock(i[0], i[1], i[2], i[3]);
                         }
@@ -76,21 +75,17 @@ public class FrontendBaseBlockIO {
                 i -> {
                     LinkedList<String> l = parentChild.get(i.blockId);
                     if (l != null)
-                        l.forEach(j -> {
-                            FrontendBaseBlock v = blocks.stream().filter(k -> Objects.equals(k.blockId, j)).findFirst().get();
-                            i.addChild(v);
-                            v.parent = i;
-                        });
+                        l.forEach(j ->
+                                i.fullLinkWith(blocks.stream().filter(k -> Objects.equals(k.blockId, j))
+                                        .findFirst().get())//TODO findFirst check
+                        );
                 }
         );
 
         FrontendBaseBlock myBlock = new FrontendBaseBlock();
         blocks.stream()
                 .filter(i -> i.parent == null)
-                .forEach(i -> {
-                    i.parent = myBlock;
-                    myBlock.addChild(i);
-                });
+                .forEach(myBlock::fullLinkWith);
         return myBlock;
     }
 }

@@ -67,10 +67,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         newBlock.parent = myBlock;
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
         visitBody(ctx.body(), newBlock)
-                .forEach(i -> {
-                    ((FrontendBaseBlock) i).parent = newBlock;
-                    newBlock.addChild((FrontendBaseBlock) i);
-                });
+                .forEach(i -> newBlock.fullLinkWith((FrontendBaseBlock) i));
         return newBlock;
     }
 
@@ -171,11 +168,8 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        LinkedList bodyList = new LinkedList(body.toList());
-        bodyList.forEach(i -> {
-            ((FrontendBaseBlock) i).parent = newBlock;
-            newBlock.addChild((FrontendBaseBlock) i);
-        });
+        LinkedList bodyList = new LinkedList<>(body.toList());
+        bodyList.forEach(i -> newBlock.fullLinkWith((FrontendBaseBlock) i));
         return newBlock;
     }
 

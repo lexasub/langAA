@@ -22,8 +22,8 @@ public class Asm {
         name_.type = FrontendBaseBlock.TYPE.ID;
         name_.name = funcName;
         FrontendBaseBlock v = introduceCodeBlock(Stream.concat(Stream.of(name_), args), "call");
-        v.parent = newFunCall;
-        newFunCall.addChild(v);
+        newFunCall.fullLinkWith(v);
+
     }
 
     private static FrontendBaseBlock introduceCodeBlock(Stream<FrontendBaseBlock> args, String nameOp) {
@@ -32,12 +32,8 @@ public class Asm {
         FrontendBaseBlock nameOP = new FrontendBaseBlock();
         nameOP.type = FrontendBaseBlock.TYPE.ID;
         nameOP.name = nameOp;
-        fbb.addChild(nameOP);
-        nameOP.parent = fbb;
-        args.forEach(i -> {
-            fbb.addChild(i);
-            i.parent = fbb;
-        });
+        fbb.fullLinkWith(nameOP);
+        args.forEach(i -> fbb.fullLinkWith(i));
         return fbb;
     }
 
@@ -63,15 +59,13 @@ public class Asm {
         FrontendBaseBlock i = new FrontendBaseBlock();
         i.type = FrontendBaseBlock.TYPE.ID;
         i.name = "res_" + expr.blockId;//todo link with expr
-        fbb.addChild(i);
-        i.parent = fbb;
+        fbb.fullLinkWith(i);
         FrontendBaseBlock newFbb = new FrontendBaseBlock();
         fbb.parent = newFbb;
-        expr.parent = newFbb;
-        newFbb.addChild(expr);
-        newFbb.addChild(fbb);
-        newFbb.parent = _parent;
+        newFbb.fullLinkWith(fbb);
+        newFbb.fullLinkWith(expr);
         return newFbb;
 
     }
+
 }

@@ -23,10 +23,7 @@ public class FBBView {
         myLangosVisitor visitor = new myLangosVisitor();
         FrontendBaseBlock myBlock = new FrontendBaseBlock();
         visitor.visitEntry_point(parser.entry_point(), myBlock)
-                .forEach(i -> {
-                    ((FrontendBaseBlock) i).parent = myBlock;
-                    myBlock.addChild((FrontendBaseBlock) i);
-                });
+                .forEach(i -> myBlock.fullLinkWith((FrontendBaseBlock) i));
         return myBlock;
     }
 }

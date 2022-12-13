@@ -10,17 +10,11 @@ public class FunctionGenerators {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
             newIf.parent = myBlock;
             newIf.type = FrontendBaseBlock.TYPE.IF;
-            FrontendBaseBlock expr = v.next();//.childs.get(0)//todo convert lambda to block
-            FrontendBaseBlock trueBranch = v.next();//todo convert lambda to block
-            expr.parent = newIf;
-            newIf.addChild(expr);
-            trueBranch.parent = newIf;
-            newIf.addChild(trueBranch);
-            if (v.hasNext()) {
-                FrontendBaseBlock falseBranch = v.next();//todo convert lambda to block
-                falseBranch.parent = newIf;
-                newIf.addChild(falseBranch);
-            }
+            newIf.fullLinkWith(v.next());//expr
+            newIf.fullLinkWith(v.next());//trueBranch
+            if (v.hasNext())
+                newIf.fullLinkWith(v.next());//falseBranch
+            //FrontendBaseBlock trueBranch = v.next();
            /* if(falseBranch != null) {
                 FrontendBaseBlock jmp = Asm.jmp(expr.returnRes(), trueBranch.begin(), falseBranch.begin());
                 jmp.parent = newIf;
@@ -46,14 +40,9 @@ public class FunctionGenerators {
 
             newWhile.parent = myBlock;
             newWhile.type = FrontendBaseBlock.TYPE.WHILE;
-            FrontendBaseBlock expr = v.next();//.childs.get(0)//todo convert lambda to block
-            FrontendBaseBlock body = v.next();//todo convert lambda to block
-            expr.parent = newWhile;
-            newWhile.addChild(expr);
-            body.parent = newWhile;
-            newWhile.addChild(body);
+            newWhile.fullLinkWith(v.next());//expr
+            newWhile.fullLinkWith(v.next());//body
 
-            //  expr.type = FrontendBaseBlock.TYPE.BLOCK;
            /* FrontendBaseBlock expr1 = new FrontendBaseBlock(expr);//TODO check deep copy
             expr1.parent = newWhile;
             expr1.type = FrontendBaseBlock.TYPE.BLOCK;*/
