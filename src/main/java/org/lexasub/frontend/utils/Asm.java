@@ -33,7 +33,7 @@ public class Asm {
         nameOP.type = FrontendBaseBlock.TYPE.ID;
         nameOP.name = nameOp;
         fbb.fullLinkWith(nameOP);
-        args.forEach(i -> fbb.fullLinkWith(i));
+        args.forEach(fbb::fullLinkWith);
         return fbb;
     }
 

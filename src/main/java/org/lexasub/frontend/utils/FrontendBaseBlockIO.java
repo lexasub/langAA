@@ -48,7 +48,7 @@ public class FrontendBaseBlockIO {
 
     public static void serialize(StringBuilder sb, FrontendBaseBlock fbb) {
         Function<String, StringBuilder> v = (String s) -> sb.append(s + "\n");
-        LinkedList<FrontendBaseBlock> childs = fbb.childs;
+        List<FrontendBaseBlock> childs = fbb.childs;
         childs.forEach(i -> {
             v.apply(i.name);
             v.apply(i.code);

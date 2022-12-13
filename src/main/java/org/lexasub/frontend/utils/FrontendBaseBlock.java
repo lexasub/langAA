@@ -7,7 +7,7 @@ public class FrontendBaseBlock {
     public String name = "";
     public String code = "";
     public FrontendBaseBlock.TYPE type = TYPE.BLOCK;
-    public LinkedList<FrontendBaseBlock> childs = new LinkedList<>();
+    public List<FrontendBaseBlock> childs = new LinkedList<>();
     public String blockId = IdGenerator.id();
 
     public FrontendBaseBlock() {

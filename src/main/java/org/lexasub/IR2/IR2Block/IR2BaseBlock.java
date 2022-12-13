@@ -6,14 +6,15 @@ import org.lexasub.frontend.utils.FrontendBaseBlock;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Objects;
 
 import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectTo;
 import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectToChilds;
 
-public class IR2BaseBlockNew {
+public class IR2BaseBlock {
     public IR1BaseBlock block;
 
-    public IR2BaseBlockNew(IR1BaseBlock block) {
+    public IR2BaseBlock(IR1BaseBlock block) {
         this.block = block;
     }
 
@@ -51,15 +52,25 @@ public class IR2BaseBlockNew {
         connectToChilds(trueScope, ifScope);
     }
 
-    public void doJob() {
-        LinkedList<IR1BaseBlock> visitedBlocks = new LinkedList<>();
-        replaceVarsWith(block, visitedBlocks);
+    public void doJob() {//root is not id, if
+        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
+        introducePhisJob(block, new LinkedList<>());
+        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
     }
 
-    private void replaceVarsWith(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+    private void introducePhisJob(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+        block.nodesOut.forEach(i -> replaceVarsWith(block, i, visitedBlocks));
+        block.nodesOutChilds.forEach(i -> replaceVarsWith(block, i, visitedBlocks));
+    }
+
+    private void replaceVarsWith(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
         if (visitedBlocks.contains(block)) return;
         visitedBlocks.add(block);
-        if (block.typeIs(FrontendBaseBlock.TYPE.ID) && block.nodesIn.size() == 0) {//maybe TODO check ID && size=0
+        if (checkType(parent, block, visitedBlocks)) return;
+        introducePhisJob(block, visitedBlocks);
+    }
+    private boolean checkType(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+        if (block.typeIs(FrontendBaseBlock.TYPE.ID) && block.hasntDeps()) {//maybe TODO check ID && hasntDeps
            /* switch (block.name){
                 case "call":
                 case "set":
@@ -68,33 +79,35 @@ public class IR2BaseBlockNew {
                     return;
             }*/
             IR1BaseBlock phiPart = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI_PART);
-            ListIterator<IR1BaseBlock> it = block.nodesOutListIterator();
+            ListIterator<IR1BaseBlock> it = block.nodesInParents.listIterator();
             while (it.hasNext()) {
                 int id = it.nextIndex();
-                replaceVarArg(block, id, it.next(), phiPart);
+                IR1BaseBlock ir1BB = it.next();
+                if(!Objects.equals(ir1BB, parent))
+                    replaceVarArg(block, id, ir1BB, phiPart);
             }
-            //  block.nodesOut.forEach(i->i.nodesOut.add(0, phiPart));
-            return;
-        } else if (block.typeIs(FrontendBaseBlock.TYPE.IF)) {
+            return true;
+        }
+        if (block.typeIs(FrontendBaseBlock.TYPE.IF)) {
             ifConvert(block, visitedBlocks);
         }
-        block.nodesOut.forEach(i -> replaceVarsWith(i, visitedBlocks));//nodesIn???
-        block.nodesOutChilds.forEach(i -> replaceVarsWith(i, visitedBlocks));//nodesInChilds???
+        return false;
     }
 
     private void replaceVarArg(IR1BaseBlock idNode, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
         //id - it's number of phi reg
         IR1BaseBlock phi = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI, idNode.name + "_" + id);
 
-        ch.nodesIn.set(ch.nodesIn.indexOf(idNode), phi);//TODO change to nodesOut ??
-        ch.nodesIn.remove(idNode);
-
-        connectToChilds(phi, ch);
-
-        idNode.nodesOut.set(id, phi);//change to nodesIn??
-
-        connectTo(phiPart, phi);
+        ch.nodesOutChilds.set(ch.nodesOutChilds.indexOf(idNode), phi);
+        phi.nodesInParents.add(ch);
         connectTo(phiPart, ch);
+
+        idNode.nodesInParents.set(id, phi);
+        phi.nodesOutChilds.add(idNode);
+        /*idNode.nodesInParents.remove(id);
+        connectTo(phi, idNode);*/
+        connectTo(phiPart, phi);
+
     }
 
     private void whileConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
@@ -136,33 +149,25 @@ public class IR2BaseBlockNew {
     }
 
     private void ifConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
-        // replaceVarArg(ir1Block);
-        //return;
         Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
         IR1BaseBlock cond = it.next();
-        //  replaceVarsWith(cond, visitedBlocks);
+        cond.type = FrontendBaseBlock.TYPE.BLOCK;
         IR1BaseBlock trueExpr = it.next();
-        //   replaceVarsWith(trueExpr, visitedBlocks);
-        //  Object trueDeps = findDependences(trueExpr); //1)найти зависимости переменных в trueExpr от переменных декларированных раньше
+        trueExpr.type = FrontendBaseBlock.TYPE.BLOCK;
+        //1)найти зависимости переменных в trueExpr от переменных декларированных раньше
         IR1BaseBlock falseExpr = null;
         if (it.hasNext()) {
             falseExpr = it.next();
-            //  doJob(falseExpr, visitedBlocks);
+            falseExpr.type = FrontendBaseBlock.TYPE.BLOCK;
         }
-        //  Object falseDeps = findDependences(falseExpr);//2)найти зависимости переменных в falseExpr от переменных декларированных раньше
+        //2)найти зависимости переменных в falseExpr от переменных декларированных раньше
         //3)сгенерить phi-функции после выполнения if(ну и новых переменных создать для phi)
         IR1BaseBlock ifScope = new IR1BaseBlock();
         ifPart(cond, trueExpr, ir1Block, ifScope);
-
-        IR1BaseBlock falseScope = new IR1BaseBlock();
-        IR1BaseBlock jmp2 = new IR1BaseBlock(FrontendBaseBlock.TYPE.JMP);
         if (falseExpr != null) {
-            connectToChilds(falseExpr, falseScope);
-            connectToChilds(jmp2, falseScope);//jmp to ...
-            connectToChilds(falseScope, ifScope);
+            ifPartFalseExpr(falseExpr, ifScope);
         }
         relinkNodeIn(ir1Block, ifScope);
-        //TODO ifScope->ir1Block
         //end_if:
         //ifScope.add(phi's)
         /*
@@ -175,5 +180,13 @@ public class IR2BaseBlockNew {
         endIF:
         phi's
         */
+    }
+
+    private static void ifPartFalseExpr(IR1BaseBlock falseExpr, IR1BaseBlock ifScope) {
+        IR1BaseBlock jmp2 = new IR1BaseBlock(FrontendBaseBlock.TYPE.JMP);
+        IR1BaseBlock falseScope = new IR1BaseBlock();
+        connectToChilds(falseExpr, falseScope);
+        connectToChilds(jmp2, falseScope);//jmp to ...
+        connectToChilds(falseScope, ifScope);
     }
 }

@@ -11,13 +11,14 @@ public class IR1BaseBlock {
     public String code;
     public String blockId = IdGenerator.id();
     public FrontendBaseBlock.TYPE type = FrontendBaseBlock.TYPE.BLOCK;
-    public LinkedList<IR1BaseBlock> nodesIn = new LinkedList<>();
-    public LinkedList<IR1BaseBlock> nodesOut = new LinkedList<>();
-    public LinkedList<IR1BaseBlock> nodesInParents = new LinkedList<>();
-    public LinkedList<IR1BaseBlock> nodesOutChilds = new LinkedList<>();
+    public List<IR1BaseBlock> nodesIn = new LinkedList<>();
+    public List<IR1BaseBlock> nodesOut = new LinkedList<>();
+    public List<IR1BaseBlock> nodesInParents = new LinkedList<>();
+    public List<IR1BaseBlock> nodesOutChilds = new LinkedList<>();
 
     public IR1BaseBlock() {
     }
+
 
     public IR1BaseBlock(FrontendBaseBlock v) {
         name = v.name;
@@ -43,7 +44,7 @@ public class IR1BaseBlock {
         //clone for cancel local modification(mb scopes)(ex local variables)//TODO check
         IR1BaseBlock ir1BB = new IR1BaseBlock(frontendBlock);
         HashMap<String, IR1BaseBlock> decls = (HashMap<String, IR1BaseBlock>) _decls.clone();
-        LinkedList<FrontendBaseBlock> fbChilds = frontendBlock.childs;
+        List<FrontendBaseBlock> fbChilds = frontendBlock.childs;
         int cnt = 0;
         /* if (Objects.equals(frontendBlock.blockId, "zlJ5kusc6q")) {
             System.out.println(frontendBlock.name);
@@ -77,7 +78,7 @@ public class IR1BaseBlock {
         //may be last expr - it's return if blockId != ""
     }
 
-    private static void codeBlock(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, LinkedList<FrontendBaseBlock> args) {
+    private static void codeBlock(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, List<FrontendBaseBlock> args) {
         //TODO
         //extract from code ids and maybe add to nodesIn, nodesOut
         FrontendBaseBlock v = args.get(0);
@@ -143,5 +144,9 @@ public class IR1BaseBlock {
 
     public boolean typeIs(FrontendBaseBlock.TYPE type_) {
         return type == type_;
+    }
+
+    public boolean hasntDeps() {
+        return nodesIn.isEmpty();
     }
 }

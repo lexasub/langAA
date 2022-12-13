@@ -1,5 +1,6 @@
 package org.lexasub.frontend.langosVisitors;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.lexasub.frontend.langosParser;
 import org.lexasub.frontend.utils.Asm;
 import org.lexasub.frontend.utils.FrontendBaseBlock;
@@ -66,8 +67,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         newBlock.name = visitVar_name(ctx.var_name());
         newBlock.setParent(myBlock);
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
-        visitBody(ctx.body(), newBlock)
-                .forEach(i -> newBlock.fullLinkWith((FrontendBaseBlock) i));
+        visitBody(ctx.body(), newBlock).forEach(newBlock::fullLinkWith);
         return newBlock;
     }
 
@@ -98,7 +98,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     }
 
     @Override
-    public Stream visitBody(langosParser.BodyContext ctx, FrontendBaseBlock newBlock) {
+    public Stream<FrontendBaseBlock> visitBody(langosParser.BodyContext ctx, FrontendBaseBlock newBlock) {
         return ctx.element().stream().map(i -> visitElement(i, newBlock));
     }
 
@@ -126,7 +126,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     public FrontendBaseBlock visitFunction_call(langosParser.Function_callContext ctx, FrontendBaseBlock myBlock) {
         FrontendBaseBlock newPart = new FrontendBaseBlock();
         Function funName = visitFun_name(ctx.fun_name(), myBlock, newPart);//->lambda
-        Stream args = visitCallArgs(ctx.callArgs(), newPart);//newPart or myBlock??
+        Stream<FrontendBaseBlock> args = visitCallArgs(ctx.callArgs(), newPart);//newPart or myBlock??
         return (FrontendBaseBlock) funName.apply(args);
     }
 
@@ -159,17 +159,17 @@ public class myLangosVisitor implements myLangosVisitorInterface {
 
     @Override
     public FrontendBaseBlock visitLambda(langosParser.LambdaContext ctx, FrontendBaseBlock myBlock) {
-        Stream args = visitLambdaArgs(ctx.lambdaArgs());
-        Stream body;
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
         newBlock.type = FrontendBaseBlock.TYPE.LAMBDA;
-        args.forEach(i -> newBlock.declareVariable((String) i));
+        Stream<String> args = visitLambdaArgs(ctx.lambdaArgs());
+        args.forEach(newBlock::declareVariable);
         newBlock.setParent(myBlock);
+        Stream<FrontendBaseBlock> body;
         if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        LinkedList bodyList = new LinkedList<>(body.toList());
-        bodyList.forEach(i -> newBlock.fullLinkWith((FrontendBaseBlock) i));
+        LinkedList<FrontendBaseBlock> bodyList = new LinkedList<>(body.toList());
+        bodyList.forEach(newBlock::fullLinkWith);
         return newBlock;
     }
 
@@ -242,14 +242,14 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     }
 
     @Override
-    public Stream visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myBlock) {
+    public Stream<FrontendBaseBlock> visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myBlock) {
         return ctx.callArg().stream().map(ctx1 -> visitCallArg(ctx1, myBlock));
     }
 
     @Override
-    public Stream visitLambdaArgs(langosParser.LambdaArgsContext ctx) {
+    public Stream<String> visitLambdaArgs(langosParser.LambdaArgsContext ctx) {
         if (ctx.ID() != null) return Stream.of(ctx.ID().getText());
-        if (ctx.id_list() != null) return ctx.id_list().ID().stream().map(i -> i.getText());
+        if (ctx.id_list() != null) return ctx.id_list().ID().stream().map(ParseTree::getText);
         return Stream.of();
     }
 }
