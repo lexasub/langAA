@@ -1,7 +1,7 @@
 package org.lexasub.IR2.IR2Block;
 
 import org.lexasub.IR1.IR1Block.IR1BaseBlock;
-import org.lexasub.frontend.utils.FrontendBaseBlock;
+import org.lexasub.frontend.utils.FrontendBaseBlock.TYPE;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,8 +38,8 @@ public class IR2BaseBlock {
     }
 
     private static void ifPart(IR1BaseBlock cond, IR1BaseBlock trueExpr, IR1BaseBlock ir1Block, IR1BaseBlock ifScope) {
-        IR1BaseBlock jmp1 = new IR1BaseBlock(FrontendBaseBlock.TYPE.JMP);
-        IR1BaseBlock condJmp = new IR1BaseBlock(FrontendBaseBlock.TYPE.COND_JMP);
+        IR1BaseBlock jmp1 = new IR1BaseBlock(TYPE.JMP);
+        IR1BaseBlock condJmp = new IR1BaseBlock(TYPE.COND_JMP);
         IR1BaseBlock trueScope = new IR1BaseBlock();
         IR1BaseBlock condScope = new IR1BaseBlock();
         connectToChilds(cond, condScope);
@@ -70,7 +70,7 @@ public class IR2BaseBlock {
         introducePhisJob(block, visitedBlocks);
     }
     private boolean checkType(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
-        if (block.typeIs(FrontendBaseBlock.TYPE.ID) && block.hasntDeps()) {//maybe TODO check ID && hasntDeps
+        if (block.typeIs(TYPE.ID) && block.hasntDeps()) {//maybe TODO check ID && hasntDeps
            /* switch (block.name){
                 case "call":
                 case "set":
@@ -78,7 +78,7 @@ public class IR2BaseBlock {
                     block.nodesOutChilds.forEach(i->replaceVarsWith(i, visitedBlocks));
                     return;
             }*/
-            IR1BaseBlock phiPart = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI_PART);
+            IR1BaseBlock phiPart = new IR1BaseBlock(TYPE.PHI_PART);
             ListIterator<IR1BaseBlock> it = block.nodesInParents.listIterator();
             while (it.hasNext()) {
                 int id = it.nextIndex();
@@ -88,7 +88,7 @@ public class IR2BaseBlock {
             }
             return true;
         }
-        if (block.typeIs(FrontendBaseBlock.TYPE.IF)) {
+        if (block.typeIs(TYPE.IF)) {
             ifConvert(block, visitedBlocks);
         }
         return false;
@@ -96,7 +96,7 @@ public class IR2BaseBlock {
 
     private void replaceVarArg(IR1BaseBlock idNode, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
         //id - it's number of phi reg
-        IR1BaseBlock phi = new IR1BaseBlock(FrontendBaseBlock.TYPE.PHI, idNode.name + "_" + id);
+        IR1BaseBlock phi = new IR1BaseBlock(TYPE.PHI, idNode.name + "_" + id);
 
         ch.nodesOutChilds.set(ch.nodesOutChilds.indexOf(idNode), phi);
         phi.nodesInParents.add(ch);
@@ -122,8 +122,8 @@ public class IR2BaseBlock {
         IR1BaseBlock whileScope = new IR1BaseBlock();
         IR1BaseBlock condScope = new IR1BaseBlock();
         IR1BaseBlock exprScope = new IR1BaseBlock();
-        IR1BaseBlock condJmp = new IR1BaseBlock(FrontendBaseBlock.TYPE.COND_JMP);
-        IR1BaseBlock jmp = new IR1BaseBlock(FrontendBaseBlock.TYPE.JMP);
+        IR1BaseBlock condJmp = new IR1BaseBlock(TYPE.COND_JMP);
+        IR1BaseBlock jmp = new IR1BaseBlock(TYPE.JMP);
         //condScope.add(phi's)
         connectToChilds(cond, condScope);
         //condJmp.add(cond_res, end_while, begin_expr)
@@ -151,14 +151,14 @@ public class IR2BaseBlock {
     private void ifConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
         Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
         IR1BaseBlock cond = it.next();
-        cond.type = FrontendBaseBlock.TYPE.BLOCK;
+        cond.type = TYPE.BLOCK;
         IR1BaseBlock trueExpr = it.next();
-        trueExpr.type = FrontendBaseBlock.TYPE.BLOCK;
+        trueExpr.type = TYPE.BLOCK;
         //1)найти зависимости переменных в trueExpr от переменных декларированных раньше
         IR1BaseBlock falseExpr = null;
         if (it.hasNext()) {
             falseExpr = it.next();
-            falseExpr.type = FrontendBaseBlock.TYPE.BLOCK;
+            falseExpr.type = TYPE.BLOCK;
         }
         //2)найти зависимости переменных в falseExpr от переменных декларированных раньше
         //3)сгенерить phi-функции после выполнения if(ну и новых переменных создать для phi)
@@ -183,7 +183,7 @@ public class IR2BaseBlock {
     }
 
     private static void ifPartFalseExpr(IR1BaseBlock falseExpr, IR1BaseBlock ifScope) {
-        IR1BaseBlock jmp2 = new IR1BaseBlock(FrontendBaseBlock.TYPE.JMP);
+        IR1BaseBlock jmp2 = new IR1BaseBlock(TYPE.JMP);
         IR1BaseBlock falseScope = new IR1BaseBlock();
         connectToChilds(falseExpr, falseScope);
         connectToChilds(jmp2, falseScope);//jmp to ...

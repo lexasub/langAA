@@ -1,6 +1,7 @@
 package org.lexasub.IR1.IR1Block;
 
-import com.mxgraph.layout.*;
+import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphXAdapter;
@@ -12,7 +13,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedList;
 
 public class IR1BaseBlockIO {
 
