@@ -64,7 +64,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
         newBlock.type = FrontendBaseBlock.TYPE.FUNC;
         newBlock.name = visitVar_name(ctx.var_name());
-        newBlock.parent = myBlock;
+        newBlock.setParent(myBlock);
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
         visitBody(ctx.body(), newBlock)
                 .forEach(i -> newBlock.fullLinkWith((FrontendBaseBlock) i));
@@ -164,7 +164,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         FrontendBaseBlock newBlock = new FrontendBaseBlock();
         newBlock.type = FrontendBaseBlock.TYPE.LAMBDA;
         args.forEach(i -> newBlock.declareVariable((String) i));
-        newBlock.parent = myBlock;
+        newBlock.setParent(myBlock);
         if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));

@@ -42,7 +42,7 @@ public class Asm {
         name_.type = FrontendBaseBlock.TYPE.ID;
         name_.name = arg;
         FrontendBaseBlock v = introduceCodeBlock(Stream.of(name_), "ret");
-        v.parent = myBlock;
+        v.setParent(myBlock);
         return v;
     }
 
@@ -50,7 +50,7 @@ public class Asm {
         FrontendBaseBlock fbb = new FrontendBaseBlock();
         fbb.type = FrontendBaseBlock.TYPE.CODE;
         fbb.code = "ret";
-        fbb.parent = _parent;
+        fbb.setParent(_parent);
         return fbb;
     }
 
@@ -61,7 +61,7 @@ public class Asm {
         i.name = "res_" + expr.blockId;//todo link with expr
         fbb.fullLinkWith(i);
         FrontendBaseBlock newFbb = new FrontendBaseBlock();
-        fbb.parent = newFbb;
+        fbb.setParent(newFbb);
         newFbb.fullLinkWith(fbb);
         newFbb.fullLinkWith(expr);
         return newFbb;

@@ -35,13 +35,13 @@ public class FrontendBaseBlock {
         FrontendBaseBlock fbb = new FrontendBaseBlock();
         fbb.type = FrontendBaseBlock.TYPE.ID;
         fbb.name = id;
-        fbb.parent = myBlock;
+        fbb.setParent(myBlock);
         return fbb;
     }
 
     public void fullLinkWith(FrontendBaseBlock child) {
         addChild(child);
-        child.parent = this;
+        child.setParent(this);
     }
 
     public void addChild(FrontendBaseBlock child) {
@@ -76,6 +76,10 @@ public class FrontendBaseBlock {
 
     public void declareVariable(String i) {
         addChild(spawnID(i, this));
+    }
+
+    public void setParent(FrontendBaseBlock parent) {
+        this.parent = parent;
     }
 
 

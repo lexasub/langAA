@@ -8,7 +8,7 @@ public class FunctionGenerators {
     public static Function IF(FrontendBaseBlock myBlock, FrontendBaseBlock newIf) {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
-            newIf.parent = myBlock;
+            newIf.setParent(myBlock);
             newIf.type = FrontendBaseBlock.TYPE.IF;
             newIf.fullLinkWith(v.next());//expr
             newIf.fullLinkWith(v.next());//trueBranch
@@ -38,7 +38,7 @@ public class FunctionGenerators {
         return (s) -> {
             Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
 
-            newWhile.parent = myBlock;
+            newWhile.setParent(myBlock);
             newWhile.type = FrontendBaseBlock.TYPE.WHILE;
             newWhile.fullLinkWith(v.next());//expr
             newWhile.fullLinkWith(v.next());//body
@@ -62,7 +62,7 @@ public class FunctionGenerators {
 
     public static Function ID(String funcName, FrontendBaseBlock myBlock, FrontendBaseBlock newFunCall) {
         return (s) -> {
-            newFunCall.parent = myBlock;
+            newFunCall.setParent(myBlock);
             Asm.call(funcName, (Stream<FrontendBaseBlock>) s, newFunCall);
             return newFunCall;
         };
