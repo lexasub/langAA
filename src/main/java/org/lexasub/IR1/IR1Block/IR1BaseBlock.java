@@ -19,23 +19,6 @@ public class IR1BaseBlock {
     public IR1BaseBlock() {
     }
 
-    public ListIterator<IR1BaseBlock> nodesOutChildsListIterator(){
-        return nodesOutChilds.listIterator();
-    }
-    public ListIterator<IR1BaseBlock> nodesOutListIterator(){
-        return nodesOut.listIterator();
-    }
-
-    public void copyNodesInsFrom(IR1BaseBlock ir1Block) {
-        nodesIn = ir1Block.nodesIn;
-        nodesInParents = ir1Block.nodesInParents;
-    }
-
-    public boolean typeIs(FrontendBaseBlock.TYPE type_) {
-        return type == type_;
-    }
-
-
     public IR1BaseBlock(FrontendBaseBlock v) {
         name = v.name;
         code = v.code;
@@ -65,7 +48,7 @@ public class IR1BaseBlock {
         /* if (Objects.equals(frontendBlock.blockId, "zlJ5kusc6q")) {
             System.out.println(frontendBlock.name);
         }*/
-        if (ir1BB.typeIs(FrontendBaseBlock.TYPE.CODE)){
+        if (ir1BB.typeIs(FrontendBaseBlock.TYPE.CODE)) {
             codeBlock(ir1BB, decls, fbChilds);
             return ir1BB;
         }
@@ -93,7 +76,6 @@ public class IR1BaseBlock {
                 }).toList());
         //may be last expr - it's return if blockId != ""
     }
-
 
     private static void codeBlock(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, LinkedList<FrontendBaseBlock> args) {
         //TODO
@@ -137,7 +119,6 @@ public class IR1BaseBlock {
         return cnt;
     }
 
-
     public static void connectToChilds(IR1BaseBlock to, IR1BaseBlock from) {
         from.nodesOutChilds.add(to);
         to.nodesInParents.add(from);
@@ -146,5 +127,22 @@ public class IR1BaseBlock {
     public static void connectTo(IR1BaseBlock to, IR1BaseBlock from) {
         from.nodesOut.add(to);
         to.nodesIn.add(from);
+    }
+
+    public ListIterator<IR1BaseBlock> nodesOutChildsListIterator() {
+        return nodesOutChilds.listIterator();
+    }
+
+    public ListIterator<IR1BaseBlock> nodesOutListIterator() {
+        return nodesOut.listIterator();
+    }
+
+    public void copyNodesInsFrom(IR1BaseBlock ir1Block) {
+        nodesIn = ir1Block.nodesIn;
+        nodesInParents = ir1Block.nodesInParents;
+    }
+
+    public boolean typeIs(FrontendBaseBlock.TYPE type_) {
+        return type == type_;
     }
 }

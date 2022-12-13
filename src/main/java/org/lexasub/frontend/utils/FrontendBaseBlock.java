@@ -47,20 +47,21 @@ public class FrontendBaseBlock {
     public void declareVariable(String type, String name) {
         addChild(spawnID(name, this));//todo add type
     }
-/*
-    public String returnRes() {
-        if (type == TYPE.ID) return name;//MayBeBad
-        return "res_" + blockId;
-    }
 
-    public String begin() {
-        return "begin_" + blockId;
-    }
+    /*
+        public String returnRes() {
+            if (type == TYPE.ID) return name;//MayBeBad
+            return "res_" + blockId;
+        }
 
-    public String end() {
-        return "end_" + blockId;
-    }
-*/
+        public String begin() {
+            return "begin_" + blockId;
+        }
+
+        public String end() {
+            return "end_" + blockId;
+        }
+    */
     public FrontendBaseBlock CONTINUE() {//TODO
         return null;
     }

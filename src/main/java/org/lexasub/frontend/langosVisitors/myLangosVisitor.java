@@ -171,7 +171,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         if (ctx.body() != null)
             body = ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));//visitElem - visitExpr || visitFunc
         else body = Stream.of(visitExpr(ctx.expr(), newBlock));
-        LinkedList bodyList = new LinkedList (body.toList());
+        LinkedList bodyList = new LinkedList(body.toList());
         bodyList.forEach(i -> {
             ((FrontendBaseBlock) i).parent = newBlock;
             newBlock.addChild((FrontendBaseBlock) i);

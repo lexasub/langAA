@@ -10,7 +10,7 @@ import java.io.IOException;
 public class IO {
     public static void main(String[] args) throws IOException {
 
-         FrontendBaseBlockIO.jsonize = true;
+        FrontendBaseBlockIO.jsonize = true;
         //Asm.print(
         FrontendBaseBlock block = FBBView.visit(FBBView.getParser("test"));
         StringBuilder sb = new StringBuilder();
