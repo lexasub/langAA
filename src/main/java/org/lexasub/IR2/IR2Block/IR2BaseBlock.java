@@ -1,6 +1,7 @@
 package org.lexasub.IR2.IR2Block;
 
 import org.lexasub.IR1.IR1Block.IR1BaseBlock;
+import org.lexasub.IR2.IR2Block.Parts.IfConvert;
 import org.lexasub.frontend.utils.FrontendBaseBlock.TYPE;
 
 import java.util.Iterator;
@@ -18,6 +19,12 @@ public class IR2BaseBlock {
         this.block = block;
     }
 
+
+    public void doJob() {//root is not id, if
+        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
+        introducePhisJob(block, new LinkedList<>());
+        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
+    }
     private static void relinkNodeIn(IR1BaseBlock ir1Block, IR1BaseBlock ifScope) {
         ifScope.nodesIn.forEach(i -> {
             ListIterator<IR1BaseBlock> il = i.nodesOutListIterator();
@@ -35,27 +42,6 @@ public class IR2BaseBlock {
                     il.set(ifScope);
                 }
         });
-    }
-
-    private static void ifPart(IR1BaseBlock cond, IR1BaseBlock trueExpr, IR1BaseBlock ir1Block, IR1BaseBlock ifScope) {
-        IR1BaseBlock jmp1 = new IR1BaseBlock(TYPE.JMP);
-        IR1BaseBlock condJmp = new IR1BaseBlock(TYPE.COND_JMP);
-        IR1BaseBlock trueScope = new IR1BaseBlock();
-        IR1BaseBlock condScope = new IR1BaseBlock();
-        connectToChilds(cond, condScope);
-        //condJmp.add(cond_res, trueExpr, falseExpr(or endIf))
-        connectToChilds(condJmp, condScope);
-        connectToChilds(trueExpr, trueScope);
-        connectToChilds(jmp1, trueScope);//jmp to ...
-        ifScope.copyNodesInsFrom(ir1Block);
-        connectToChilds(condScope, ifScope);
-        connectToChilds(trueScope, ifScope);
-    }
-
-    public void doJob() {//root is not id, if
-        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
-        introducePhisJob(block, new LinkedList<>());
-        IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
     }
 
     private void introducePhisJob(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
@@ -89,7 +75,7 @@ public class IR2BaseBlock {
             return true;
         }
         if (block.typeIs(TYPE.IF)) {
-            ifConvert(block, visitedBlocks);
+            relinkNodeIn(block, IfConvert.ifConvert(block, visitedBlocks));
         }
         return false;
     }
@@ -110,83 +96,5 @@ public class IR2BaseBlock {
 
     }
 
-    private void whileConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
-        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
-        IR1BaseBlock cond = it.next();
-        //doJob(cond, visitedBlocks);
-        IR1BaseBlock expr = it.next();
-        //doJob(expr, visitedBlocks);
-        //1)найти зависимости переменных в cond от переменных в expr
-        //2)найти зависимости переменных в expr от переменных декларированных раньше
-        //3)вставить phi функции в начала cond, expr и после while
-        IR1BaseBlock whileScope = new IR1BaseBlock();
-        IR1BaseBlock condScope = new IR1BaseBlock();
-        IR1BaseBlock exprScope = new IR1BaseBlock();
-        IR1BaseBlock condJmp = new IR1BaseBlock(TYPE.COND_JMP);
-        IR1BaseBlock jmp = new IR1BaseBlock(TYPE.JMP);
-        //condScope.add(phi's)
-        connectToChilds(cond, condScope);
-        //condJmp.add(cond_res, end_while, begin_expr)
-        connectToChilds(condJmp, condScope);
-        //exprScope.add(phi's)
-        connectToChilds(expr, exprScope);
-        connectToChilds(jmp, exprScope);//jmp to ...
-        connectToChilds(condScope, whileScope);
-        connectToChilds(exprScope, whileScope);
-        //end_while:
-        //whileScope.add(phi's)
-        /*
-        phi's
-        cond
-        TYPE::JMP_COND -> end_while, begin_expr
-        begin_expr:
-        phi's
-        expr
-        TYPE::JMP -> cond
-        end_while:
-        phi's
-         */
-    }
 
-    private void ifConvert(IR1BaseBlock ir1Block, LinkedList<IR1BaseBlock> visitedBlocks) {
-        Iterator<IR1BaseBlock> it = ir1Block.nodesOutChildsListIterator();
-        IR1BaseBlock cond = it.next();
-        cond.type = TYPE.BLOCK;
-        IR1BaseBlock trueExpr = it.next();
-        trueExpr.type = TYPE.BLOCK;
-        //1)найти зависимости переменных в trueExpr от переменных декларированных раньше
-        IR1BaseBlock falseExpr = null;
-        if (it.hasNext()) {
-            falseExpr = it.next();
-            falseExpr.type = TYPE.BLOCK;
-        }
-        //2)найти зависимости переменных в falseExpr от переменных декларированных раньше
-        //3)сгенерить phi-функции после выполнения if(ну и новых переменных создать для phi)
-        IR1BaseBlock ifScope = new IR1BaseBlock();
-        ifPart(cond, trueExpr, ir1Block, ifScope);
-        if (falseExpr != null) {
-            ifPartFalseExpr(falseExpr, ifScope);
-        }
-        relinkNodeIn(ir1Block, ifScope);
-        //end_if:
-        //ifScope.add(phi's)
-        /*
-        cond
-        TYPE::JMP_COND -> trueExpr, falseExpr(or endIf)
-        trueExpr
-        TYPE::JMP -> endIf
-        falseExpr
-        TYPE::JMP -> endIf
-        endIF:
-        phi's
-        */
-    }
-
-    private static void ifPartFalseExpr(IR1BaseBlock falseExpr, IR1BaseBlock ifScope) {
-        IR1BaseBlock jmp2 = new IR1BaseBlock(TYPE.JMP);
-        IR1BaseBlock falseScope = new IR1BaseBlock();
-        connectToChilds(falseExpr, falseScope);
-        connectToChilds(jmp2, falseScope);//jmp to ...
-        connectToChilds(falseScope, ifScope);
-    }
 }

@@ -2,7 +2,7 @@ package org.lexasub.IR1;
 
 
 import org.lexasub.IR1.IR1Block.IR1BaseBlock;
-import org.lexasub.IR1.IR1Block.IR1BaseBlockIO;
+import org.lexasub.utils.IR1BaseBlockIO;
 import org.lexasub.frontend.utils.FBBView;
 
 import java.io.IOException;

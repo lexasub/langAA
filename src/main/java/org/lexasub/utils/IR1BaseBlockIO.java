@@ -1,11 +1,13 @@
-package org.lexasub.IR1.IR1Block;
+package org.lexasub.utils;
 
+import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.lexasub.IR1.IR1Block.IR1BaseBlock;
 import org.lexasub.utils.CustomEdge;
 
 import javax.imageio.ImageIO;

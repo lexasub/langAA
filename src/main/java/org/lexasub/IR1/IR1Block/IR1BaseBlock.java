@@ -149,4 +149,9 @@ public class IR1BaseBlock {
     public boolean hasntDeps() {
         return nodesIn.isEmpty();
     }
+
+    public IR1BaseBlock after() {
+        //TODO
+        return new IR1BaseBlock();//temporary kostyl'
+    }
 }

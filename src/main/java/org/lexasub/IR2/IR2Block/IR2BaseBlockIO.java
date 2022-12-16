@@ -1,7 +1,7 @@
 package org.lexasub.IR2.IR2Block;
 
 import org.lexasub.IR1.IR1Block.IR1BaseBlock;
-import org.lexasub.IR1.IR1Block.IR1BaseBlockIO;
+import org.lexasub.utils.IR1BaseBlockIO;
 
 public class IR2BaseBlockIO {
     public static void dump(IR2BaseBlock ir2BaseBlock) {
