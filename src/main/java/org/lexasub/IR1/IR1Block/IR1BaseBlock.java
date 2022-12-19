@@ -8,13 +8,13 @@ import java.util.stream.Stream;
 
 public class IR1BaseBlock {
     public String name;
-    public String code;
     public String blockId = IdGenerator.id();
     public FrontendBaseBlock.TYPE type = FrontendBaseBlock.TYPE.BLOCK;
     public List<IR1BaseBlock> nodesIn = new LinkedList<>();
     public List<IR1BaseBlock> nodesOut = new LinkedList<>();
     public List<IR1BaseBlock> nodesInParents = new LinkedList<>();
     public List<IR1BaseBlock> nodesOutChilds = new LinkedList<>();
+    private IR1BaseBlock after_;
 
     public IR1BaseBlock() {
     }
@@ -22,7 +22,6 @@ public class IR1BaseBlock {
 
     public IR1BaseBlock(FrontendBaseBlock v) {
         name = v.name;
-        code = v.code;
         type = v.type;
         blockId = v.blockId;
     }
@@ -34,6 +33,11 @@ public class IR1BaseBlock {
     public IR1BaseBlock(FrontendBaseBlock.TYPE type, String name) {
         this.type = type;
         this.name = name;
+    }
+
+    public IR1BaseBlock(FrontendBaseBlock.TYPE afterOrBefore, IR1BaseBlock block) {
+        type = afterOrBefore;
+        connectTo(this, block);
     }
 
     public static IR1BaseBlock makeFromFrontendBaseBlock(FrontendBaseBlock frontendBlock) {
@@ -80,7 +84,7 @@ public class IR1BaseBlock {
 
     private static void codeBlock(IR1BaseBlock ir1BB, HashMap<String, IR1BaseBlock> decls, List<FrontendBaseBlock> args) {
         //TODO
-        //extract from code ids and maybe add to nodesIn, nodesOut
+        //extract ids and maybe add to nodesIn, nodesOut
         FrontendBaseBlock v = args.get(0);
         connectToChilds(new IR1BaseBlock(v), ir1BB);
         int n;
@@ -151,7 +155,8 @@ public class IR1BaseBlock {
     }
 
     public IR1BaseBlock after() {
-        //TODO
-        return new IR1BaseBlock();//temporary kostyl'
+        if (after_ == null)
+            after_ = new IR1BaseBlock(FrontendBaseBlock.TYPE.AFTER, this);//temporary kostyl'
+        return after_;
     }
 }

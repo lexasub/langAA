@@ -1,5 +1,7 @@
 package org.lexasub.frontend.utils;
 
+import org.lexasub.frontend.langosParser;
+
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -66,5 +68,15 @@ public class FunctionGenerators {
             Asm.call(funcName, (Stream<FrontendBaseBlock>) s, newFunCall);
             return newFunCall;
         };
+    }
+
+    public static Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myBlock, FrontendBaseBlock newPart) {
+        //pairmap,map,set,swap
+        if (ctx.IF() != null) return FunctionGenerators.IF(myBlock, newPart);
+        if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock, newPart);
+        if (ctx.ID() != null) return FunctionGenerators.ID(ctx.ID().getText(), myBlock, newPart);
+        if (ctx.SET() != null) return FunctionGenerators.ID(ctx.SET().getText(), myBlock, newPart);//kostyl'
+        if (ctx.SWAP() != null) return FunctionGenerators.ID(ctx.SWAP().getText(), myBlock, newPart);//kostyl'
+        return null;
     }
 }

@@ -7,7 +7,6 @@ import java.util.Objects;
 public class FrontendBaseBlock {
     public FrontendBaseBlock parent = null;
     public String name = "";
-    public String code = "";
     public FrontendBaseBlock.TYPE type = TYPE.BLOCK;
     public List<FrontendBaseBlock> childs = new LinkedList<>();
     public String blockId = IdGenerator.id();
@@ -17,9 +16,8 @@ public class FrontendBaseBlock {
     }
 
 
-    public FrontendBaseBlock(String name, String code, String blockId, String type) {
+    public FrontendBaseBlock(String name, String blockId, String type) {
         this.name = name;
-        this.code = code;
         this.blockId = blockId;
         if (!Objects.equals(type, "null"))
             this.type = TYPE.valueOf(type);
@@ -28,7 +26,6 @@ public class FrontendBaseBlock {
  /*   public FrontendBaseBlock(FrontendBaseBlock obj) {//blockId
         this.parent = obj.parent;
         this.name = obj.name;
-        this.code = obj.code;
         this.type = obj.type;
         this.childs = new LinkedList<>(obj.childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
     }*/
@@ -85,5 +82,5 @@ public class FrontendBaseBlock {
     }
 
 
-    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, PHI_PART, PHI, LAMBDA}//ID or variable??//TODO
+    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, PHI_PART, PHI, AFTER, LAMBDA}//ID or variable??//TODO
 }

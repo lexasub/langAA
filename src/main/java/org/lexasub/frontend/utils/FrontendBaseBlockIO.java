@@ -21,7 +21,6 @@ public class FrontendBaseBlockIO {
                 append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");
         if (jsonize) append(sb, t, "{" + "\n");
         v.apply("name", fbb.name);
-        v.apply("code", fbb.code);
         v.apply("blockId", fbb.blockId);
         v.apply("type", String.valueOf(fbb.type));
         // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
@@ -51,7 +50,6 @@ public class FrontendBaseBlockIO {
         List<FrontendBaseBlock> childs = fbb.childs;
         childs.forEach(i -> {
             v.apply(i.name);
-            v.apply(i.code);
             v.apply(i.blockId);
             v.apply(String.valueOf(i.type));
             v.apply((i.parent == null) ? "" : i.parent.blockId);
@@ -66,9 +64,9 @@ public class FrontendBaseBlockIO {
                 .map(i -> i.split("\n"))
                 .map(i ->
                         {
-                            parentChild.computeIfAbsent(i[4], k -> new LinkedList<>());
-                            parentChild.get(i[4]).add(i[2]);
-                            return new FrontendBaseBlock(i[0], i[1], i[2], i[3]);
+                            parentChild.computeIfAbsent(i[3], k -> new LinkedList<>());
+                            parentChild.get(i[3]).add(i[1]);
+                            return new FrontendBaseBlock(i[0], i[1], i[2]);
                         }
                 ).toList();
         blocks.forEach(

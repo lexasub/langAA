@@ -32,7 +32,7 @@ public class IfConvert {
         if (falseExpr != null) {
             connectTo(falseExpr, condJmp);
             ifPartFalseExpr(falseExpr, ifScope);
-        } else  connectTo(ifScope.after(), condJmp);
+        } else connectTo(ifScope.after(), condJmp);
         return ifScope;
         //end_if:
         //ifScope.add(phi's)
@@ -53,7 +53,7 @@ public class IfConvert {
         IR1BaseBlock falseScope = new IR1BaseBlock();
         connectToChilds(falseExpr, falseScope);
         connectToChilds(jmp, falseScope);//jmp to ...
-        connectTo(ifScope.after(), jmp);//jmp to ...
+        connectTo(jmp, ifScope.after());//jmp to ...
         connectToChilds(falseScope, ifScope);
     }
 
@@ -69,7 +69,7 @@ public class IfConvert {
         connectToChilds(condJmp, condScope);
         connectToChilds(trueExpr, trueScope);
         connectToChilds(jmp, trueScope);//jmp to ...
-        connectTo(ifScope.after(), jmp);//jmp to ...
+        connectTo(jmp, ifScope.after());//jmp to ...
         ifScope.copyNodesInsFrom(ir1Block);
         connectToChilds(condScope, ifScope);
         connectToChilds(trueScope, ifScope);

@@ -4,13 +4,11 @@ import org.lexasub.IR1.IR1Block.IR1BaseBlock;
 import org.lexasub.IR2.IR2Block.Parts.IfConvert;
 import org.lexasub.frontend.utils.FrontendBaseBlock.TYPE;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Objects;
 
 import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectTo;
-import static org.lexasub.IR1.IR1Block.IR1BaseBlock.connectToChilds;
 
 public class IR2BaseBlock {
     public IR1BaseBlock block;
@@ -20,11 +18,13 @@ public class IR2BaseBlock {
     }
 
 
-    public void doJob() {//root is not id, if
+    public static IR1BaseBlock doJob(IR1BaseBlock block) {//root is not id, if
         IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
         introducePhisJob(block, new LinkedList<>());
         IR2Walkers.removeTransitBlocksJob(block, new LinkedList<>());
+        return block;
     }
+
     private static void relinkNodeIn(IR1BaseBlock ir1Block, IR1BaseBlock ifScope) {
         ifScope.nodesIn.forEach(i -> {
             ListIterator<IR1BaseBlock> il = i.nodesOutListIterator();
@@ -44,18 +44,19 @@ public class IR2BaseBlock {
         });
     }
 
-    private void introducePhisJob(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+    private static void introducePhisJob(IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
         block.nodesOut.forEach(i -> replaceVarsWith(block, i, visitedBlocks));
         block.nodesOutChilds.forEach(i -> replaceVarsWith(block, i, visitedBlocks));
     }
 
-    private void replaceVarsWith(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+    private static void replaceVarsWith(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
         if (visitedBlocks.contains(block)) return;
         visitedBlocks.add(block);
         if (checkType(parent, block, visitedBlocks)) return;
         introducePhisJob(block, visitedBlocks);
     }
-    private boolean checkType(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
+
+    private static boolean checkType(IR1BaseBlock parent, IR1BaseBlock block, LinkedList<IR1BaseBlock> visitedBlocks) {
         if (block.typeIs(TYPE.ID) && block.hasntDeps()) {//maybe TODO check ID && hasntDeps
            /* switch (block.name){
                 case "call":
@@ -69,7 +70,7 @@ public class IR2BaseBlock {
             while (it.hasNext()) {
                 int id = it.nextIndex();
                 IR1BaseBlock ir1BB = it.next();
-                if(!Objects.equals(ir1BB, parent))
+                if (!Objects.equals(ir1BB, parent))
                     replaceVarArg(block, id, ir1BB, phiPart);
             }
             return true;
@@ -80,7 +81,7 @@ public class IR2BaseBlock {
         return false;
     }
 
-    private void replaceVarArg(IR1BaseBlock idNode, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
+    private static void replaceVarArg(IR1BaseBlock idNode, int id, IR1BaseBlock ch, IR1BaseBlock phiPart) {
         //id - it's number of phi reg
         IR1BaseBlock phi = new IR1BaseBlock(TYPE.PHI, idNode.name + "_" + id);
 

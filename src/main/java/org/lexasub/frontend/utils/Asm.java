@@ -3,19 +3,6 @@ package org.lexasub.frontend.utils;
 import java.util.stream.Stream;
 
 public class Asm {
-    /*public static FrontendBaseBlock jmp(String cond, String lblTrue, String lblFalse) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        fbb.code = "jmp " + cond + ", " + lblTrue + ", " + lblFalse;
-        return fbb;
-    }
-
-    public static FrontendBaseBlock jmp(String lbl) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        fbb.code = "jmp " + lbl;
-        return fbb;
-    }*/
 
     public static void call(String funcName, Stream<FrontendBaseBlock> args, FrontendBaseBlock newFunCall) {
         FrontendBaseBlock name_ = new FrontendBaseBlock();
@@ -47,11 +34,9 @@ public class Asm {
     }
 
     public static FrontendBaseBlock RETURN(FrontendBaseBlock _parent) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        fbb.code = "ret";
-        fbb.setParent(_parent);
-        return fbb;
+        FrontendBaseBlock v = introduceCodeBlock(Stream.of(), "ret");
+        v.setParent(_parent);
+        return v;
     }
 
     public static FrontendBaseBlock RETURN(FrontendBaseBlock expr, FrontendBaseBlock _parent) {

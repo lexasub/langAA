@@ -72,7 +72,6 @@ public class IR1BaseBlockIO {
         StringBuilder sb = new StringBuilder();
         sb.append(newBlock.blockId + "\n");
         sb.append(newBlock.name + "\n");
-        sb.append(newBlock.code + "\n");
         sb.append(newBlock.type + "\n");
         return sb.toString();
     }
@@ -85,7 +84,6 @@ public class IR1BaseBlockIO {
         if (visitedNodes.contains(newBlock.blockId)) return;//уже обошли
         sb1.append(newBlock.blockId + "\n");
         sb1.append(newBlock.name + "\n");
-        sb1.append(newBlock.code + "\n");
         sb1.append(newBlock.type + "\n");
         String nods = newBlock.nodesIn.stream().map(i -> i.blockId + ", ").reduce("", String::concat);
         if (newBlock.nodesIn.size() > 0) sb1.append(nods, 0, nods.length() - 2);
