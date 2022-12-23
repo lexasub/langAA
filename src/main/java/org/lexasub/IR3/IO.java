@@ -5,10 +5,9 @@ import org.lexasub.IR1.IR1;
 import org.lexasub.IR2.IR2.IR2;
 import org.lexasub.frontend.utils.FBBView;
 
-import static org.lexasub.IR1.IR1.makeFromFBB;
-
 import java.io.IOException;
 
+import static org.lexasub.IR1.IR1.makeFromFBB;
 
 
 public class IO {

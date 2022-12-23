@@ -39,7 +39,7 @@ public class IR2BaseBlockOld {
     }
 
     private static String getPhiDependences(IR1BaseBlock parent, String text) {
-        List<String> blocks = new ArrayList<>(parent.nodesOut.stream().map(i -> i.blockId).toList());
+        List<String> blocks = new ArrayList<String>(parent.nodesOut.stream().map(i -> i.blockId).toList());
         for (ListIterator<String> it = blocks.listIterator(); it.hasNext(); ) {
             int id = it.nextIndex();
             blocks.set(id, " , " + text + "_" + id + " " + it.next());
@@ -129,7 +129,7 @@ public class IR2BaseBlockOld {
          */
     }
 
-    private ListIterator findAndGetIterator(LinkedList<IR1BaseBlock> nodesOutChilds, IR1BaseBlock ir1Block) {
+    private ListIterator<? extends IR1BaseBlock> findAndGetIterator(LinkedList<IR1BaseBlock> nodesOutChilds, IR1BaseBlock ir1Block) {
         ListIterator<IR1BaseBlock> it = nodesOutChilds.listIterator();
         while (!Objects.equals(it.next(), ir1Block)) ;
         return it;

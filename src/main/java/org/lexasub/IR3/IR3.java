@@ -16,6 +16,7 @@ public class IR3 {
     public IR3(Type type) {
         this.type = type;
     }
+
     public IR3(Type type, String blockId) {
         this(type);
         this.blockId = blockId;
@@ -24,25 +25,16 @@ public class IR3 {
     public IR3(IR1 i, boolean readFromVar) {//for only type==ID
         //readFromVar - else write to var//TODO
         //if readFromVar == true -> use phi
-        if(!readFromVar) {
+        if (!readFromVar) {
             setName(i.name);
             this.type = Type.ID;
             this.blockId = i.blockId;
-        }
-        else {
+        } else {
             //System.out.println(i.nodesOut.get(0).type);//TYPE need PHI_PART
             this.type = Type.BLOCK;
             addChild(transformPhiPart(i)).addChild(new IR3(i, false));
         }
 
-    }
-
-    private IR3 transformPhiPart(IR1 i) {
-        IR1 phiPart = i.nodesOut.get(0);
-        IR3 newBlock = new IR3(Type.PHI_PART);
-        //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
-
-        return newBlock;
     }
 
     //Make more CODEBLOCKS
@@ -55,9 +47,9 @@ public class IR3 {
         if (block.typeIs(FBB.TYPE.FUNC)) return FunctionPart(block);
         if (block.typeIs(FBB.TYPE.CODE)) return CodePart(block);
         if (block.typeIs(FBB.TYPE.JMP)) return JmpPart(block);//TODO cond_jmp
-        if (block.typeIs(FBB.TYPE.ID)) return  new IR3(Type.BLOCK);//TODO
-        if (block.typeIs(FBB.TYPE.PHI)) return  new IR3(Type.BLOCK);//TODO
-        if (block.typeIs(FBB.TYPE.COND_JMP)) return  new IR3(Type.BLOCK);//TODO
+        if (block.typeIs(FBB.TYPE.ID)) return new IR3(Type.BLOCK);//TODO
+        if (block.typeIs(FBB.TYPE.PHI)) return new IR3(Type.BLOCK);//TODO
+        if (block.typeIs(FBB.TYPE.COND_JMP)) return new IR3(Type.BLOCK);//TODO
         return null;
     }
 
@@ -73,9 +65,9 @@ public class IR3 {
 
     private static LinkedList<IR3> getFuncArgs(Iterator<IR1> ir1ChildsIterator) {
         LinkedList<IR3> args = new LinkedList<>();
-        while(ir1ChildsIterator.hasNext()){
+        while (ir1ChildsIterator.hasNext()) {
             IR1 next = ir1ChildsIterator.next();
-            if(!next.typeIs(FBB.TYPE.ID)) break;
+            if (!next.typeIs(FBB.TYPE.ID)) break;
             args.add(new IR3(next, false));//boolean-hack for normal create
         }
         return args;
@@ -108,7 +100,7 @@ public class IR3 {
         }
         //else it's ret
         IR3 retBlock = new IR3(Type.RET, block.blockId);
-        if(childs.get(1).typeIs(FBB.TYPE.PHI))
+        if (childs.get(1).typeIs(FBB.TYPE.PHI))
             return retBlock.addChild(new IR3(childs.get(1), true));
         IR3 newBlock = doJob_(childs.get(1));
         //args = BLOCK || CODE
@@ -140,6 +132,14 @@ public class IR3 {
         //arg0 - PHI
         //arg1 - BLOCK || CODE
         return Optional.of(IR3Asm.thenConcat(arg1, IR3Asm.SET(childs.get(2), arg1.getRes())));
+    }
+
+    private IR3 transformPhiPart(IR1 i) {
+        IR1 phiPart = i.nodesOut.get(0);
+        IR3 newBlock = new IR3(Type.PHI_PART);
+        //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
+
+        return newBlock;
     }
 
     public IR3 addChild(IR3 to) {

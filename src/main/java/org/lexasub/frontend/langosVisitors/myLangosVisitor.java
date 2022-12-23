@@ -74,7 +74,8 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     static public Object visitClass_(langosParser.Class_Context ctx) {
         return null;
     }
-    static public Object visitWithArg(langosParser.WithArgContext ctx, FBB myBlock) {
+
+    static public FBB visitWithArg(langosParser.WithArgContext ctx, FBB myBlock) {
         return visitExpr(ctx.expr(), myBlock);
     }
 

@@ -1,8 +1,8 @@
 package org.lexasub.IR1;
 
 
-import org.lexasub.utils.IR1IO;
 import org.lexasub.frontend.utils.FBBView;
+import org.lexasub.utils.IR1IO;
 
 import java.io.IOException;
 

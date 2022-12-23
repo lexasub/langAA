@@ -12,11 +12,11 @@ public class CustomEdge {
         tgt = t;
     }
 
-    protected Object getSource() {
+    protected String getSource() {
         return src;
     }
 
-    protected Object getTarget() {
+    protected String getTarget() {
         return tgt;
     }
 
