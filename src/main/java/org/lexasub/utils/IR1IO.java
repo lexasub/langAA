@@ -1,14 +1,12 @@
 package org.lexasub.utils;
 
-import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.lexasub.IR1.IR1Block.IR1BaseBlock;
-import org.lexasub.utils.CustomEdge;
+import org.lexasub.IR1.IR1;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,11 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class IR1BaseBlockIO {
+public class IR1IO {
 
     static boolean jsonize = false;
 
-    public static void dump(IR1BaseBlock newBlock, boolean deps, boolean parts) {//TODO
+    public static void dump(IR1 newBlock, boolean deps, boolean parts) {//TODO
         Graph<String, CustomEdge> graph = new DefaultDirectedGraph<>(CustomEdge.class);//DirectedPseudograph//DefaultDirectedGraph
         graph.addVertex(getMyDumpForGraph(newBlock));
         dump(new LinkedList<>(), graph, newBlock, deps, parts);
@@ -42,7 +40,8 @@ public class IR1BaseBlockIO {
         }
     }
 
-    private static void dump(LinkedList<String> visitedNodes, Graph<String, CustomEdge> graph, IR1BaseBlock newBlock, boolean deps, boolean parts) {
+    private static void dump(LinkedList<String> visitedNodes, Graph<String, CustomEdge> graph, IR1 newBlock, boolean deps, boolean parts) {
+        System.out.println(newBlock.type + ": " + newBlock.blockId);
         if (visitedNodes.contains(newBlock.blockId)) return;//уже обошли
         if (deps) {
             newBlock.nodesOut.forEach(i -> {
@@ -68,7 +67,7 @@ public class IR1BaseBlockIO {
         //вроде все в предыдущих связывается норм
     }
 
-    private static String getMyDumpForGraph(IR1BaseBlock newBlock) {
+    private static String getMyDumpForGraph(IR1 newBlock) {
         StringBuilder sb = new StringBuilder();
         sb.append(newBlock.blockId + "\n");
         sb.append(newBlock.name + "\n");
@@ -76,11 +75,11 @@ public class IR1BaseBlockIO {
         return sb.toString();
     }
 
-    public void serialize(StringBuilder sb1, IR1BaseBlock newBlock) {
+    public void serialize(StringBuilder sb1, IR1 newBlock) {
         serialize(sb1, new LinkedList<>(), newBlock);
     }
 
-    private void serialize(StringBuilder sb1, LinkedList<String> visitedNodes, IR1BaseBlock newBlock) {
+    private void serialize(StringBuilder sb1, LinkedList<String> visitedNodes, IR1 newBlock) {
         if (visitedNodes.contains(newBlock.blockId)) return;//уже обошли
         sb1.append(newBlock.blockId + "\n");
         sb1.append(newBlock.name + "\n");

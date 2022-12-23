@@ -2,11 +2,9 @@ package org.lexasub.frontend.langosVisitors.parts;
 
 import org.lexasub.frontend.langosParser;
 import org.lexasub.frontend.langosVisitors.myLangosVisitor;
-import org.lexasub.frontend.utils.FrontendBaseBlock;
-import org.lexasub.frontend.utils.FunctionGenerators;
+import org.lexasub.frontend.utils.FBB;
 
 import java.util.Iterator;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.lexasub.frontend.langosVisitors.myLangosVisitor.visitElement;
@@ -14,11 +12,11 @@ import static org.lexasub.frontend.langosVisitors.myLangosVisitor.visitVar_name;
 
 public class Parts {
 
-    public static FrontendBaseBlock visitFunction(langosParser.FunctionContext ctx, final FrontendBaseBlock myBlock) {
+    public static FBB visitFunction(langosParser.FunctionContext ctx, final FBB myBlock) {
         //func spec
         //type
-        FrontendBaseBlock newBlock = new FrontendBaseBlock();
-        newBlock.type = FrontendBaseBlock.TYPE.FUNC;
+        FBB newBlock = new FBB();
+        newBlock.type = FBB.TYPE.FUNC;
         newBlock.name = visitVar_name(ctx.var_name());
         newBlock.setParent(myBlock);
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
@@ -26,7 +24,7 @@ public class Parts {
         return newBlock;
     }
 
-    public static void visitFunc_args(langosParser.Func_argsContext ctx, FrontendBaseBlock newBlock) {
+    public static void visitFunc_args(langosParser.Func_argsContext ctx, FBB newBlock) {
         Iterator<String> names = ctx.var_name().stream().map(myLangosVisitor::visitVar_name).iterator();
         Iterator<String> types = ctx.type_name().stream().map(Parts::visitType_name).iterator();
         while (names.hasNext()) {
@@ -38,7 +36,7 @@ public class Parts {
         return ctx.ID().getText();
     }
 
-    public static Stream<FrontendBaseBlock> visitBody(langosParser.BodyContext ctx, FrontendBaseBlock newBlock) {
+    public static Stream<FBB> visitBody(langosParser.BodyContext ctx, FBB newBlock) {
         return ctx.element().stream().map(i -> visitElement(i, newBlock));
     }
 }

@@ -1,8 +1,7 @@
 package org.lexasub.IR1;
 
 
-import org.lexasub.IR1.IR1Block.IR1BaseBlock;
-import org.lexasub.utils.IR1BaseBlockIO;
+import org.lexasub.utils.IR1IO;
 import org.lexasub.frontend.utils.FBBView;
 
 import java.io.IOException;
@@ -13,8 +12,8 @@ public class IO {
 
         //Asm.pretty = true;//Set output with tabs
         //Asm.print(
-        IR1BaseBlock newBlock = IR1BaseBlock.makeFromFrontendBaseBlock(FBBView.visit(FBBView.getParser("test")));
-        IR1BaseBlockIO.dump(newBlock, true, true);
+        IR1 newBlock = IR1.makeFromFBB(FBBView.visit(FBBView.getParser("test")));
+        IR1IO.dump(newBlock, true, true);
         // newBlock.serialize(sb);
         // System.out.println(sb);
 

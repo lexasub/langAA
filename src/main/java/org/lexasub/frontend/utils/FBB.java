@@ -4,19 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class FrontendBaseBlock {
-    public FrontendBaseBlock parent = null;
+public class FBB {
+    public FBB parent = null;
     public String name = "";
-    public FrontendBaseBlock.TYPE type = TYPE.BLOCK;
-    public List<FrontendBaseBlock> childs = new LinkedList<>();
+    public TYPE type = TYPE.BLOCK;
+    public List<FBB> childs = new LinkedList<>();
     public String blockId = IdGenerator.id();
 
-    public FrontendBaseBlock() {
+    public FBB() {
 
     }
 
 
-    public FrontendBaseBlock(String name, String blockId, String type) {
+    public FBB(String name, String blockId, String type) {
         this.name = name;
         this.blockId = blockId;
         if (!Objects.equals(type, "null"))
@@ -30,20 +30,20 @@ public class FrontendBaseBlock {
         this.childs = new LinkedList<>(obj.childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
     }*/
 
-    public static FrontendBaseBlock spawnID(String id, FrontendBaseBlock myBlock) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.ID;
+    public static FBB spawnID(String id, FBB myBlock) {
+        FBB fbb = new FBB();
+        fbb.type = FBB.TYPE.ID;
         fbb.name = id;
         fbb.setParent(myBlock);
         return fbb;
     }
 
-    public void fullLinkWith(FrontendBaseBlock child) {
+    public void fullLinkWith(FBB child) {
         addChild(child);
         child.setParent(this);
     }
 
-    public void addChild(FrontendBaseBlock child) {
+    public void addChild(FBB child) {
         childs.add(child);
     }
 
@@ -51,25 +51,11 @@ public class FrontendBaseBlock {
         addChild(spawnID(name, this));//todo add type
     }
 
-    /*
-        public String returnRes() {
-            if (type == TYPE.ID) return name;//MayBeBad
-            return "res_" + blockId;
-        }
-
-        public String begin() {
-            return "begin_" + blockId;
-        }
-
-        public String end() {
-            return "end_" + blockId;
-        }
-    */
-    public FrontendBaseBlock CONTINUE() {//TODO
+    public FBB CONTINUE() {//TODO
         return null;
     }
 
-    public FrontendBaseBlock BREAK() {//TODO
+    public FBB BREAK() {//TODO
         return null;
     }
 
@@ -77,7 +63,7 @@ public class FrontendBaseBlock {
         addChild(spawnID(i, this));
     }
 
-    public void setParent(FrontendBaseBlock parent) {
+    public void setParent(FBB parent) {
         this.parent = parent;
     }
 

@@ -9,14 +9,14 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class FrontendBaseBlockIO {
+public class FBBIO {
     public static boolean jsonize = false;
 
     private static String r(String a) {
         return (jsonize) ? ('"' + a + '"') : a;
     }
 
-    public static void dump(String t, StringBuilder sb, FrontendBaseBlock fbb) {
+    public static void dump(String t, StringBuilder sb, FBB fbb) {
         BiFunction<String, String, StringBuilder> v = (String a, String b) ->
                 append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");
         if (jsonize) append(sb, t, "{" + "\n");
@@ -45,9 +45,9 @@ public class FrontendBaseBlockIO {
         return sb.append(t.concat(str));
     }
 
-    public static void serialize(StringBuilder sb, FrontendBaseBlock fbb) {
+    public static void serialize(StringBuilder sb, FBB fbb) {
         Function<String, StringBuilder> v = (String s) -> sb.append(s + "\n");
-        List<FrontendBaseBlock> childs = fbb.childs;
+        List<FBB> childs = fbb.childs;
         childs.forEach(i -> {
             v.apply(i.name);
             v.apply(i.blockId);
@@ -58,15 +58,15 @@ public class FrontendBaseBlockIO {
         childs.forEach(i -> serialize(sb, i));
     }
 
-    public static FrontendBaseBlock deserialize(String[] split) {
+    public static FBB deserialize(String[] split) {
         OrderedHashMap<String, LinkedList<String>> parentChild = new OrderedHashMap<String, LinkedList<String>>();
-        List<FrontendBaseBlock> blocks = Arrays.stream(split)
+        List<FBB> blocks = Arrays.stream(split)
                 .map(i -> i.split("\n"))
                 .map(i ->
                         {
                             parentChild.computeIfAbsent(i[3], k -> new LinkedList<>());
                             parentChild.get(i[3]).add(i[1]);
-                            return new FrontendBaseBlock(i[0], i[1], i[2]);
+                            return new FBB(i[0], i[1], i[2]);
                         }
                 ).toList();
         blocks.forEach(
@@ -80,7 +80,7 @@ public class FrontendBaseBlockIO {
                 }
         );
 
-        FrontendBaseBlock myBlock = new FrontendBaseBlock();
+        FBB myBlock = new FBB();
         blocks.stream()
                 .filter(i -> i.parent == null)
                 .forEach(myBlock::fullLinkWith);

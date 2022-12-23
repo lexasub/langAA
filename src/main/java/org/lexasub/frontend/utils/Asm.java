@@ -4,48 +4,48 @@ import java.util.stream.Stream;
 
 public class Asm {
 
-    public static void call(String funcName, Stream<FrontendBaseBlock> args, FrontendBaseBlock newFunCall) {
-        FrontendBaseBlock name_ = new FrontendBaseBlock();
-        name_.type = FrontendBaseBlock.TYPE.ID;
+    public static void call(String funcName, Stream<FBB> args, FBB newFunCall) {
+        FBB name_ = new FBB();
+        name_.type = FBB.TYPE.ID;
         name_.name = funcName;
-        FrontendBaseBlock v = introduceCodeBlock(Stream.concat(Stream.of(name_), args), "call");
+        FBB v = introduceCodeBlock(Stream.concat(Stream.of(name_), args), "call");
         newFunCall.fullLinkWith(v);
 
     }
 
-    private static FrontendBaseBlock introduceCodeBlock(Stream<FrontendBaseBlock> args, String nameOp) {
-        FrontendBaseBlock fbb = new FrontendBaseBlock();
-        fbb.type = FrontendBaseBlock.TYPE.CODE;
-        FrontendBaseBlock nameOP = new FrontendBaseBlock();
-        nameOP.type = FrontendBaseBlock.TYPE.ID;
+    private static FBB introduceCodeBlock(Stream<FBB> args, String nameOp) {
+        FBB fbb = new FBB();
+        fbb.type = FBB.TYPE.CODE;
+        FBB nameOP = new FBB();
+        nameOP.type = FBB.TYPE.ID;
         nameOP.name = nameOp;
         fbb.fullLinkWith(nameOP);
         args.forEach(fbb::fullLinkWith);
         return fbb;
     }
 
-    public static FrontendBaseBlock RETURN(String arg, FrontendBaseBlock myBlock) {
-        FrontendBaseBlock name_ = new FrontendBaseBlock();
-        name_.type = FrontendBaseBlock.TYPE.ID;
+    public static FBB RETURN(String arg, FBB myBlock) {
+        FBB name_ = new FBB();
+        name_.type = FBB.TYPE.ID;
         name_.name = arg;
-        FrontendBaseBlock v = introduceCodeBlock(Stream.of(name_), "ret");
+        FBB v = introduceCodeBlock(Stream.of(name_), "ret");
         v.setParent(myBlock);
         return v;
     }
 
-    public static FrontendBaseBlock RETURN(FrontendBaseBlock _parent) {
-        FrontendBaseBlock v = introduceCodeBlock(Stream.of(), "ret");
+    public static FBB RETURN(FBB _parent) {
+        FBB v = introduceCodeBlock(Stream.of(), "ret");
         v.setParent(_parent);
         return v;
     }
 
-    public static FrontendBaseBlock RETURN(FrontendBaseBlock expr, FrontendBaseBlock _parent) {
-        FrontendBaseBlock fbb = introduceCodeBlock(Stream.of(), "ret");
-        FrontendBaseBlock i = new FrontendBaseBlock();
-        i.type = FrontendBaseBlock.TYPE.ID;
+    public static FBB RETURN(FBB expr, FBB _parent) {
+        FBB fbb = introduceCodeBlock(Stream.of(), "ret");
+        FBB i = new FBB();
+        i.type = FBB.TYPE.ID;
         i.name = "res_" + expr.blockId;//todo link with expr
         fbb.fullLinkWith(i);
-        FrontendBaseBlock newFbb = new FrontendBaseBlock();
+        FBB newFbb = new FBB();
         fbb.setParent(newFbb);
         newFbb.fullLinkWith(fbb);
         newFbb.fullLinkWith(expr);

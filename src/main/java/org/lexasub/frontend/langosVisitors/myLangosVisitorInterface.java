@@ -1,7 +1,7 @@
 package org.lexasub.frontend.langosVisitors;
 
 import org.lexasub.frontend.langosParser;
-import org.lexasub.frontend.utils.FrontendBaseBlock;
+import org.lexasub.frontend.utils.FBB;
 
 public interface myLangosVisitorInterface {
     static Object visitImport_(langosParser.Import_Context ctx) {
@@ -28,7 +28,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    static Object visitExpr(langosParser.ExprContext ctx, FrontendBaseBlock myblock) {
+    static Object visitExpr(langosParser.ExprContext ctx, FBB myblock) {
         return null;
     }
 
@@ -52,7 +52,7 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    static Object visitFunction_call(langosParser.Function_callContext ctx, FrontendBaseBlock myblock) {
+    static Object visitFunction_call(langosParser.Function_callContext ctx, FBB myblock) {
         return null;
     }
 
@@ -60,27 +60,27 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    static Object visitFunction_call2(langosParser.Function_call2Context ctx, FrontendBaseBlock myblock) {
+    static Object visitFunction_call2(langosParser.Function_call2Context ctx, FBB myblock) {
         return null;
     }
 
-    static Object visitFunction_call_(langosParser.Function_call_Context ctx, FrontendBaseBlock myblock) {
+    static Object visitFunction_call_(langosParser.Function_call_Context ctx, FBB myblock) {
         return null;
     }
 
-    static Object visitFlow_control(langosParser.Flow_controlContext ctx, FrontendBaseBlock myscope) {
+    static Object visitFlow_control(langosParser.Flow_controlContext ctx, FBB myscope) {
         return null;
     }
 
-    static Object visitLambda(langosParser.LambdaContext ctx, FrontendBaseBlock myblock) {
+    static Object visitLambda(langosParser.LambdaContext ctx, FBB myblock) {
         return null;
     }
 
-    static Object visitReturn_expr(langosParser.Return_exprContext ctx, FrontendBaseBlock myblock) {
+    static Object visitReturn_expr(langosParser.Return_exprContext ctx, FBB myblock) {
         return null;
     }
 
-    static Object visitElement(langosParser.ElementContext ctx, FrontendBaseBlock myblock) {
+    static Object visitElement(langosParser.ElementContext ctx, FBB myblock) {
         return null;
     }
 
@@ -97,7 +97,7 @@ public interface myLangosVisitorInterface {
     }
 
 
-    static Object visitWithArg(langosParser.WithArgContext ctx, FrontendBaseBlock myblock) {
+    static Object visitWithArg(langosParser.WithArgContext ctx, FBB myblock) {
         return null;
     }
 
@@ -111,19 +111,19 @@ public interface myLangosVisitorInterface {
         return null;
     }
 
-    static Object visitProgram(langosParser.ProgramContext ctx, FrontendBaseBlock myBlock) {
+    static Object visitProgram(langosParser.ProgramContext ctx, FBB myBlock) {
         return null;
     }
 
-    static Object visitEntry_point(langosParser.Entry_pointContext ctx, FrontendBaseBlock myBlock) {
+    static Object visitEntry_point(langosParser.Entry_pointContext ctx, FBB myBlock) {
         return null;
     }
 
-    static Object visitCallArg(langosParser.CallArgContext ctx, FrontendBaseBlock myblock) {
+    static Object visitCallArg(langosParser.CallArgContext ctx, FBB myblock) {
         return null;
     }
 
-    static Object visitCallArgs(langosParser.CallArgsContext ctx, FrontendBaseBlock myblock) {
+    static Object visitCallArgs(langosParser.CallArgsContext ctx, FBB myblock) {
         return null;
     }
 

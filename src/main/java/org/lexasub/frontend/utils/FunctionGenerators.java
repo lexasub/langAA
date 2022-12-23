@@ -7,11 +7,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FunctionGenerators {
-    public static Function IF(FrontendBaseBlock myBlock, FrontendBaseBlock newIf) {
+    public static Function IF(FBB myBlock, FBB newIf) {
         return (s) -> {
-            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
+            Iterator<FBB> v = ((Stream<FBB>) s).iterator();
             newIf.setParent(myBlock);
-            newIf.type = FrontendBaseBlock.TYPE.IF;
+            newIf.type = FBB.TYPE.IF;
             newIf.fullLinkWith(v.next());//expr
             newIf.fullLinkWith(v.next());//trueBranch
             if (v.hasNext())
@@ -36,12 +36,12 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function WHILE(FrontendBaseBlock myBlock, FrontendBaseBlock newWhile) {
+    public static Function WHILE(FBB myBlock, FBB newWhile) {
         return (s) -> {
-            Iterator<FrontendBaseBlock> v = ((Stream<FrontendBaseBlock>) s).iterator();
+            Iterator<FBB> v = ((Stream<FBB>) s).iterator();
 
             newWhile.setParent(myBlock);
-            newWhile.type = FrontendBaseBlock.TYPE.WHILE;
+            newWhile.type = FBB.TYPE.WHILE;
             newWhile.fullLinkWith(v.next());//expr
             newWhile.fullLinkWith(v.next());//body
 
@@ -62,15 +62,15 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function ID(String funcName, FrontendBaseBlock myBlock, FrontendBaseBlock newFunCall) {
+    public static Function ID(String funcName, FBB myBlock, FBB newFunCall) {
         return (s) -> {
             newFunCall.setParent(myBlock);
-            Asm.call(funcName, (Stream<FrontendBaseBlock>) s, newFunCall);
+            Asm.call(funcName, (Stream<FBB>) s, newFunCall);
             return newFunCall;
         };
     }
 
-    public static Function visitFun_name(langosParser.Fun_nameContext ctx, FrontendBaseBlock myBlock, FrontendBaseBlock newPart) {
+    public static Function visitFun_name(langosParser.Fun_nameContext ctx, FBB myBlock, FBB newPart) {
         //pairmap,map,set,swap
         if (ctx.IF() != null) return FunctionGenerators.IF(myBlock, newPart);
         if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock, newPart);
