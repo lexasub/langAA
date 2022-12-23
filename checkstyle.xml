@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<!--
+
+  Checkstyle configuration that checks the sun coding conventions from:
+
+    - the Java Language Specification at
+      http://java.sun.com/docs/books/jls/second_edition/html/index.html
+
+    - the Sun Code Conventions at http://java.sun.com/docs/codeconv/
+
+    - the Javadoc guidelines at
+      http://java.sun.com/j2se/javadoc/writingdoccomments/index.html
+
+    - the JDK Api documentation http://java.sun.com/j2se/docs/api/index.html
+
+    - some best practices
+
+  Checkstyle is very configurable. Be sure to read the documentation at
+  http://checkstyle.sf.net (or in your downloaded distribution).
+
+  Most Checks are configurable, be sure to consult the documentation.
+
+  To completely disable a check, just comment it out or delete it from the file.
+
+  Finally, it is worth reading the documentation.
+
+-->
+
+<module name="Checker">
+
+    <!-- Checks whether files end with a new line.                        -->
+    <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+        <property name="fileExtensions" value="java, xml, js"/>
+    </module>
+
+    <!-- Checks for whitespace                               -->
+    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <module name="FileTabCharacter"/>
+
+    <!-- Double empty lines -->
+    <module name="RegexpMultiline">
+        <property name="format" value="\n\n\n"/>
+        <property name="message" value="Too many consecutive empty lines"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- Checks for Naming Conventions.                  -->
+        <!-- See http://checkstyle.sf.net/config_naming.html -->
+        <module name="ConstantName"/>
+        <module name="LocalFinalVariableName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="PackageName"/>
+        <module name="ParameterName"/>
+        <module name="StaticVariableName"/>
+        <module name="TypeName"/>
+
+        <module name="IllegalImport">
+            <property name="illegalClasses" value="com.google.common.base.Function" />
+        </module>
+        <!-- defaults to sun.* packages -->
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+
+        <!-- Checks for whitespace                               -->
+        <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+        <module name="EmptyForIteratorPad"/>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+        </module>
+        <module name="NoWhitespaceBefore"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, EQUAL, GE, GT, LAND, LE, LITERAL_ASSERT, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN, TYPE_EXTENSION_AND"/>
+        </module>
+        <!-- Double space (for simplicity ignore lines with strings) -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?&gt; *)[^&quot;]+  "/>
+            <property name="message" value="Double space"/>
+        </module>
+        <!-- Avoid this.-prefix on method calls -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="[^.]this\.[a-zA-Z0-9_]*\("/>
+            <property name="message" value="Avoid this. prefix on method calls"/>
+        </module>
+        <!-- Cast to ObjectNode/ArrayNode considered unsafe -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="\((Object|Array)Node\)"/>
+            <property name="message" value="Cast to ObjectNode/ArrayNode should not be performed"/>
+        </module>
+        <!-- Forbid JsonNode.withArray() -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="withArray\("/>
+            <property name="message" value="Avoid usage of withArray() as the method can be used to mutate JsonNode objects"/>
+        </module>
+
+        <!-- Modifier Checks                                    -->
+        <!-- See http://checkstyle.sf.net/config_modifiers.html -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+
+        <!-- Checks for blocks. You know, those {}'s         -->
+        <!-- See http://checkstyle.sf.net/config_blocks.html -->
+        <module name="AvoidNestedBlocks">
+            <property name="allowInSwitchCase" value="true"/>
+        </module>
+        <module name="EmptyBlock"/>
+        <module name="LeftCurly"/>
+        <module name="NeedBraces"/>
+        <module name="RightCurly"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="IllegalInstantiation"/>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="(valueOf|parse[a-zA-Z]*)\s*\(\s*&quot;[0-9.-]+&quot;"/>
+            <property name="message" value="Magic number string"/>
+        </module>
+        <module name="MissingSwitchDefault"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <module name="FinalClass"/>
+        <module name="InterfaceIsType"/>
+
+        <!-- Miscellaneous other checks.                   -->
+        <!-- See http://checkstyle.sf.net/config_misc.html -->
+        <module name="ArrayTypeStyle"/>
+        <module name="UpperEll"/>
+        <!-- required for SuppressWarnignsFilter  -->
+        <module name="SuppressWarningsHolder" />
+
+        <!--
+             Allow devs to suppress checkstyle warnings inline instead of using a central suppressions file.
+             Use this by adding the following comment line before the code in question:
+             // CHECKSTYLE:OFF XXX
+             and the following at the end:
+             // CHECKSTYLE:ON XXX
+             (where XXX is the checkstyle check to turn off on the code in question)
+        -->
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE\:OFF ([\w\|]+)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE\:ON ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
+        </module>
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE\:DISABLE"/>
+            <property name="onCommentFormat" value="CHECKSTYLE\:ENABLE"/>
+            <property name="checkFormat" value=".*"/>
+        </module>
+    </module>
+    <module name="SuppressWarningsFilter" />
+
+    <!-- Miscellaneous other checks.                   -->
+    <!-- See http://checkstyle.sf.net/config_misc.html -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="message" value="Line has trailing spaces."/>
+    </module>
+
+    <!-- checking in "TO_DO: Class comment." tag entries. -->
+    <module name="RegexpSingleline">
+        <property name="format" value="TODO: Class comment\."/>
+        <property name="message" value="Add a class comment and don't be lazy."/>
+    </module>
+
+    <!-- Author tags confuse the (better) information from version control. -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@author"/>
+        <property name="message" value="Don't put author tags in the file."/>
+    </module>
+
+    <!-- Warn against use of Java calendar / date stuff since we use LocalDateTime -->
+    <module name="RegexpSingleline">
+        <property name="format" value="new DateTime\("/>
+        <property name="message" value="It is unlikely you want to do this as it creates a DateTime instance in the machine local timezone, not UTC as required by our standard. See TimeUtil for helper methods."/>
+    </module>
+
+    <!-- Warn against using log4j -->
+    <module name="RegexpSingleline">
+        <property name="format" value="log4j"/>
+        <property name="message" value="We use slf4j."/>
+    </module>
+
+    <!-- Stop using URLEncoder/URLDecoder. Use StringKit.(Un)escape*. -->
+    <!--    <module name="RegexpSingleline">-->
+    <!--        <property name="format" value="URL(En|De)coder.(en|de)code\("/>-->
+    <!--        <property name="message" value="URLEncoder/URLDecoder has issues with synchronization and checked exceptions. Use StringKit.escapeForURLPlus/unescapeFromURLPlus."/>-->
+    <!--    </module>-->
+
+    <!-- Make sure multi-catch is using consistent syntax -->
+    <module name="RegexpSingleline">
+        <property name="format" value="catch \(.*(\S+\|\S+|\S+ \|\S+|\S+\| \S+)"/>
+        <property name="message" value="Use Exception0 | Exception1 for multi catch"/>
+    </module>
+
+    <!-- Easy mistake when catching InterruptedException -->
+    <module name="RegexpSingleline">
+        <property name="format" value="^\s+Thread\.interrupted"/>
+        <property name="message" value="Use Thread.currentThread().interrupt();"/>
+    </module>
+
+    <!-- Never use getBytes() with default encoding. -->
+    <module name="RegexpSingleline">
+        <property name="format" value="getBytes\(\)"/>
+        <property name="message" value="Never use getBytes without providing a charset"/>
+    </module>
+
+    <!-- Everything is nonnull by the default. -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@Nonnull"/>
+        <property name="message" value="@ParametersAreNonnullByDefault is already set for the package"/>
+    </module>
+
+    <!-- Use LOG instead of LOGGER -->
+    <module name="RegexpSingleline">
+        <property name="format" value="LOGGER" />
+        <property name="message" value="Use LOG instead of LOGGER" />
+    </module>
+
+    <!-- Use <p> and not <p/>, according to JavaDoc spec -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\* &lt;p/&gt;" />
+        <property name="message" value="Use &lt;p&gt; and not &lt;p/&gt;, according to JavaDoc spec" />
+    </module>
+
+    <!-- Use body(JsonNode.class -->
+    <module name="RegexpSingleline">
+        <property name="format" value="JSONUtil.fromString\(\S+.bodyString\(\)\)" />
+        <property name="message" value="Use body(JsonNode.class"  />
+    </module>
+
+    <!-- Use jdk/guava -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(import org.elasticsearch.common.(Strings|Preconditions|base|primitives|collect|util)|import com.beust.jcommander.internal|import org.testng.collections|import org.spark_project.guava)" />
+        <property name="message" value="Use jdk/guava"  />
+    </module>
+
+    <!-- Use jetty -->
+    <module name="RegexpSingleline">
+        <property name="format" value="com.sun.net" />
+        <property name="message" value="Use jetty" />
+    </module>
+
+    <!-- Use Util not Utils -->
+    <module name="RegexpSingleline">
+        <property name="format" value="class \S+Utils\S*" />
+        <property name="message" value="Use Util not Utils" />
+    </module>
+
+    <!-- Use StringBuilder instead of StringBuffer -->
+    <module name="RegexpSingleline">
+        <property name="format" value="StringBuffer" />
+        <property name="message" value="Use StringBuilder instead of StringBuffer" />
+    </module>
+
+    <!-- Use SLF4JLogger instead of slf4j directly -->
+    <module name="RegexpSingleline">
+        <property name="format" value="LoggerFactory.getLogger\(\S+\.class\)" />
+        <property name="message" value="Use SLF4JLogger instead of slf4j directly" />
+    </module>
+
+    <!-- Use org.eclipse.jetty.http.HttpStatus -->
+    <module name="RegexpSingleline">
+        <property name="format" value="import org.apache.http.HttpStatus" />
+        <property name="message" value="Use org.eclipse.jetty.http.HttpStatus" />
+    </module>
+
+    <!-- Call the parameterized method directly from a normal test method -->
+    <module name="RegexpSingleline">
+        <property name="format" value="import org.testng.annotations.DataProvider" />
+        <property name="message" value="Call the parameterized method directly from a normal test method" />
+    </module>
+
+    <!-- Use java.util.concurrent.atomic.LongAdder -->
+    <module name="RegexpSingleline">
+        <property name="format" value="import jsr166e.LongAdder;" />
+        <property name="message" value="Use java.util.concurrent.atomic.LongAdder" />
+    </module>
+
+    <!-- Use locale when formatting with %f -->
+    <module name="RegexpSingleline">
+        <property name="format" value="String.format\([^L].*%[\.\d]*f" />
+        <property name="message" value="Use locale when formatting with %f" />
+    </module>
+
+    <!-- Can be replaced with multicatch or several catch clauses catching specific exceptions -->
+    <module name="RegexpSingleline">
+        <property name="format" value="catch \(Throwable" />
+        <property name="message" value="Can be replaced with multicatch or several catch clauses catching specific exceptions" />
+    </module>
+
+    <!-- Avoid using javafx which is not always bundled with jdk -->
+    <module name="RegexpSingleline">
+        <property name="format" value="import javafx" />
+        <property name="message" value="Avoid using javafx which is not always bundled with jdk" />
+    </module>
+
+    <!-- Use java.util.Optional -->
+    <module name="RegexpSingleline">
+        <property name="format" value="import com.google.common.base.Optional;" />
+        <property name="message" value="Use java.util.Optional" />
+    </module>
+
+    <!-- Use ContextWrappingCacheLoader or AsynchronousReloadCacheLoader which handles io.grpc.Context correct -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(new CacheLoader|extends CacheLoader)" />
+        <property name="message" value="Use ContextWrappingCacheLoader or AsynchronousReloadCacheLoader which handles io.grpc.Context correct" />
+    </module>
+
+</module>

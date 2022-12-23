@@ -1,0 +1,84 @@
+int gcd(int a, int b) {
+  return if(
+    () -> b.isZero(),
+    () -> a,
+    () -> gcd(b, a.mod(b))
+  )
+}
+
+int gcd2(int a, int b) {
+  while(
+    () -> b.isZero().not(),
+    () -> {
+        set(a, a.mod(b))
+       swap(a,b)
+    }
+  )
+  return a;
+}
+
+int whileTest(){
+    while(
+        () -> i.isZero().not(),
+        () -> {
+            set(i, i.add(one()))
+        }
+    )
+}
+
+import yto;
+class v {
+    int m;
+
+    int p(){
+
+
+    }
+}
+
+  return a;
+  a.r((i) -> {return (k)->{return plus(k, i)}})
+  map((l) -> map(a, (i) -> {return i}), (u) -> u)
+
+int main() {
+    return map((i)->i(), (j) -> j())
+}
+
+int gcd(int a, int b) {
+  if(
+    () -> isZero(b),
+    () -> return a,
+    () -> return gcd(b, mod(a, b))
+  )
+}
+
+int gcd2(int v, int k) {
+  while(
+    () -> not(isZero(k)),
+    () -> {
+        set(v, mod(v, k))
+       swap(v,k)
+    }
+  )
+}
+int gcd2(int v, int k) {
+  while(
+    () -> not(isZero(k)),
+    () -> {
+       def(v0, phi (v1, v))
+       def(v1, phi (t0, k))
+
+       def(t0, mod(v0, v1))
+    }
+  )
+  return v1
+}
+
+int gcd(int a, int b, int v) {
+  if(
+    () -> isZero(b),
+    () -> set(v, a),
+    () -> set(v, gcd(b, mod(a, b)))
+  )
+  return v
+}
