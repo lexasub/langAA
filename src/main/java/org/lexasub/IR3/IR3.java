@@ -7,11 +7,11 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class IR3 {
-    private Type type;
-    private String name;
+    public Type type;
+    public String name;
     private IR3 parent;
-    private LinkedList<IR3> childs = new LinkedList<>();
-    private String blockId;
+    public LinkedList<IR3> childs = new LinkedList<>();
+    public String blockId;
 
     public IR3(Type type) {
         this.type = type;
@@ -32,7 +32,7 @@ public class IR3 {
         } else {
             //System.out.println(i.nodesOut.get(0).type);//TYPE need PHI_PART
             this.type = Type.BLOCK;
-            addChild(transformPhiPart(i)).addChild(new IR3(i, false));
+            modifyPhiPart(i);
         }
 
     }
@@ -46,10 +46,11 @@ public class IR3 {
         if (block.typeIs(FBB.TYPE.BLOCK)) return BlockPart(block);
         if (block.typeIs(FBB.TYPE.FUNC)) return FunctionPart(block);
         if (block.typeIs(FBB.TYPE.CODE)) return CodePart(block);
-        if (block.typeIs(FBB.TYPE.JMP)) return JmpPart(block);//TODO cond_jmp
-        if (block.typeIs(FBB.TYPE.ID)) return new IR3(Type.BLOCK);//TODO
-        if (block.typeIs(FBB.TYPE.PHI)) return new IR3(Type.BLOCK);//TODO
-        if (block.typeIs(FBB.TYPE.COND_JMP)) return new IR3(Type.BLOCK);//TODO
+        if (block.typeIs(FBB.TYPE.JMP)) return JmpPart(block);
+
+        if (block.typeIs(FBB.TYPE.ID)) return new IR3(Type.BLOCK, block.blockId);//TODO
+        if (block.typeIs(FBB.TYPE.PHI)) return new IR3(Type.BLOCK, block.blockId);//TODO
+        if (block.typeIs(FBB.TYPE.COND_JMP)) return new IR3(Type.BLOCK, block.blockId);//TODO
         return null;
     }
 
@@ -92,7 +93,7 @@ public class IR3 {
         //may be having phi in nodesOutChilds and create with phi
         List<IR1> childs = block.nodesOutChilds;
         if (Objects.equals(childs.get(0).name, "call")) {//почти всегда call, else ret
-            return tryCheckSetFunc(childs).orElseGet(() -> modifyUserFunc(childs));
+            return tryCheckSetFunc(childs).orElseGet(() -> modifyCallFunc(childs));
         }
         if (!Objects.equals(childs.get(0).name, "ret")) {
             System.err.println("bad code part");
@@ -107,7 +108,7 @@ public class IR3 {
         return IR3Asm.thenConcat(newBlock, retBlock.addChild(newBlock.getRes()));
     }
 
-    private static IR3 modifyUserFunc(List<IR1> childs) {
+    private static IR3 modifyCallFunc(List<IR1> childs) {
         //else it's userFunc
         // may be TODO force seqence strong
         LinkedList<IR3> argsExt = new LinkedList<>();
@@ -131,15 +132,19 @@ public class IR3 {
         IR3 arg1 = doJob_(childs.get(3));
         //arg0 - PHI
         //arg1 - BLOCK || CODE
+        assert arg1 != null;
         return Optional.of(IR3Asm.thenConcat(arg1, IR3Asm.SET(childs.get(2), arg1.getRes())));
     }
 
-    private IR3 transformPhiPart(IR1 i) {
+    private IR3 modifyPhiPart(IR1 i) {
+        //addChild(new_i).addChild(new IR3(i, false));
         IR1 phiPart = i.nodesOut.get(0);
         IR3 newBlock = new IR3(Type.PHI_PART);
+        newBlock.name = phiPart.name;
+        newBlock.blockId = phiPart.blockId;
         //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
 
-        return newBlock;
+        return this;//newBlock;
     }
 
     public IR3 addChild(IR3 to) {

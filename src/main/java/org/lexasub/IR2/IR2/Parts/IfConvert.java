@@ -6,7 +6,7 @@ import org.lexasub.frontend.utils.FBB;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import static org.lexasub.IR1.IR1.connectTo;
+import static org.lexasub.IR1.IR1.connectDependence;
 import static org.lexasub.IR1.IR1.connectToChilds;
 
 public class IfConvert {
@@ -26,13 +26,13 @@ public class IfConvert {
         //3)сгенерить phi-функции после выполнения if(ну и новых переменных создать для phi)
         IR1 ifScope = new IR1();
         IR1 condJmp = new IR1(FBB.TYPE.COND_JMP);
-        ifPart(cond, trueExpr, ir1Block, ifScope, condJmp);
-
-        //; , falseExpr(or endIf))on outer of func
-        if (falseExpr != null) {
-            connectTo(falseExpr, condJmp);
-            ifPartFalseExpr(falseExpr, ifScope);
-        } else connectTo(ifScope.after(), condJmp);
+        ifScope.copyNodesInsFrom(ir1Block);
+        ifCondPart(cond, ifScope, condJmp);
+        IR1 endIf = ifScope.after();
+        ifJumper(trueExpr, ifScope, condJmp, endIf);
+        if (falseExpr != null) //check exist of else(falseExpr)
+            ifJumper(falseExpr, ifScope, condJmp, endIf);
+        else connectDependence(endIf, condJmp);
         return ifScope;
         //end_if:
         //ifScope.add(phi's)
@@ -48,30 +48,23 @@ public class IfConvert {
         */
     }
 
-    private static void ifPartFalseExpr(IR1 falseExpr, IR1 ifScope) {
-        IR1 jmp = new IR1(FBB.TYPE.JMP);
-        IR1 falseScope = new IR1();
-        connectToChilds(falseExpr, falseScope);
-        connectToChilds(jmp, falseScope);//jmp to ...
-        connectTo(jmp, ifScope.after());//jmp to ...
-        connectToChilds(falseScope, ifScope);
+    private static void ifCondPart(IR1 cond, IR1 ifScope, IR1 condJmp) {
+        IR1 condScope = new IR1();
+        //condJmp.add(cond_res//TODO
+        connectToChilds(cond, condScope);
+        connectToChilds(condJmp, condScope);//jump - is last element of block
+        connectToChilds(condScope, ifScope);
     }
 
-    private static void ifPart(IR1 cond, IR1 trueExpr, IR1 ir1Block, IR1 ifScope, IR1 condJmp) {
+    private static void ifJumper(IR1 body, IR1 ifScope, IR1 condJmp, IR1 endIf) {
         IR1 jmp = new IR1(FBB.TYPE.JMP);
-        IR1 trueScope = new IR1();
-        IR1 condScope = new IR1();
-        connectToChilds(cond, condScope);
-        //condJmp.add(cond_res//TODO
-        //trueExpr
-        connectTo(trueExpr, condJmp);
-        //; , falseExpr(or endIf))on outer of func
-        connectToChilds(condJmp, condScope);
-        connectToChilds(trueExpr, trueScope);
-        connectToChilds(jmp, trueScope);//jmp to ...
-        connectTo(jmp, ifScope.after());//jmp to ...
-        ifScope.copyNodesInsFrom(ir1Block);
-        connectToChilds(condScope, ifScope);
-        connectToChilds(trueScope, ifScope);
+        connectDependence(jmp, endIf);//jump to ...
+        IR1 localScope = new IR1();
+        //body
+        connectDependence(body, condJmp);
+        connectToChilds(body, localScope);
+        connectToChilds(jmp, localScope);//add jump code//jump - is last of block
+        connectToChilds(localScope, ifScope);
     }
+
 }

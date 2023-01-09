@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Objects;
 
-import static org.lexasub.IR1.IR1.connectTo;
+import static org.lexasub.IR1.IR1.connectDependence;
 
 public class IR2 {
     public IR1 block;
@@ -86,13 +86,13 @@ public class IR2 {
 
         ch.nodesOutChilds.set(ch.nodesOutChilds.indexOf(idNode), phi);
         phi.nodesInParents.add(ch);
-        connectTo(phiPart, ch);
+        connectDependence(phiPart, ch);
 
         idNode.nodesInParents.set(id, phi);
         phi.nodesOutChilds.add(idNode);
         /*idNode.nodesInParents.remove(id);
         connectTo(phi, idNode);*/
-        connectTo(phiPart, phi);
+        connectDependence(phiPart, phi);
 
     }
 

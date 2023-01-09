@@ -37,7 +37,7 @@ public class IR1 {
 
     public IR1(FBB.TYPE afterOrBefore, IR1 block) {
         type = afterOrBefore;
-        connectTo(this, block);
+        connectDependence(this, block);
     }
 
     public static IR1 makeFromFBB(FBB frontendBlock) {
@@ -128,7 +128,7 @@ public class IR1 {
         to.nodesInParents.add(from);
     }
 
-    public static void connectTo(IR1 to, IR1 from) {
+    public static void connectDependence(IR1 to, IR1 from) {
         from.nodesOut.add(to);
         to.nodesIn.add(from);
     }
