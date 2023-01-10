@@ -8,15 +8,17 @@ public class IR3IO {
     private static String r(String a) {
         return (jsonize) ? ('"' + a + '"') : a;
     }
+
     private static StringBuilder append(StringBuilder sb, String t, String str) {
         return sb.append(t.concat(str));
     }
 
-    public static void dump(IR3 ll){
+    public static void dump(IR3 ll) {
         StringBuilder sb = new StringBuilder();
         dump("", sb, ll);
         System.out.println(sb);
     }
+
     private static void dump(String t, StringBuilder sb, IR3 ll) {
         BiFunction<String, String, StringBuilder> v = (String a, String b) ->
                 append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");

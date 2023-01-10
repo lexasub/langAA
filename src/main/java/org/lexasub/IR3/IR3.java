@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 public class IR3 {
     public Type type;
     public String name;
-    private IR3 parent;
     public LinkedList<IR3> childs = new LinkedList<>();
     public String blockId;
+    private IR3 parent;
 
     public IR3(Type type) {
         this.type = type;
@@ -167,6 +167,10 @@ public class IR3 {
 
         //TODO
         return this;
+    }
+
+    public boolean typeIs(Type _type) {
+        return type == _type;
     }
 
     public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI_PART, RET, SPLITTER}
