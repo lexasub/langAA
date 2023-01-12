@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 public class IR4 {
     private Type type;
     private LinkedList<IR4> childs = new LinkedList<>();
+    private String name;
 
     public IR4(Type _type) {
         type = _type;
@@ -27,20 +28,21 @@ public class IR4 {
     }
 
     private static IR4 BlockPart(IR3 block) {
-        return IR4Asm.thenConcat(IR4Asm.lbl(block.blockId + "_begin"), block.childs.stream().map(IR4::doJob))
-                .addChild(IR4Asm.lbl(block.blockId + "_end"));
+        return IR4Asm.decorateBlock(block.blockId, block.childs.stream().map(IR4::doJob));
     }
+
 
     private static IR4 AssignPart(IR3 block) {//first child - it's id
-        return null;
+        return IR4Asm.Assign(block.childs.get(0).name, doJob(block.childs.get(1)));
     }
 
-    private static IR4 CallPart(IR3 block) {
-        return null;
+    private static IR4 CallPart(IR3 block) {// childs only id's?
+        return IR4Asm.call(block.name, block.childs.stream());
     }
 
-    private static IR4 FuncPart(IR3 block) {
-        return null;
+    private static IR4 FuncPart(IR3 block) {//TODO
+        return IR4Asm.func(block.name, block.childs.stream().filter(i->i.typeIs(IR3.Type.ID)),//mb reduce refinding over object by stream
+                block.childs.stream().filter(i->!i.typeIs(IR3.Type.ID)).map(IR4::doJob));
     }
 
     private static IR4 IdPart(IR3 block) {
@@ -65,7 +67,10 @@ public class IR4 {
         return this;
     }
 
-    public enum Type {CODE, SEQ}
+    public IR4 setName(String _name) {
+        name = _name;
+        return this;
+    }
 
-    ;
+    public enum Type {CODE, ID, SEQ}
 }

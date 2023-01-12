@@ -115,8 +115,16 @@ public class IR3 {
         //.name - сейчас так, может в будущем какая-то служебная инфа кроме имени функции будет добавляться
         IR3 call = IR3Asm.CALL(childs.get(1).name,
                 childs.stream().skip(2).map(i -> {
-                    if (i.typeIs(FBB.TYPE.ID))// that ok
-                        return new IR3(i, true);
+                   // if (i.typeIs(FBB.TYPE.ID))//  that ok //ID-> PHI??
+                     //   return new IR3(i, true);
+                    if (i.typeIs(FBB.TYPE.PHI)){
+                        IR3 phi = new IR3(Type.PHI_PART);//TODO add some
+                        IR3 id = new IR3(Type.ID);
+                        id.setName(i.name);
+                        id.blockId = i.blockId;
+                        argsExt.add(IR3Asm.SET(i, phi));
+                        return id;
+                    }
                     IR3 arg = doJob_(i);
                     argsExt.add(arg);
                     return arg.getRes();
@@ -136,12 +144,13 @@ public class IR3 {
         return Optional.of(IR3Asm.thenConcat(arg1, IR3Asm.SET(childs.get(2), arg1.getRes())));
     }
 
-    private IR3 modifyPhiPart(IR1 i) {
+    private IR3 modifyPhiPart(IR1 i) {//TODO edit
         //addChild(new_i).addChild(new IR3(i, false));
         IR1 phiPart = i.nodesOut.get(0);
         IR3 newBlock = new IR3(Type.PHI_PART);
-        newBlock.name = phiPart.name;
-        newBlock.blockId = phiPart.blockId;
+
+        newBlock.name = i.name;
+        newBlock.blockId = i.blockId;
         //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
 
         return this;//newBlock;
