@@ -16,15 +16,14 @@ public class IR4Asm {
 
     private static IR4 funcHeader(String name, Stream<IR3> args) {
         return thenConcatCode("define", spawnId("int"))
-                .addChild(spawnId("@" + name))
-                .addChild(spawnCode("("))
+                .addTwoChilds(spawnId("@" + name), spawnCode("("))
                 .addChildsStream(args.map(i->"int %" + i.name).map(IR4Asm::spawnCode))//mb pairs, not string-concat
                 .addChild(spawnCode(")"));
     }
 
     public static IR4 Assign(String regName, IR4 expr) {
-        return thenConcatCode(regName, spawnCode("="))
-                .addChild(expr);//mb some part of expr before assing, and some part after '='
+        //mb some part of expr before assing, and some part after '='
+        return thenConcatCode(regName, spawnCode("=")).addChild(expr);
     }
 
     public static IR4 func(String name, Stream<IR3> args, Stream<IR4> body) {
@@ -38,11 +37,11 @@ public class IR4Asm {
     }
 
     private static IR4 thenConcatCode(String id, IR4 child) {
-        return new IR4(IR4.Type.CODE).addChild(spawnId(id)).addChild(child);
+        return new IR4(IR4.Type.CODE).addTwoChilds(spawnId(id), child);
     }
 
     private static IR4 thenConcat(IR4 child0, IR4 child1) {
-        return new IR4(IR4.Type.SEQ).addChild(child0).addChild(child1);
+        return new IR4(IR4.Type.SEQ).addTwoChilds(child0, child1);
     }
 
     private static IR4 thenConcat(IR4 child0, Stream<IR4> childs) {

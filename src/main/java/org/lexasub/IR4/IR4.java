@@ -61,7 +61,11 @@ public class IR4 {
         childs.add(child);
         return this;
     }
-
+    public IR4 addTwoChilds(IR4 child0, IR4 child1) {
+        childs.add(child0);
+        childs.add(child1);
+        return this;
+    }
     public IR4 addChildsStream(Stream<IR4> args) {
         args.forEach(this::addChild);
         return this;
