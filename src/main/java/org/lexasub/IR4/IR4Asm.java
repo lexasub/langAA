@@ -2,6 +2,8 @@ package org.lexasub.IR4;
 
 import org.lexasub.IR3.IR3;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.stream.Stream;
 
 public class IR4Asm {
@@ -54,5 +56,18 @@ public class IR4Asm {
 
     private static IR4 spawnId(String idName) {
         return new IR4(IR4.Type.ID).setName(idName);
+    }
+
+    public static IR4 phi(String i32, LinkedList<IR3> childs) {
+        IR4 ir4 = new IR4(IR4.Type.SEQ);
+        ir4.addChild(spawnCode("phi"));
+        ir4.addChild(spawnId("i32"));
+        ListIterator<IR3> it = childs.listIterator();
+        while (it.hasNext()){
+            String bl = it.next().blockId;
+            String id = it.next().name;//mb get blockId from this it.next() ))
+            ir4.addChild(spawnCode("[%" + id + ", " + "%" + bl + "], "));
+        }
+        return ir4;
     }
 }

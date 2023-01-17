@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.stream.Stream;
 
 public class IR4 {
-    private Type type;
-    private LinkedList<IR4> childs = new LinkedList<>();
-    private String name;
+    public Type type;
+    public LinkedList<IR4> childs = new LinkedList<>();
+    public String name;
 
     public IR4(Type _type) {
         type = _type;
@@ -21,7 +21,7 @@ public class IR4 {
         if (block.typeIs(IR3.Type.CALL)) return CallPart(block);
         if (block.typeIs(IR3.Type.FUNC)) return FuncPart(block);
         if (block.typeIs(IR3.Type.ID)) return IdPart(block);
-        if (block.typeIs(IR3.Type.PHI_PART)) return PhiPart(block);
+        if (block.typeIs(IR3.Type.PHI)) return PhiPart(block);
         if (block.typeIs(IR3.Type.RET)) return RetPart(block);
         //splitter
         return null;
@@ -50,11 +50,11 @@ public class IR4 {
     }
 
     private static IR4 PhiPart(IR3 block) {
-        return null;
+        return IR4Asm.phi("i32", block.childs);
     }
 
     private static IR4 RetPart(IR3 block) {
-        return null;
+        return new IR4(Type.CODE).setName("ret ...");
     }
 
     public IR4 addChild(IR4 child) {

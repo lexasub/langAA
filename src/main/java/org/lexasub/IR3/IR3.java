@@ -22,19 +22,12 @@ public class IR3 {
         this.blockId = blockId;
     }
 
-    public IR3(IR1 i, boolean readFromVar) {//for only type==ID
+    public IR3(IR1 i) {//for only type==ID
         //readFromVar - else write to var//TODO
         //if readFromVar == true -> use phi
-        if (!readFromVar) {
-            setName(i.name);
-            this.type = Type.ID;
-            this.blockId = i.blockId;
-        } else {
-            //System.out.println(i.nodesOut.get(0).type);//TYPE need PHI_PART
-            this.type = Type.BLOCK;
-            modifyPhiPart(i);
-        }
-
+        setName(i.name);
+        this.type = Type.ID;
+        this.blockId = i.blockId;
     }
 
     //Make more CODEBLOCKS
@@ -69,7 +62,7 @@ public class IR3 {
         while (ir1ChildsIterator.hasNext()) {
             IR1 next = ir1ChildsIterator.next();
             if (!next.typeIs(FBB.TYPE.ID)) break;
-            args.add(new IR3(next, false));//boolean-hack for normal create
+            args.add(new IR3(next));//boolean-hack for normal create
         }
         return args;
     }
@@ -102,7 +95,7 @@ public class IR3 {
         //else it's ret
         IR3 retBlock = new IR3(Type.RET, block.blockId);
         if (childs.get(1).typeIs(FBB.TYPE.PHI))
-            return retBlock.addChild(new IR3(childs.get(1), true));
+            return transformPhi(retBlock, childs.get(1));
         IR3 newBlock = doJob_(childs.get(1));
         //args = BLOCK || CODE
         return IR3Asm.thenConcat(newBlock, retBlock.addChild(newBlock.getRes()));
@@ -118,11 +111,8 @@ public class IR3 {
                    // if (i.typeIs(FBB.TYPE.ID))//  that ok //ID-> PHI??
                      //   return new IR3(i, true);
                     if (i.typeIs(FBB.TYPE.PHI)){
-                        IR3 phi = new IR3(Type.PHI_PART);//TODO add some
-                        IR3 id = new IR3(Type.ID);
-                        id.setName(i.name);
-                        id.blockId = i.blockId;
-                        argsExt.add(IR3Asm.SET(i, phi));
+                        argsExt.add(generatePhiPart(i, i.nodesOut.get(0)));
+                        IR3 id = new IR3(i);
                         return id;
                     }
                     IR3 arg = doJob_(i);
@@ -135,8 +125,8 @@ public class IR3 {
 
     private static Optional<IR3> tryCheckSetFunc(List<IR1> childs) {
         if (!Objects.equals(childs.get(1).name, "set")) return Optional.empty();
-        if (childs.get(3).typeIs(FBB.TYPE.ID))//arg1 is PHI
-            return Optional.of(IR3Asm.SET(childs.get(2), new IR3(childs.get(3), true)));
+      //  if (childs.get(3).typeIs(FBB.TYPE.ID))//arg1 is PHI //TODO check!!!!!
+       //     return Optional.of(IR3Asm.SET(childs.get(2), modifyPhiPart(childs.get(3))));
         IR3 arg1 = doJob_(childs.get(3));
         //arg0 - PHI
         //arg1 - BLOCK || CODE
@@ -144,16 +134,27 @@ public class IR3 {
         return Optional.of(IR3Asm.thenConcat(arg1, IR3Asm.SET(childs.get(2), arg1.getRes())));
     }
 
-    private IR3 modifyPhiPart(IR1 i) {//TODO edit
+    static private IR3 transformPhi(IR3 retBlock, IR1 i) {//TODO edit//FBB.type.PHI
+
+        //System.out.println(i.nodesOut.get(0).type);//TYPE need PHI_PART
+        /*
+        name=v4
+        blockid=".."
+        dependences...
+         */
         //addChild(new_i).addChild(new IR3(i, false));
-        IR1 phiPart = i.nodesOut.get(0);
-        IR3 newBlock = new IR3(Type.PHI_PART);
-
-        newBlock.name = i.name;
-        newBlock.blockId = i.blockId;
+        IR3 phiPart = generatePhiPart(i, i.nodesOut.get(0));//mb add types
+        IR3 reg = new IR3(i);
         //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
+        return IR3Asm.thenConcat(phiPart, retBlock.addChild(reg));//reg;
+    }
 
-        return this;//newBlock;
+    private static IR3 generatePhiPart(IR1 reg, IR1 ir1) {
+        IR3 phi = new IR3(Type.PHI);
+        ir1.nodesIn.stream()//NodesOut->in
+                .map(i->new IR3((i.typeIs(FBB.TYPE.PHI)?Type.ID:Type.BLOCK), ir1.blockId).setName(i.name))//type BLOCK??mb
+                .forEach(phi::addChild);
+        return IR3Asm.SET(reg, phi);
     }
 
     public IR3 addChild(IR3 to) {
@@ -182,5 +183,5 @@ public class IR3 {
         return type == _type;
     }
 
-    public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI_PART, RET, SPLITTER}
+    public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI, RET, SPLITTER}
 }

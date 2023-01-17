@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 public class IR3Asm {
     public static IR3 SET(IR1 to, IR3 from) {
-        IR3 to_ = new IR3(to, false);//don't use dependences
+        IR3 to_ = new IR3(to);//don't use dependences
         return new IR3(IR3.Type.ASSIGN).addChild(to_).addChild(from);
     }
 
