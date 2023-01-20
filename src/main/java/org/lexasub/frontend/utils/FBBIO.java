@@ -1,52 +1,32 @@
 package org.lexasub.frontend.utils;
 
 import org.antlr.v4.misc.OrderedHashMap;
+import org.lexasub.utils.JsonDumper;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.*;
 import java.util.function.Function;
 
 public class FBBIO {
-    public static boolean jsonize = false;
-
-    private static String r(String a) {
-        return (jsonize) ? ('"' + a + '"') : a;
-    }
+    private static final String tb = "    ";//""\t";
 
     public static void dump(String t, StringBuilder sb, FBB fbb) {
-        BiFunction<String, String, StringBuilder> v = (String a, String b) ->
-                append(sb, t, r(a) + ":" + r(b) + ((jsonize) ? "," : "") + "\n");
-        if (jsonize) append(sb, t, "{" + "\n");
-        v.apply("name", fbb.name);
-        v.apply("blockId", fbb.blockId);
-        v.apply("type", String.valueOf(fbb.type));
-        // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
-        if (!fbb.childs.isEmpty()) {
-            if (jsonize)
-                append(sb, t, "\"childs\":[\n");
-            else
-                append(sb, t, "childs:{\n");
-            fbb.childs.forEach(i -> dump(t + "\t", sb, i));
-            if (jsonize) append(sb, t, "\t" + "{}" + "\n");
-            append(sb, t, ((jsonize) ? "]" : "}") + "\n");
-        } else {
-            if (jsonize)
-                append(sb, t, "\"childs\":{}\n");
-            else
-                append(sb, t, "childs:{}\n");
-        }
-        if (jsonize) append(sb, t, "}" + "," + "\n");
-    }
+        //их тут много создается(пустых stringBUilders). Как вариант foreach() -> map().collect()
+        StringBuilder sb1 = new StringBuilder();
+        fbb.childs.forEach(i -> dump(t + tb, sb1, i));
 
-    private static StringBuilder append(StringBuilder sb, String t, String str) {
-        return sb.append(t.concat(str));
+        HashMap<String, String> items = new HashMap<>();
+        items.put("name", fbb.name);
+        items.put("blockId", fbb.blockId);
+        items.put("type", String.valueOf(fbb.type));
+        /*v.apply("name", fbb.name);
+        v.apply("blockId", fbb.blockId);
+        v.apply("type", String.valueOf(fbb.type));*/
+        // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
+        JsonDumper.dumpq(t, sb, fbb.childs.isEmpty(), items, sb1);
     }
 
     public static void serialize(StringBuilder sb, FBB fbb) {
-        Function<String, StringBuilder> v = (String s) -> sb.append(s + "\n");
+        Function<String, StringBuilder> v = (String s) -> sb.append(s).append("\n");
         List<FBB> childs = fbb.childs;
         childs.forEach(i -> {
             v.apply(i.name);

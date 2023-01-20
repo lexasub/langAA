@@ -16,6 +16,7 @@ public class IO {
         IR1 ir1Block = makeFromFBB(FBBView.visit(FBBView.getParser("test")));
         IR4 ll = IR4.doJob(IR3.doJob(IR2.doJob(ir1Block)));
         IR4IO.jsonize = true;
+        IR4IO.compact = true;
         IR4IO.dump(ll);
         System.out.println("ss");
     }

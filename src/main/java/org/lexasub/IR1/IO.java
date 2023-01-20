@@ -2,7 +2,7 @@ package org.lexasub.IR1;
 
 
 import org.lexasub.frontend.utils.FBBView;
-import org.lexasub.utils.IR1IO;
+import org.lexasub.utils.GraphDumper;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public class IO {
         //Asm.pretty = true;//Set output with tabs
         //Asm.print(
         IR1 newBlock = IR1.makeFromFBB(FBBView.visit(FBBView.getParser("test")));
-        IR1IO.dump(newBlock, true, true);
+        GraphDumper.dump(newBlock, true, true);
         // newBlock.serialize(sb);
         // System.out.println(sb);
 
