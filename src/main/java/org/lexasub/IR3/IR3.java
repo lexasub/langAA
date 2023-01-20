@@ -108,9 +108,9 @@ public class IR3 {
         //.name - сейчас так, может в будущем какая-то служебная инфа кроме имени функции будет добавляться
         IR3 call = IR3Asm.CALL(childs.get(1).name,
                 childs.stream().skip(2).map(i -> {
-                   // if (i.typeIs(FBB.TYPE.ID))//  that ok //ID-> PHI??
-                     //   return new IR3(i, true);
-                    if (i.typeIs(FBB.TYPE.PHI)){
+                    // if (i.typeIs(FBB.TYPE.ID))//  that ok //ID-> PHI??
+                    //   return new IR3(i, true);
+                    if (i.typeIs(FBB.TYPE.PHI)) {
                         argsExt.add(generatePhiPart(i, i.nodesOut.get(0)));
                         IR3 id = new IR3(i);
                         return id;
@@ -125,8 +125,8 @@ public class IR3 {
 
     private static Optional<IR3> tryCheckSetFunc(List<IR1> childs) {
         if (!Objects.equals(childs.get(1).name, "set")) return Optional.empty();
-      //  if (childs.get(3).typeIs(FBB.TYPE.ID))//arg1 is PHI //TODO check!!!!!
-       //     return Optional.of(IR3Asm.SET(childs.get(2), modifyPhiPart(childs.get(3))));
+        //  if (childs.get(3).typeIs(FBB.TYPE.ID))//arg1 is PHI //TODO check!!!!!
+        //     return Optional.of(IR3Asm.SET(childs.get(2), modifyPhiPart(childs.get(3))));
         IR3 arg1 = doJob_(childs.get(3));
         //arg0 - PHI
         //arg1 - BLOCK || CODE
@@ -152,7 +152,7 @@ public class IR3 {
     private static IR3 generatePhiPart(IR1 reg, IR1 ir1) {
         IR3 phi = new IR3(Type.PHI);
         ir1.nodesIn.stream()//NodesOut->in
-                .map(i->new IR3((i.typeIs(FBB.TYPE.PHI)?Type.ID:Type.BLOCK), ir1.blockId).setName(i.name))//type BLOCK??mb
+                .map(i -> new IR3((i.typeIs(FBB.TYPE.PHI) ? Type.ID : Type.BLOCK), ir1.blockId).setName(i.name))//type BLOCK??mb
                 .forEach(phi::addChild);
         return IR3Asm.SET(reg, phi);
     }

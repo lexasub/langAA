@@ -41,8 +41,8 @@ public class IR4 {
     }
 
     private static IR4 FuncPart(IR3 block) {//TODO
-        return IR4Asm.func(block.name, block.childs.stream().filter(i->i.typeIs(IR3.Type.ID)),//mb reduce refinding over object by stream
-                block.childs.stream().filter(i->!i.typeIs(IR3.Type.ID)).map(IR4::doJob));
+        return IR4Asm.func(block.name, block.childs.stream().filter(i -> i.typeIs(IR3.Type.ID)),//mb reduce refinding over object by stream
+                block.childs.stream().filter(i -> !i.typeIs(IR3.Type.ID)).map(IR4::doJob));
     }
 
     private static IR4 IdPart(IR3 block) {
@@ -61,11 +61,13 @@ public class IR4 {
         childs.add(child);
         return this;
     }
+
     public IR4 addTwoChilds(IR4 child0, IR4 child1) {
         childs.add(child0);
         childs.add(child1);
         return this;
     }
+
     public IR4 addChildsStream(Stream<IR4> args) {
         args.forEach(this::addChild);
         return this;

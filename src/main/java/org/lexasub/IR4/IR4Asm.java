@@ -13,13 +13,13 @@ public class IR4Asm {
 
     public static IR4 call(String funcName, Stream<IR3> childs) {
         return thenConcatCode("call", spawnId(funcName))
-                .addChildsStream(childs.map(i-> i.name).map(IR4Asm::spawnId));
+                .addChildsStream(childs.map(i -> i.name).map(IR4Asm::spawnId));
     }
 
     private static IR4 funcHeader(String name, Stream<IR3> args) {
         return thenConcatCode("define", spawnId("int"))
                 .addTwoChilds(spawnId("@" + name), spawnCode("("))
-                .addChildsStream(args.map(i->"int %" + i.name).map(IR4Asm::spawnCode))//mb pairs, not string-concat
+                .addChildsStream(args.map(i -> "int %" + i.name).map(IR4Asm::spawnCode))//mb pairs, not string-concat
                 .addChild(spawnCode(")"));
     }
 
@@ -33,6 +33,7 @@ public class IR4Asm {
                 .addChildsStream(body)
                 .addChild(spawnCode("}"));//mb mark type as function
     }
+
     public static IR4 decorateBlock(String blockId, Stream<IR4> body) {
         return thenConcat(lbl(blockId + "_begin"), body)
                 .addChild(lbl(blockId + "_end"));
@@ -58,12 +59,12 @@ public class IR4Asm {
         return new IR4(IR4.Type.ID).setName(idName);
     }
 
-    public static IR4 phi(String i32, LinkedList<IR3> childs) {
+    public static IR4 phi(String type, LinkedList<IR3> childs) {
         IR4 ir4 = new IR4(IR4.Type.SEQ);
         ir4.addChild(spawnCode("phi"));
-        ir4.addChild(spawnId("i32"));
+        ir4.addChild(spawnId(type));
         ListIterator<IR3> it = childs.listIterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             String bl = it.next().blockId;
             String id = it.next().name;//mb get blockId from this it.next() ))
             ir4.addChild(spawnCode("[%" + id + ", " + "%" + bl + "], "));

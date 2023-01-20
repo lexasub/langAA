@@ -1,4 +1,4 @@
-package org.lexasub.utils.jgrapht;
+package org.lexasub.utils.graphDriver.jgrapht;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -6,7 +6,7 @@ import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
 import org.jgrapht.ext.JGraphXAdapter;
-import org.lexasub.utils.GraphDriver;
+import org.lexasub.utils.graphDriver.GraphDriver;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -21,6 +21,7 @@ public class jgraphtDriver implements GraphDriver {
         graph = new DefaultDirectedGraph<>(CustomEdge.class);//DirectedPseudograph//DefaultDirectedGraph
         addVertex(s);
     }
+
     private void addVertex(String text) {
         graph.addVertex(text);
     }

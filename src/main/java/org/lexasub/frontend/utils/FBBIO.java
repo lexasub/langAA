@@ -1,7 +1,11 @@
 package org.lexasub.frontend.utils;
 
 import org.antlr.v4.misc.OrderedHashMap;
-import org.lexasub.utils.JsonDumper;
+import org.lexasub.utils.graphDriver.GraphDriver;
+import org.lexasub.utils.treeDriver.TreeDriver;
+import org.lexasub.utils.graphDriver.graphiz.graphizDriver;
+import org.lexasub.utils.treeDriver.TreeAsGraphDriver;
+import org.lexasub.utils.treeDriver.TreeAsTextDriver;
 
 import java.util.*;
 import java.util.function.Function;
@@ -9,11 +13,37 @@ import java.util.function.Function;
 public class FBBIO {
     private static final String tb = "    ";//""\t";
 
-    public static void dump(String t, StringBuilder sb, FBB fbb) {
-        //их тут много создается(пустых stringBUilders). Как вариант foreach() -> map().collect()
-        StringBuilder sb1 = new StringBuilder();
-        fbb.childs.forEach(i -> dump(t + tb, sb1, i));
+    public static StringBuilder dumpAsText(String t, FBB ll) {
+        if (ll == null) return new StringBuilder();
 
+        TreeDriver p = new TreeAsTextDriver(t);
+        p.fromEntrySetStream(getMyDump(ll).entrySet().stream());
+        if (ll.childs.isEmpty())
+            return p.emptyChilds();
+        p.init();
+        ll.childs.stream().map(i -> dumpAsText(t + tb, i)).forEach(p::addChild);
+        p.finit();
+        return p.getRes();
+    }
+
+    private static void dumpAsGraph(FBB ll, String fileName, String fileFormat) {
+        GraphDriver graph = new graphizDriver("");
+        dumpAsGraph(ll, graph);
+        graph.write(fileName, fileFormat);
+    }
+
+    private static void dumpAsGraph(FBB ll, GraphDriver graph) {
+        if (ll == null) return;
+        TreeDriver p = new TreeAsGraphDriver(graph, getMyDumpConcated(ll));
+        ll.childs.stream().map(FBBIO::getMyDumpConcated).forEach(p::addChild);
+        ll.childs.forEach(i -> dumpAsGraph(i, graph));//recursive
+    }
+
+    private static String getMyDumpConcated(FBB ll) {
+        return getMyDump(ll).entrySet().stream().map(i -> i.getKey() + ":" + i.getValue() + "\n").reduce("", String::concat);
+    }
+
+    private static HashMap<String, String> getMyDump(FBB fbb) {
         HashMap<String, String> items = new HashMap<>();
         items.put("name", fbb.name);
         items.put("blockId", fbb.blockId);
@@ -22,7 +52,7 @@ public class FBBIO {
         v.apply("blockId", fbb.blockId);
         v.apply("type", String.valueOf(fbb.type));*/
         // v.apply("parent:" + ((parent == null) ? null : parent.getBlockId()));
-        JsonDumper.dumpq(t, sb, fbb.childs.isEmpty(), items, sb1);
+        return items;
     }
 
     public static void serialize(StringBuilder sb, FBB fbb) {
@@ -39,7 +69,7 @@ public class FBBIO {
     }
 
     public static FBB deserialize(String[] split) {
-        OrderedHashMap<String, LinkedList<String>> parentChild = new OrderedHashMap<String, LinkedList<String>>();
+        OrderedHashMap<String, LinkedList<String>> parentChild = new OrderedHashMap<>();
         List<FBB> blocks = Arrays.stream(split)
                 .map(i -> i.split("\n"))
                 .map(i ->

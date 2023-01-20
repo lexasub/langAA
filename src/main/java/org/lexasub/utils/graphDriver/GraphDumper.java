@@ -1,22 +1,23 @@
-package org.lexasub.utils;
+package org.lexasub.utils.graphDriver;
 
 import org.lexasub.IR1.IR1;
-import org.lexasub.utils.graphiz.graphizDriver;
+import org.lexasub.utils.graphDriver.graphiz.graphizDriver;
 
 import java.util.List;
 
 public class GraphDumper {
 
     static boolean jsonize = false;
-    static boolean deps  = false;
+    static boolean deps = false;
     static boolean parts = false;
     static GraphDriver graphDriver;
-    public static void dump(IR1 newBlock, boolean deps, boolean parts) {//TODO
+
+    public static void dump(IR1 newBlock, boolean deps, boolean parts, String fileName, String fileFormat) {//TODO
         graphDriver = new graphizDriver(getMyDumpForGraph(newBlock));//new jgraphtDriver();
         GraphDumper.deps = deps;
         GraphDumper.parts = parts;
         dump(/*new LinkedList<>(),*/ newBlock);
-        graphDriver.write("graph.svg", "SVG");
+        graphDriver.write(fileName, fileFormat);
     }
 
     private static void dump(/*LinkedList<String> visitedNodes,*/ IR1 newBlock) {

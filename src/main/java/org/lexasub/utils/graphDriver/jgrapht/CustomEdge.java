@@ -1,4 +1,4 @@
-package org.lexasub.utils.jgrapht;
+package org.lexasub.utils.graphDriver.jgrapht;
 
 
 import java.util.Objects;

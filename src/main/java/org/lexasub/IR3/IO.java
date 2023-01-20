@@ -14,9 +14,10 @@ public class IO {
     public static void main(String[] args) throws IOException {
         IR1 ir1Block = makeFromFBB(FBBView.visit(FBBView.getParser("test")));
         IR3 ll = IR3.doJob(IR2.doJob(ir1Block));
-       // IR3IO.jsonize = true;
+        // IR3IO.jsonize = true;
         IR3IO.compact = true;
-        IR3IO.dump(ll);
+        IR3IO.dumpAsText(ll);
+        // IR3IO.dumpAsGraph(ll, "graph.svg", "SVG");
         System.out.println("s");
     }
 
