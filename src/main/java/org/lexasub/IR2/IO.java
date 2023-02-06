@@ -12,7 +12,7 @@ import java.io.IOException;
 public class IO {
     public static void main(String[] args) throws IOException {
         IR1 newBlock = IR1.makeFromFBB(FBBView.visit(FBBView.getParser("test")));
-        GraphDumper.dump(IR2.doJob(newBlock), true, true, "graph.svg", "SVG");
+        GraphDumper.dump(IR2.doJob(newBlock), true, true, "/tmp/IR2.svg", "SVG");
     }
 
 }

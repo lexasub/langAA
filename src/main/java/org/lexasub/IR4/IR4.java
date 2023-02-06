@@ -1,6 +1,7 @@
 package org.lexasub.IR4;
 
 import org.lexasub.IR3.IR3;
+import org.lexasub.frontend.utils.IdGenerator;
 
 import java.util.LinkedList;
 import java.util.stream.Stream;
@@ -8,7 +9,7 @@ import java.util.stream.Stream;
 public class IR4 {
     public Type type;
     public LinkedList<IR4> childs = new LinkedList<>();
-    public String name;
+    public String name = IdGenerator.id();//kostyl'
 
     public IR4(Type _type) {
         type = _type;
@@ -23,8 +24,19 @@ public class IR4 {
         if (block.typeIs(IR3.Type.ID)) return IdPart(block);
         if (block.typeIs(IR3.Type.PHI)) return PhiPart(block);
         if (block.typeIs(IR3.Type.RET)) return RetPart(block);
+        if (block.typeIs(IR3.Type.COND_JMP)) return JMPCondPart(block);
+        if (block.typeIs(IR3.Type.JMP)) return JMPPart(block);
         //splitter
         return null;
+    }
+
+    private static IR4 JMPPart(IR3 block) {
+        return IR4Asm.JMP(block.childs.get(0));
+    }
+
+    private static IR4 JMPCondPart(IR3 block) {//todo add condition in ir3
+        return IR4Asm.JMPCond(doJob(block.childs.get(0)), doJob(block.childs.get(1)),
+                              doJob(new IR3(IR3.Type.ID)));//<-replace to condition res
     }
 
     private static IR4 BlockPart(IR3 block) {
@@ -46,7 +58,7 @@ public class IR4 {
     }
 
     private static IR4 IdPart(IR3 block) {
-        return null;
+        return new IR4(Type.ID).setName(block.name);
     }
 
     private static IR4 PhiPart(IR3 block) {
@@ -54,7 +66,7 @@ public class IR4 {
     }
 
     private static IR4 RetPart(IR3 block) {
-        return new IR4(Type.CODE).setName("ret ...");
+        return IR4Asm.ret(doJob(block.childs.get(0).getRes()));
     }
 
     public IR4 addChild(IR4 child) {
@@ -63,9 +75,7 @@ public class IR4 {
     }
 
     public IR4 addTwoChilds(IR4 child0, IR4 child1) {
-        childs.add(child0);
-        childs.add(child1);
-        return this;
+        return addChild(child0).addChild(child1);
     }
 
     public IR4 addChildsStream(Stream<IR4> args) {
@@ -78,5 +88,9 @@ public class IR4 {
         return this;
     }
 
-    public enum Type {CODE, ID, SEQ}
+    public boolean typeIs(Type _type) {
+        return type == _type;
+    }
+
+    public enum Type {CODE, ID, CODEPART, SEQ}
 }

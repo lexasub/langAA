@@ -37,7 +37,7 @@ public class IR4IO {
         return p.getRes();
     }
 
-    private static void dumpAsGraph(IR4 ll, String fileName, String fileFormat) {
+    public static void dumpAsGraph(IR4 ll, String fileName, String fileFormat) {
         GraphDriver graph = new graphizDriver("");
         dumpAsGraph(ll, graph);
         graph.write(fileName, fileFormat);

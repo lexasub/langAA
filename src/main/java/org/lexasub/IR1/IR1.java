@@ -21,22 +21,21 @@ public class IR1 {
 
 
     public IR1(FBB v) {
-        name = v.name;
-        type = v.type;
+        this(v.type, v.name);
         blockId = v.blockId;
     }
 
     public IR1(FBB.TYPE type) {
-        this.type = type;
+        setType(type);
     }
 
     public IR1(FBB.TYPE type, String name) {
-        this.type = type;
+        this(type);
         this.name = name;
     }
 
-    public IR1(FBB.TYPE afterOrBefore, IR1 block) {
-        type = afterOrBefore;
+    public IR1(FBB.TYPE type, IR1 block) {
+        this(type);
         connectDependence(this, block);
     }
 
@@ -141,9 +140,10 @@ public class IR1 {
         return nodesOut.listIterator();
     }
 
-    public void copyNodesInsFrom(IR1 ir1Block) {
+    public IR1 copyNodesInsFrom(IR1 ir1Block) {
         nodesIn = ir1Block.nodesIn;
         nodesInParents = ir1Block.nodesInParents;
+        return this;
     }
 
     public boolean typeIs(FBB.TYPE type_) {
@@ -158,5 +158,10 @@ public class IR1 {
         if (after_ == null)
             after_ = new IR1(FBB.TYPE.AFTER, this);//temporary kostyl'
         return after_;
+    }
+
+    public IR1 setType(FBB.TYPE _type) {
+        type = _type;
+        return this;
     }
 }

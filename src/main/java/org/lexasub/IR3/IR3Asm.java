@@ -9,7 +9,9 @@ public class IR3Asm {
         IR3 to_ = new IR3(to);//don't use dependences
         return new IR3(IR3.Type.ASSIGN).addChild(to_).addChild(from);
     }
-
+    public static IR3 SET(IR3 to, IR3 from) {
+        return new IR3(IR3.Type.ASSIGN).addChild(to).addChild(from);
+    }
     public static IR3 thenConcat(IR3 conc, IR3 body) {
         return new IR3(IR3.Type.BLOCK).addChild(conc).addChild(body);
     }
