@@ -4,29 +4,31 @@ import org.lexasub.IR3.IR3;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class IR4Asm {
     public static IR4 lbl(String s) {
-        return spawnCodePart(s + ":");
+        return new IR4(IR4.Type.LBL).setName(s);
     }
 
     public static IR4 call(String funcName, Stream<IR3> childs) {
-        return thenConcatCode("call", spawnId(funcName))
-                .addChildsStream(childs.map(i -> i.name).map(IR4Asm::spawnId));
+        return thenConcatCode("call", spawnId("i32"))
+                .addChild(spawnId(funcName))
+                .addChild(spawnCodePart("("))
+                .addChild(spawnComa().addChildsStream(childs.map(i ->i.name).map(IR4Asm::spawnLocalRegister)))
+                .addChild(spawnCodePart(")"));
     }
-
     private static IR4 funcHeader(String name, Stream<IR3> args) {
-        return thenConcatCode("define", spawnId("int"))
-                .addTwoChilds(spawnId("@" + name), spawnCodePart("("))
-                .addChildsStream(args.map(i -> "int %" + i.name).map(IR4Asm::spawnCodePart))//mb pairs, not string-concat
+        return thenConcatCode("define", spawnId("int")).addChild(spawnGlobalRegister(name))
+                .addChild(spawnCodePart("("))
+                //mb pairs, not string-concat
+                .addChild(spawnComa().addChildsStream(args.map(i -> " int " + "%" + i.name).map(IR4Asm::spawnCodePart)))
                 .addChild(spawnCodePart(")"));
     }
 
     public static IR4 Assign(String regName, IR4 expr) {
-        //mb some part of expr before assing, and some part after '='
-        return thenConcatCode(regName, spawnCodePart("=")).addChild(expr);
+        //mb some part of expr before assign, and some part after '='
+        return new IR4(IR4.Type.CODE).addTwoChilds(spawnLocalRegister(regName), spawnCodePart("=")).addChild(expr);
     }
 
     public static IR4 func(String name, Stream<IR3> args, Stream<IR4> body) {
@@ -65,14 +67,21 @@ public class IR4Asm {
         ir4.addChild(spawnCodePart("phi"));
         ir4.addChild(spawnId(type));
         ListIterator<IR3> it = childs.listIterator();
+        IR4 coma = spawnComa();
         while (it.hasNext()) {
             //String bl = it.next().blockId;
             IR3 next = it.next();
             String bl = next.parent.blockId;//zzz
             String id = next.name;//mb get blockId from this it.next() ))
-            ir4.addChild(spawnCodePart("[%" + id + ", " + "%" + bl + "], "));
+            coma.addChild(thenConcatCodePart("[",
+                                                spawnComa().addTwoChilds(spawnLocalRegister(id),spawnLocalRegister(bl)))
+                     .addChild(spawnCodePart("]")));
         }
-        return ir4;
+        return ir4.addChild(coma);
+    }
+
+    private static IR4 thenConcatCodePart(String child0, IR4 child1) {
+        return new IR4(IR4.Type.CODE).addTwoChilds(spawnCodePart(child0), child1);
     }
 
     public static IR4 ret(IR4 arg) {
@@ -82,16 +91,30 @@ public class IR4Asm {
     public static IR4 JMPCond(IR4 truePart, IR4 falsePart, IR4 condRes) {
         return thenConcat(thenConcatCode("br",
                 spawnId("i1")
-        ).addTwoChilds(spawnId("%" + condRes.name),
-                spawnCodePart(", label")).addTwoChilds(
-                spawnId("%" + truePart.name + "_begin"),//mb use not string
-                spawnCodePart(", label")
-        ).addChild(spawnId("%" + falsePart.name + "_begin")//mb use not string
-        ),
-                truePart).addChild(falsePart);
+        ).addChild(spawnComa().addChild(spawnLocalRegister(condRes.name))
+                              .addTwoChilds(spawnTypedRegister("label", truePart.name + "_begin"),
+                                            spawnTypedRegister("label", falsePart.name + "_begin"))
+        ), truePart).addChild(falsePart);
+    }
+
+    private static IR4 spawnTypedRegister(String type, String name) {
+        return thenConcatCode(type, spawnLocalRegister(name));
+    }
+
+    private static IR4 spawnLocalRegister(String name) {
+        return spawnId("%" + name);
+    }
+
+    private static IR4 spawnGlobalRegister(String name) {
+        return spawnId("@" + name);
     }
 
     public static IR4 JMP(IR3 to) {
-        return thenConcatCode("br", spawnId(to.blockId + "_end"));
+        return thenConcatCode("br", spawnTypedRegister("label", to.blockId + "_end"));
     }
+
+    private static IR4 spawnComa() {
+        return new IR4(IR4.Type.COMA);
+    }
+
 }

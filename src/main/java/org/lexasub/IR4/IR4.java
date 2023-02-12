@@ -92,5 +92,5 @@ public class IR4 {
         return type == _type;
     }
 
-    public enum Type {CODE, ID, CODEPART, SEQ}
+    public enum Type {CODE, ID, CODEPART, COMA, LBL, SEQ}
 }

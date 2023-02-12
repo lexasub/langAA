@@ -12,8 +12,19 @@ public class LLVMIRasm {
                 .map(smartConcatWithSplitter(s))
                 .collect(Collectors.joining()));
     }
+    public static LLVMIR concatSplitterComa(Stream<LLVMIR> llvmirStream) {
+        return new LLVMIR(llvmirStream.filter(Objects::nonNull)
+                .map(i -> i.ir).filter(ir -> !ir.isEmpty())
+                .map(smartConcatWithSplitter(',')).map(i -> i.append(' '))
+                .collect(Collectors.joining()))
+                .truncateIrFromEnd(2);
+    }
 
     private static Function<StringBuilder, StringBuilder> smartConcatWithSplitter(char s) {
         return ir -> Objects.equals(ir.charAt(ir.length() - 1), s) ? ir : ir.append(s);
+    }
+
+    public static LLVMIR spawnLBL(String name) {
+        return new LLVMIR(name + ":");
     }
 }

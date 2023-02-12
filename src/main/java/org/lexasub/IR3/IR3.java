@@ -205,8 +205,8 @@ public class IR3 {
     private IR3 getResForCall() {
         assert parent == null;
         IR3 child = new IR3(type, blockId)
-                .setName(name).moveChilds(this);
-        assignGen(child, this);//mb setName null
+                .setName(name).moveChildsFrom(this);
+        assignGen(child, this).setName(null);
         return childs.get(0);
     }
 
@@ -224,7 +224,7 @@ public class IR3 {
         return assign.childs.get(0);
     }
 
-    private IR3 moveChilds(IR3 ir3) {
+    private IR3 moveChildsFrom(IR3 ir3) {
         childs = ir3.childs;//copy childs
         ir3.childs = new LinkedList<>();//nulling prevowner child's
         childs.forEach(i->i.parent = this);//link
@@ -245,5 +245,5 @@ public class IR3 {
         return type == _type;
     }
 
-    public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI, RET, COND_JMP, JMP, SPLITTER}
+    public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI, RET, COND_JMP, JMP}
 }
