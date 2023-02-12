@@ -30,7 +30,7 @@ public class IR4 {
     }
 
     private static IR4 JMPPart(IR3 block) {
-        return IR4Asm.JMP(block.childsGet(0));
+        return IR4Asm.JMP(IR4AsmUtils.endOf(block.childsGet(0)));
     }
 
     private static IR4 JMPCondPart(IR3 block) {//todo add condition in ir3
@@ -44,7 +44,7 @@ public class IR4 {
 
 
     private static IR4 AssignPart(IR3 block) {//first child - it's id
-        return IR4Asm.Assign(block.childsGet(0).name, doJob(block.childsGet(1)));
+        return IR4Asm.Assign(block.childsGet(0).name, doJob(block.childsGet(1))).setName(block.blockId);
     }
 
     private static IR4 CallPart(IR3 block) {// childs only id's?

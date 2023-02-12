@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class IR3 {
-    private static boolean dympTypeBlock = false;
+    private static boolean dumpTypeBlock = false;
     public Type type;
     public String name;
     public LinkedList<IR3> childs = new LinkedList<>();
@@ -59,7 +59,7 @@ public class IR3 {
     }
 
     public static IR3 FunctionPart(IR1 block) {
-        if (dympTypeBlock) System.out.println("func: " + block.blockId);
+        if (dumpTypeBlock) System.out.println("func: " + block.blockId);
         LinkedList<IR3> args = getFuncArgs(block.nodesOutChilds.iterator());//transform ids
         return new IR3(Type.FUNC, block.blockId)
                 .setName(block.name)
@@ -81,7 +81,7 @@ public class IR3 {
     private static IR3 BlockPart(IR1 block) {
 
         //need nodesInParents.size() == 1??
-        if (dympTypeBlock) System.out.println("block: " + block.blockId);
+        if (dumpTypeBlock) System.out.println("block: " + block.blockId);
         IR3 newBlock = new IR3(Type.BLOCK, block.blockId);
         return newBlock.addChildsStream(block.nodesOutChilds.stream().map(IR3::doJob_));
     }
@@ -92,7 +92,7 @@ public class IR3 {
     }
 
     private static IR3 CodePart(IR1 block) {
-        if (dympTypeBlock) System.out.println("code: " + block.blockId);
+        if (dumpTypeBlock) System.out.println("code: " + block.blockId);
         //may be having phi in nodesOutChilds and create with phi
         List<IR1> childs = block.nodesOutChilds;
         if (Objects.equals(childs.get(0).name, "call")) {//почти всегда call, else ret
@@ -166,9 +166,9 @@ public class IR3 {
     private static IR3 generatePhiPart1(IR1 ir1, IR3 reg) {
         IR3 phi = new IR3(Type.PHI);
         ir1.nodesIn.stream()//NodesOut->in
-                .filter(i -> !i.typeIs(FBB.TYPE.PHI)).map(i -> new IR3(Type.ID, i.blockId).setName(i.name))
+                .filter(i -> i.typeIs(FBB.TYPE.PHI)).map(i -> new IR3(Type.ID, i.blockId).setName(i.name))
                 //   .map(i -> new IR3((i.typeIs(FBB.TYPE.PHI) ? Type.ID : Type.BLOCK), i.blockId).setName(i.name))//type BLOCK??mb
-                .map(i -> Objects.equals(i.name, reg.name) ? i : reg)//partiotional kostyl'
+                .map(i -> !Objects.equals(i.name, reg.name) ? i : reg)//partiotional kostyl'
                 .forEach(phi::addChild);
         return IR3Asm.SET(reg, phi);
     }

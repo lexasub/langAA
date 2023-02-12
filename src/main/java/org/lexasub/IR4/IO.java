@@ -18,7 +18,7 @@ public class IO {
         //  IR4IO.jsonize = true;
         IR4IO.compact = true;
         IR4IO.dumpAsText(ll);
-        //  IR4IO.dumpAsGraph(ll, "/tmp/IR4.svg", "SVG");
+        IR4IO.dumpAsGraph(ll, "/tmp/IR4.svg", "SVG");
         System.out.println("ss");
     }
 

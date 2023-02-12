@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.stream.Stream;
 
+import static org.lexasub.IR4.IR4AsmUtils.*;
+
 public class IR4Asm {
     public static IR4 lbl(String s) {
         return new IR4(IR4.Type.LBL).setName(s);
@@ -15,7 +17,7 @@ public class IR4Asm {
         return thenConcatCode("call", spawnId("i32"))
                 .addChild(spawnGlobalRegister(funcName))
                 .addChild(spawnCodePart("("))
-                .addChild(spawnComa().addChildsStream(childs.map(i -> i.name).map(i -> spawnTypedRegister("i32", i))))
+                .addChild(spawnComa().addChildsStream(childs.map(i -> i.name).map(i -> IR4AsmUtils.spawnTypedRegister("i32", i))))
                 .addChild(spawnCodePart(")"));
     }
 
@@ -39,11 +41,10 @@ public class IR4Asm {
     }
 
     public static IR4 decorateBlock(String blockId, Stream<IR4> body) {
-        return thenConcat(lbl(blockId + "_begin"), body)
-                .addChild(lbl(blockId + "_end")).setName(blockId);
+        return thenConcat(lbl(beginOf(blockId)), body)
+                .addChild(lbl(endOf(blockId))).setName(blockId);
     }
-
-    private static IR4 thenConcatCode(String id, IR4 child) {
+    static IR4 thenConcatCode(String id, IR4 child) {
         return new IR4(IR4.Type.CODE).addTwoChilds(spawnId(id), child);
     }
 
@@ -59,7 +60,7 @@ public class IR4Asm {
         return new IR4(IR4.Type.CODEPART).setName(code);
     }
 
-    private static IR4 spawnId(String idName) {
+    static IR4 spawnId(String idName) {
         return new IR4(IR4.Type.ID).setName(idName);
     }
 
@@ -72,10 +73,10 @@ public class IR4Asm {
         while (it.hasNext()) {
             //String bl = it.next().blockId;
             IR3 next = it.next();
-            String bl = next.parent.blockId;//zzz
-            String id = next.name;//mb get blockId from this it.next() ))
+            IR4 id = spawnLocalRegister(next.name);//mb обрамлять чем-то чтоб юзать blockid
+            String bl = next.blockId + "_after";//TODO get real blockid//from
             coma.addChild(thenConcatCodePart("[",
-                    spawnComa().addTwoChilds(spawnLocalRegister(id), spawnLocalRegister(bl)))
+                    spawnComa().addTwoChilds(id, spawnLocalRegister(bl)))
                     .addChild(spawnCodePart("]")));
         }
         return ir4.addChild(coma);
@@ -97,25 +98,14 @@ public class IR4Asm {
         return thenConcat(thenConcatCode("br",
                 spawnId("i1")
         ).addChild(spawnComa().addChild(spawnLocalRegister(condRes.name))
-                .addTwoChilds(spawnTypedRegister("label", truePart.name + "_begin"),
-                        spawnTypedRegister("label", falsePart.name + "_begin"))
+                .addTwoChilds(IR4AsmUtils.spawnTypedLabelOfObject(beginOf(truePart)),
+                        IR4AsmUtils.spawnTypedLabelOfObject(beginOf(falsePart)))
         ), truePart).addChild(falsePart);
     }
 
-    private static IR4 spawnTypedRegister(String type, String name) {
-        return thenConcatCode(type, spawnLocalRegister(name));
-    }
 
-    private static IR4 spawnLocalRegister(String name) {
-        return spawnId("%" + name);
-    }
-
-    private static IR4 spawnGlobalRegister(String name) {
-        return spawnId("@" + name);
-    }
-
-    public static IR4 JMP(IR3 to) {
-        return thenConcatCode("br", spawnTypedRegister("label", to.blockId + "_end"));
+    public static IR4 JMP(String lblName) {
+        return thenConcatCode("br", IR4AsmUtils.spawnTypedLabelOfObject(lblName));
     }
 
     private static IR4 spawnComa() {

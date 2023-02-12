@@ -5,6 +5,7 @@ import org.lexasub.frontend.utils.FBB;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.lexasub.IR1.IR1.connectDependence;
 import static org.lexasub.IR1.IR1.connectToChilds;
@@ -12,24 +13,22 @@ import static org.lexasub.IR1.IR1.connectToChilds;
 public class IfConvert {
     public static IR1 ifConvert(IR1 ir1Block, LinkedList<IR1> visitedBlocks) {
         Iterator<IR1> it = ir1Block.nodesOutChildsListIterator();
+        IR1 ifScope = new IR1().copyNodesInsFrom(ir1Block);
         IR1 cond = it.next().setType(FBB.TYPE.BLOCK);
         IR1 trueExpr = it.next().setType(FBB.TYPE.BLOCK);
-        IR1 falseExpr = (it.hasNext()) ? it.next().setType(FBB.TYPE.BLOCK) : null;
+        Optional<IR1> falseExpr = Optional.of(it.hasNext() ? it.next().setType(FBB.TYPE.BLOCK) : null);
         //1)найти зависимости переменных в trueExpr от переменных декларированных раньше
         //2)найти зависимости переменных в falseExpr от переменных декларированных раньше
         //3)сгенерить phi-функции после выполнения if(ну и новых переменных создать для phi)
         IR1 condJmp = new IR1(FBB.TYPE.COND_JMP);
-        IR1 ifScope = new IR1().copyNodesInsFrom(ir1Block);
         ifCondConnect(cond, ifScope, condJmp);
         ifBodyConnect(trueExpr, falseExpr, condJmp, ifScope.after());
         return ifScope;
     }
 
-    private static void ifBodyConnect(IR1 trueExpr, IR1 falseExpr, IR1 condJmp, IR1 endIf) {
+    private static void ifBodyConnect(IR1 trueExpr, Optional<IR1> falseExprO, IR1 condJmp, IR1 endIf) {
         ifJumper(trueExpr, condJmp, endIf);
-        if (falseExpr != null) //check exist of else(falseExpr)
-            ifJumper(falseExpr, condJmp, endIf);
-        else connectDependence(endIf, condJmp);
+        falseExprO.ifPresentOrElse(falseExpr->ifJumper(falseExpr, condJmp, endIf), ()->connectDependence(endIf, condJmp));
     }
 
     private static void ifCondConnect(IR1 cond, IR1 ifScope, IR1 condJmp) {
