@@ -1,0 +1,25 @@
+
+define i1 @isZero(i32 %b){
+    %u = icmp eq i32 0, %b
+    %not_res = call noundef i32 @FUNCTION_not(i1 %u)
+    %not_res1 = call noundef i1 @FUNCTION_not(i32 %not_res)
+    ret i1 %not_res1
+}
+define i32 @mod(i32 %a, i32 %b){
+      %z = srem i32 %a, %b
+      ret i32 %z
+}
+
+define i32 @main() {
+entry:
+    %d = call noundef i32 @gcd(i32 24826148,i32 45296490)
+    %u = srem i32 526, 1
+    %r = call i32 (ptr, ...) @printf(ptr noundef @.str, i32 noundef %d)
+    ret i32 1
+}
+@.str = private unnamed_addr constant [4 x i8] c"%d \00", align 1
+declare i32 @printf(i8*, ...)
+define i1 @FUNCTION_not(i1 %b)  {
+    %isZero_res = xor i1 %b, 1
+    ret i1 %isZero_res
+}

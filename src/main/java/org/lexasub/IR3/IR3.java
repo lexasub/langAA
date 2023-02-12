@@ -43,8 +43,12 @@ public class IR3 {
         if (block.typeIs(FBB.TYPE.COND_JMP)) return jmpCondPart(block);
 
         if (block.typeIs(FBB.TYPE.ID)) return new IR3(Type.ID, block.blockId).setName(block.name);//TODO
-        if (block.typeIs(FBB.TYPE.PHI)) return new IR3(Type.BLOCK, block.blockId);//TODO
+        if (block.typeIs(FBB.TYPE.PHI)) return PhiPart(block);
         return null;
+    }
+
+    private static IR3 PhiPart(IR1 block) {//TODO
+        return new IR3(Type.PHI, block.blockId);//.addChild(new IR3(Type.ID).setName("zzz"));
     }
 
     private static IR3 jmpCondPart(IR1 block) {//TODO
@@ -199,6 +203,7 @@ public class IR3 {
         if(typeIs(Type.BLOCK)) return getResForBlock();
         if(typeIs(Type.CALL)) return getResForCall();
         if(typeIs(Type.ID)) return this;
+        if(typeIs(Type.PHI)) return this;//TODO check
         return null;
     }
 

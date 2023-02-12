@@ -41,7 +41,7 @@ public class LLVMIR {
 
     public LLVMIR truncateIrFromEnd(int count) {
         int size = ir.length();
-        ir.delete(size - count, size);//rm last ", "
+        if(size > count) ir.delete(size - count, size);//rm last ", "
         return this;
     }
 }

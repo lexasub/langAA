@@ -5,10 +5,12 @@ import org.lexasub.IR1.IR1;
 import org.lexasub.IR2.IR2.IR2;
 import org.lexasub.IR3.IR3;
 import org.lexasub.IR4.IR4;
-import org.lexasub.IR4.IR4IO;
 import org.lexasub.frontend.utils.FBBView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import static org.lexasub.IR1.IR1.makeFromFBB;
 
@@ -21,7 +23,16 @@ public class IO {
      //   IR4IO.compact = true;
        // IR4IO.dumpAsText(ll);
       //  IR4IO.dumpAsGraph(ll, "/tmp/IR4.svg", "SVG");
+        printBaseCode();
         System.out.println(ll.ir);
+    }
+
+    private static void printBaseCode() throws FileNotFoundException {
+        try (Scanner input = new Scanner(new File("src/main/java/org/lexasub/LLVMIR/preCode.txt"))) {
+            while (input.hasNextLine()) {
+                System.out.println(input.nextLine());
+            }
+        }
     }
 
 }

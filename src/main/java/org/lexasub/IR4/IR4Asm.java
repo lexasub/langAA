@@ -13,16 +13,16 @@ public class IR4Asm {
 
     public static IR4 call(String funcName, Stream<IR3> childs) {
         return thenConcatCode("call", spawnId("i32"))
-                .addChild(spawnId(funcName))
+                .addChild(spawnGlobalRegister(funcName))
                 .addChild(spawnCodePart("("))
-                .addChild(spawnComa().addChildsStream(childs.map(i ->i.name).map(IR4Asm::spawnLocalRegister)))
+                .addChild(spawnComa().addChildsStream(childs.map(i ->i.name).map(i->spawnTypedRegister("i32", i))))
                 .addChild(spawnCodePart(")"));
     }
     private static IR4 funcHeader(String name, Stream<IR3> args) {
-        return thenConcatCode("define", spawnId("int")).addChild(spawnGlobalRegister(name))
+        return thenConcatCode("define", spawnId("i32")).addChild(spawnGlobalRegister(name))
                 .addChild(spawnCodePart("("))
                 //mb pairs, not string-concat
-                .addChild(spawnComa().addChildsStream(args.map(i -> " int " + "%" + i.name).map(IR4Asm::spawnCodePart)))
+                .addChild(spawnComa().addChildsStream(args.map(i -> " i32 " + "%" + i.name).map(IR4Asm::spawnCodePart)))
                 .addChild(spawnCodePart(")"));
     }
 
@@ -85,7 +85,11 @@ public class IR4Asm {
     }
 
     public static IR4 ret(IR4 arg) {
-        return thenConcatCode("ret", arg);
+        return thenConcatCode("ret", transformToTypedRegister("i32", arg));//TODO , now ok on only ret id
+    }
+
+    private static IR4 transformToTypedRegister(String type, IR4 arg) {
+        return thenConcatCode(type, spawnLocalRegister(arg.name));
     }
 
     public static IR4 JMPCond(IR4 truePart, IR4 falsePart, IR4 condRes) {
