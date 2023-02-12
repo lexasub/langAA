@@ -7,7 +7,7 @@ public class Asm {
     public static void call(String funcName, Stream<FBB> args, FBB newFunCall) {
         FBB name_ = new FBB();
         name_.type = FBB.TYPE.ID;
-        name_.name = funcName;
+        name_.setName(funcName);
         FBB v = introduceCodeBlock(Stream.concat(Stream.of(name_), args), "call");
         newFunCall.fullLinkWith(v);
 
@@ -18,7 +18,7 @@ public class Asm {
         fbb.type = FBB.TYPE.CODE;
         FBB nameOP = new FBB();
         nameOP.type = FBB.TYPE.ID;
-        nameOP.name = nameOp;
+        nameOP.setName(nameOp);
         fbb.fullLinkWith(nameOP);
         args.forEach(fbb::fullLinkWith);
         return fbb;
@@ -27,7 +27,7 @@ public class Asm {
     public static FBB RETURN(String arg, FBB myBlock) {
         FBB name_ = new FBB();
         name_.type = FBB.TYPE.ID;
-        name_.name = arg;
+        name_.setName(arg);
         FBB v = introduceCodeBlock(Stream.of(name_), "ret");
         v.setParent(myBlock);
         return v;
@@ -43,7 +43,7 @@ public class Asm {
         FBB fbb = introduceCodeBlock(Stream.of(), "ret");
         FBB i = new FBB();
         i.type = FBB.TYPE.ID;
-        i.name = "res_" + expr.blockId;//todo link with expr
+        i.setName("res_" + expr.blockId);//todo link with expr
         fbb.fullLinkWith(i);
         FBB newFbb = new FBB();
         fbb.setParent(newFbb);

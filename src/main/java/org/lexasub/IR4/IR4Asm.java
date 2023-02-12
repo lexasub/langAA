@@ -15,9 +15,10 @@ public class IR4Asm {
         return thenConcatCode("call", spawnId("i32"))
                 .addChild(spawnGlobalRegister(funcName))
                 .addChild(spawnCodePart("("))
-                .addChild(spawnComa().addChildsStream(childs.map(i ->i.name).map(i->spawnTypedRegister("i32", i))))
+                .addChild(spawnComa().addChildsStream(childs.map(i -> i.name).map(i -> spawnTypedRegister("i32", i))))
                 .addChild(spawnCodePart(")"));
     }
+
     private static IR4 funcHeader(String name, Stream<IR3> args) {
         return thenConcatCode("define", spawnId("i32")).addChild(spawnGlobalRegister(name))
                 .addChild(spawnCodePart("("))
@@ -74,8 +75,8 @@ public class IR4Asm {
             String bl = next.parent.blockId;//zzz
             String id = next.name;//mb get blockId from this it.next() ))
             coma.addChild(thenConcatCodePart("[",
-                                                spawnComa().addTwoChilds(spawnLocalRegister(id),spawnLocalRegister(bl)))
-                     .addChild(spawnCodePart("]")));
+                    spawnComa().addTwoChilds(spawnLocalRegister(id), spawnLocalRegister(bl)))
+                    .addChild(spawnCodePart("]")));
         }
         return ir4.addChild(coma);
     }
@@ -96,8 +97,8 @@ public class IR4Asm {
         return thenConcat(thenConcatCode("br",
                 spawnId("i1")
         ).addChild(spawnComa().addChild(spawnLocalRegister(condRes.name))
-                              .addTwoChilds(spawnTypedRegister("label", truePart.name + "_begin"),
-                                            spawnTypedRegister("label", falsePart.name + "_begin"))
+                .addTwoChilds(spawnTypedRegister("label", truePart.name + "_begin"),
+                        spawnTypedRegister("label", falsePart.name + "_begin"))
         ), truePart).addChild(falsePart);
     }
 

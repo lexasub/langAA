@@ -1,6 +1,8 @@
 package org.lexasub.utils.graphDriver.graphiz;
 
-import guru.nidi.graphviz.attribute.*;
+import guru.nidi.graphviz.attribute.Rank;
+import guru.nidi.graphviz.attribute.Shape;
+import guru.nidi.graphviz.attribute.Style;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.Graph;

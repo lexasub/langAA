@@ -17,11 +17,19 @@ public class FBB {
 
 
     public FBB(String name, String blockId, String type) {
-        this.name = name;
+        setName(name);
         this.blockId = blockId;
         if (!Objects.equals(type, "null"))
             this.type = TYPE.valueOf(type);
         //may be - add childs
+    }
+
+    public static FBB spawnID(String id, FBB myBlock) {
+        FBB fbb = new FBB();
+        fbb.type = FBB.TYPE.ID;
+        fbb.setName(id);
+        fbb.setParent(myBlock);
+        return fbb;
     }
  /*   public FrontendBaseBlock(FrontendBaseBlock obj) {//blockId
         this.parent = obj.parent;
@@ -30,12 +38,8 @@ public class FBB {
         this.childs = new LinkedList<>(obj.childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
     }*/
 
-    public static FBB spawnID(String id, FBB myBlock) {
-        FBB fbb = new FBB();
-        fbb.type = FBB.TYPE.ID;
-        fbb.name = id;
-        fbb.setParent(myBlock);
-        return fbb;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void fullLinkWith(FBB child) {

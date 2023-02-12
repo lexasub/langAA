@@ -14,18 +14,18 @@ import static org.lexasub.IR1.IR1Test.generateIr1TestRes;
 
 public class IR2Test {
 
-    @ParameterizedTest
-    @MethodSource("argsProviderFactory")
-    void visit(String filemame) {
-        GraphDumper.dump(generateIr2TestRes(filemame), true, true, "/tmp/" + filemame + "_ir2.svg", "SVG");
-        Assert.assrt(true);
-    }
-
     public static IR1 generateIr2TestRes(String filemame) {
         return IR2.doJob(generateIr1TestRes(filemame));
     }
 
     static Stream<String> argsProviderFactory() {
         return testFiles();
+    }
+
+    @ParameterizedTest
+    @MethodSource("argsProviderFactory")
+    void visit(String filemame) {
+        GraphDumper.dump(generateIr2TestRes(filemame), true, true, "/tmp/" + filemame + "_ir2.svg", "SVG");
+        Assert.assrt(true);
     }
 }

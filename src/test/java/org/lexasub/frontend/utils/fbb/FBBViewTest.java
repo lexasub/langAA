@@ -18,9 +18,13 @@ public class FBBViewTest {
     public static FBB generateFBBTestRes(String filemame) {
         try {
             return FBBView.visit(FBBView.getParser(GenericTest.addPath(filemame)));
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static Stream<String> argsProviderFactory() {
+        return testFiles();
     }
 
     @ParameterizedTest
@@ -28,8 +32,5 @@ public class FBBViewTest {
     void visit(String filemame) {
         System.out.println(FBBIO.dumpAsText("", generateFBBTestRes(filemame)));
         Assert.assrt(true);
-    }
-    static Stream<String> argsProviderFactory() {
-        return testFiles();
     }
 }

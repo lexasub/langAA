@@ -20,9 +20,9 @@ public class IO {
         IR1 ir1Block = makeFromFBB(FBBView.visit(FBBView.getParser("test")));
         LLVMIR ll = LLVMIR.doJob(IR4.doJob(IR3.doJob(IR2.doJob(ir1Block))));
         //  IR4IO.jsonize = true;
-     //   IR4IO.compact = true;
-       // IR4IO.dumpAsText(ll);
-      //  IR4IO.dumpAsGraph(ll, "/tmp/IR4.svg", "SVG");
+        //   IR4IO.compact = true;
+        // IR4IO.dumpAsText(ll);
+        //  IR4IO.dumpAsGraph(ll, "/tmp/IR4.svg", "SVG");
         printBaseCode();
         System.out.println(ll.ir);
     }

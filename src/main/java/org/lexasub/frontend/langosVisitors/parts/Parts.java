@@ -17,7 +17,7 @@ public class Parts {
         //type
         FBB newBlock = new FBB();
         newBlock.type = FBB.TYPE.FUNC;
-        newBlock.name = visitVar_name(ctx.var_name());
+        newBlock.setName(visitVar_name(ctx.var_name()));
         newBlock.setParent(myBlock);
         visitFunc_args(ctx.func_args(), newBlock);//result-insertedVariables
         visitBody(ctx.body(), newBlock).forEach(newBlock::fullLinkWith);

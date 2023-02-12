@@ -5,9 +5,9 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class TreeDumper {
+    public static final boolean showEmptyChildList = false;
     public static boolean jsonize = false;
     public static boolean compact = false;
-    public static final boolean showEmptyChildList = false;
     private final String t;
     Stream<BiFunction<StringBuilder, String, StringBuilder>> items = null;
     private StringBuilder buf;

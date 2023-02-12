@@ -16,7 +16,6 @@ public class IR4 {
     }
 
     public static IR4 doJob(IR3 block) {
-        // public enum Type {ASSIGN, BLOCK, CALL, FUNC, ID, PHI_PART, RET, SPLITTER}
         if (block.typeIs(IR3.Type.BLOCK)) return BlockPart(block);
         if (block.typeIs(IR3.Type.ASSIGN)) return AssignPart(block);
         if (block.typeIs(IR3.Type.CALL)) return CallPart(block);
@@ -31,12 +30,12 @@ public class IR4 {
     }
 
     private static IR4 JMPPart(IR3 block) {
-        return IR4Asm.JMP(block.childs.get(0));
+        return IR4Asm.JMP(block.childsGet(0));
     }
 
     private static IR4 JMPCondPart(IR3 block) {//todo add condition in ir3
-        return IR4Asm.JMPCond(doJob(block.childs.get(0)), doJob(block.childs.get(1)),
-                              doJob(new IR3(IR3.Type.ID)));//<-replace to condition res
+        return IR4Asm.JMPCond(doJob(block.childsGet(0)), doJob(block.childsGet(1)),
+                doJob(new IR3(IR3.Type.ID)));//<-replace to condition res
     }
 
     private static IR4 BlockPart(IR3 block) {
@@ -45,7 +44,7 @@ public class IR4 {
 
 
     private static IR4 AssignPart(IR3 block) {//first child - it's id
-        return IR4Asm.Assign(block.childs.get(0).name, doJob(block.childs.get(1)));
+        return IR4Asm.Assign(block.childsGet(0).name, doJob(block.childsGet(1)));
     }
 
     private static IR4 CallPart(IR3 block) {// childs only id's?
@@ -66,7 +65,7 @@ public class IR4 {
     }
 
     private static IR4 RetPart(IR3 block) {
-        return IR4Asm.ret(doJob(block.childs.get(0).getRes()));
+        return IR4Asm.ret(doJob(block.childsGet(0).getRes()));
     }
 
     public IR4 addChild(IR4 child) {

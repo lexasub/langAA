@@ -11,14 +11,14 @@ import static org.lexasub.IR4.IR4Test.generateIr4TestRes;
 
 class LLVMIRTest {
 
+    static Stream<String> argsProviderFactory() {
+        return testFiles();
+    }
+
     @ParameterizedTest
     @MethodSource("argsProviderFactory")
     void visit(String filemame) {
         System.out.println(LLVMIR.doJob(generateIr4TestRes(filemame)).ir);
         Assert.assrt(true);
-    }
-
-    static Stream<String> argsProviderFactory() {
-        return testFiles();
     }
 }

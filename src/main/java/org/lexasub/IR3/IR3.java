@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class IR3 {
+    private static boolean dympTypeBlock = false;
     public Type type;
     public String name;
     public LinkedList<IR3> childs = new LinkedList<>();
@@ -41,10 +42,10 @@ public class IR3 {
         if (block.typeIs(FBB.TYPE.CODE)) return CodePart(block);
         if (block.typeIs(FBB.TYPE.JMP)) return JmpPart(block);
         if (block.typeIs(FBB.TYPE.COND_JMP)) return jmpCondPart(block);
+        if (block.typeIs(FBB.TYPE.PHI)) return PhiPart(block);
 
         if (block.typeIs(FBB.TYPE.ID)) return new IR3(Type.ID, block.blockId).setName(block.name);//TODO
-        if (block.typeIs(FBB.TYPE.PHI)) return PhiPart(block);
-        return null;
+        throw new RuntimeException();
     }
 
     private static IR3 PhiPart(IR1 block) {//TODO
@@ -58,12 +59,12 @@ public class IR3 {
     }
 
     public static IR3 FunctionPart(IR1 block) {
-        System.out.println("func: " + block.blockId);
+        if (dympTypeBlock) System.out.println("func: " + block.blockId);
         LinkedList<IR3> args = getFuncArgs(block.nodesOutChilds.iterator());//transform ids
         return new IR3(Type.FUNC, block.blockId)
                 .setName(block.name)
                 .addChildsStream(args.stream())//add functionArgs
-               // .addChild(new IR3(Type.SPLITTER))//splitter//а нужен ли он??
+                // .addChild(new IR3(Type.SPLITTER))//splitter//а нужен ли он??
                 .addChildsStream(block.nodesOutChilds.stream().skip(args.size()).map(IR3::doJob_));//then add parts
     }
 
@@ -80,7 +81,7 @@ public class IR3 {
     private static IR3 BlockPart(IR1 block) {
 
         //need nodesInParents.size() == 1??
-        System.out.println("block: " + block.blockId);
+        if (dympTypeBlock) System.out.println("block: " + block.blockId);
         IR3 newBlock = new IR3(Type.BLOCK, block.blockId);
         return newBlock.addChildsStream(block.nodesOutChilds.stream().map(IR3::doJob_));
     }
@@ -91,7 +92,7 @@ public class IR3 {
     }
 
     private static IR3 CodePart(IR1 block) {
-        System.out.println("code: " + block.blockId);
+        if (dympTypeBlock) System.out.println("code: " + block.blockId);
         //may be having phi in nodesOutChilds and create with phi
         List<IR1> childs = block.nodesOutChilds;
         if (Objects.equals(childs.get(0).name, "call")) {//почти всегда call, else ret
@@ -161,12 +162,13 @@ public class IR3 {
         //todo plan for "changing" blockid//linkage from IR1BB to IR3BB
         return IR3Asm.thenConcat(phiPart, retBlock.addChild(reg));//reg;
     }
+
     private static IR3 generatePhiPart1(IR1 ir1, IR3 reg) {
         IR3 phi = new IR3(Type.PHI);
         ir1.nodesIn.stream()//NodesOut->in
-                .filter(i->!i.typeIs(FBB.TYPE.PHI)).map(i -> new IR3(Type.ID, i.blockId).setName(i.name))
+                .filter(i -> !i.typeIs(FBB.TYPE.PHI)).map(i -> new IR3(Type.ID, i.blockId).setName(i.name))
                 //   .map(i -> new IR3((i.typeIs(FBB.TYPE.PHI) ? Type.ID : Type.BLOCK), i.blockId).setName(i.name))//type BLOCK??mb
-                .map(i->Objects.equals(i.name, reg.name)?i: reg)//partiotional kostyl'
+                .map(i -> Objects.equals(i.name, reg.name) ? i : reg)//partiotional kostyl'
                 .forEach(phi::addChild);
         return IR3Asm.SET(reg, phi);
     }
@@ -183,10 +185,28 @@ public class IR3 {
         return IR3Asm.SET(rrr, phi);*/
     }
 
+    private static IR3 getResPart(IR3 child, IR3 cur, int childId) {
+        IR3 assign = assignGen(child, new IR3(Type.ASSIGN));
+        cur.childs.set(childId, assign);
+        return assign.childsGet(0);
+    }
+
+    private static IR3 assignGen(IR3 child, IR3 obj) {
+        return obj.setType(Type.ASSIGN).addTwoChilds(new IR3(Type.ID).setName(IdGenerator.id()), child);
+    }
+
+    public IR3 childsGet(int id) {
+        return childs.get(id);
+    }
+
     public IR3 addChild(IR3 to) {
         to.parent = this;
         childs.add(to);
         return this;
+    }
+
+    public IR3 addTwoChilds(IR3 to, IR3 to1) {
+        return addChild(to).addChild(to1);
     }
 
     public IR3 addChildsStream(Stream<IR3> argsIds) {
@@ -200,10 +220,10 @@ public class IR3 {
     }
 
     public IR3 getRes() {
-        if(typeIs(Type.BLOCK)) return getResForBlock();
-        if(typeIs(Type.CALL)) return getResForCall();
-        if(typeIs(Type.ID)) return this;
-        if(typeIs(Type.PHI)) return this;//TODO check
+        if (typeIs(Type.BLOCK)) return getResForBlock();
+        if (typeIs(Type.CALL)) return getResForCall();
+        if (typeIs(Type.ID)) return this;
+        if (typeIs(Type.PHI)) return this;//TODO check
         return null;
     }
 
@@ -212,32 +232,22 @@ public class IR3 {
         IR3 child = new IR3(type, blockId)
                 .setName(name).moveChildsFrom(this);
         assignGen(child, this).setName(null);
-        return childs.get(0);
+        return childsGet(0);
     }
 
     private IR3 getResForBlock() {
         IR3 cur = this;
-        while(cur.childs.getLast().typeIs(Type.BLOCK))//не учитываем пока jmps
+        while (cur.childs.getLast().typeIs(Type.BLOCK))//не учитываем пока jmps
             cur = cur.childs.getLast();
         IR3 child = cur.childs.getLast();
         return getResPart(child, cur, cur.childs.size() - 1);
     }
 
-    private static IR3 getResPart(IR3 child, IR3 cur, int childId) {
-        IR3 assign = assignGen(child, new IR3(Type.ASSIGN));
-        cur.childs.set(childId, assign);
-        return assign.childs.get(0);
-    }
-
     private IR3 moveChildsFrom(IR3 ir3) {
         childs = ir3.childs;//copy childs
         ir3.childs = new LinkedList<>();//nulling prevowner child's
-        childs.forEach(i->i.parent = this);//link
+        childs.forEach(i -> i.parent = this);//link
         return this;
-    }
-
-    private static IR3 assignGen(IR3 child, IR3 obj) {
-        return obj.setType(Type.ASSIGN).addChild(new IR3(Type.ID).setName(IdGenerator.id())).addChild(child);
     }
 
     private IR3 setType(Type _type) {

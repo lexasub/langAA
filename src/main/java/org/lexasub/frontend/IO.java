@@ -11,7 +11,7 @@ import java.io.IOException;
 public class IO {
     public static void main(String[] args) throws IOException {
 
-       // TreeDumper.jsonize = true;
+        // TreeDumper.jsonize = true;
         TreeDumper.compact = true;
         //Asm.print(
         FBB block = FBBView.visit(FBBView.getParser("test"));

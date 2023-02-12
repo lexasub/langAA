@@ -1,13 +1,13 @@
 package org.lexasub.IR3;
 
-import java.util.HashMap;
-
 import org.lexasub.utils.graphDriver.GraphDriver;
 import org.lexasub.utils.graphDriver.graphiz.graphizDriver;
 import org.lexasub.utils.treeDriver.TreeAsGraphDriver;
 import org.lexasub.utils.treeDriver.TreeAsTextDriver;
 import org.lexasub.utils.treeDriver.TreeDriver;
 import org.lexasub.utils.treeDriver.TreeDumper;
+
+import java.util.HashMap;
 
 
 public class IR3IO {

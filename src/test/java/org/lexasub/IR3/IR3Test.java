@@ -11,18 +11,18 @@ import static org.lexasub.IR2.IR2Test.generateIr2TestRes;
 
 public class IR3Test {
 
-    @ParameterizedTest
-    @MethodSource("argsProviderFactory")
-    void visit(String filemame) {
-        IR3IO.dumpAsGraph(generateIr3TestRes(filemame), "/tmp/" + filemame + "_ir3.svg", "SVG");
-        Assert.assrt(true);
-    }
-
     public static IR3 generateIr3TestRes(String filemame) {
         return IR3.doJob(generateIr2TestRes(filemame));
     }
 
     static Stream<String> argsProviderFactory() {
         return testFiles();
+    }
+
+    @ParameterizedTest
+    @MethodSource("argsProviderFactory")
+    void visit(String filemame) {
+        IR3IO.dumpAsGraph(generateIr3TestRes(filemame), "/tmp/" + filemame + "_ir3.svg", "SVG");
+        Assert.assrt(true);
     }
 }

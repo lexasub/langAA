@@ -8,10 +8,11 @@ import java.util.stream.Stream;
 public class LLVMIRasm {
     public static LLVMIR concatSplitter(Stream<LLVMIR> llvmirStream, char s) {
         return new LLVMIR(llvmirStream.filter(Objects::nonNull)
-                .map(i->i.ir).filter(ir -> !ir.isEmpty())
+                .map(i -> i.ir).filter(ir -> !ir.isEmpty())
                 .map(smartConcatWithSplitter(s))
                 .collect(Collectors.joining()));
     }
+
     public static LLVMIR concatSplitterComa(Stream<LLVMIR> llvmirStream) {
         return new LLVMIR(llvmirStream.filter(Objects::nonNull)
                 .map(i -> i.ir).filter(ir -> !ir.isEmpty())

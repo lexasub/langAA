@@ -1,11 +1,11 @@
 package org.lexasub.utils.graphDriver.jgrapht;
 
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.util.mxCellRenderer;
+import org.jgrapht.Graph;
 import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.lexasub.utils.graphDriver.GraphDriver;
 
 import javax.imageio.ImageIO;
