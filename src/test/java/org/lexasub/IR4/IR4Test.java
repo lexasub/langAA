@@ -4,7 +4,6 @@ import com.ibm.icu.impl.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.lexasub.Generic.GenericTest.testFiles;

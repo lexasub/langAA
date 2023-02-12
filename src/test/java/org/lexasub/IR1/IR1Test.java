@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.lexasub.frontend.utils.fbb.FBBViewTest;
 import org.lexasub.utils.graphDriver.GraphDumper;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.lexasub.Generic.GenericTest.testFiles;
