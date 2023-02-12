@@ -15,17 +15,11 @@ public class IR3Test {
     @ParameterizedTest
     @MethodSource("argsProviderFactory")
     void visit(String filemame) {
-        IR3 block = null;
-        try {
-            block = generateIr3TestRes(filemame);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        IR3IO.dumpAsGraph(block, "/tmp/" + filemame + "_ir3.svg", "SVG");
+        IR3IO.dumpAsGraph(generateIr3TestRes(filemame), "/tmp/" + filemame + "_ir3.svg", "SVG");
         Assert.assrt(true);
     }
 
-    public static IR3 generateIr3TestRes(String filemame) throws IOException {
+    public static IR3 generateIr3TestRes(String filemame) {
         return IR3.doJob(generateIr2TestRes(filemame));
     }
 

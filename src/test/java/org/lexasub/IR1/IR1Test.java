@@ -16,17 +16,11 @@ public class IR1Test {
     @ParameterizedTest
     @MethodSource("argsProviderFactory")
     void visit(String filemame) {
-        IR1 block = null;
-        try {
-            block = generateIr1TestRes(filemame);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        GraphDumper.dump(block, true, true, "/tmp/" + filemame + "_ir1.svg", "SVG");
+        GraphDumper.dump(generateIr1TestRes(filemame), true, true, "/tmp/" + filemame + "_ir1.svg", "SVG");
         Assert.assrt(true);
     }
 
-    public static IR1 generateIr1TestRes(String filemame) throws IOException {
+    public static IR1 generateIr1TestRes(String filemame) {
         return IR1.makeFromFBB(FBBViewTest.generateFBBTestRes(filemame));
     }
 

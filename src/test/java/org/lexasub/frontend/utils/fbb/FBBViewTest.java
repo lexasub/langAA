@@ -15,20 +15,18 @@ import static org.lexasub.Generic.GenericTest.testFiles;
 
 public class FBBViewTest {
 
-    public static FBB generateFBBTestRes(String filemame) throws IOException {
-        return FBBView.visit(FBBView.getParser(GenericTest.addPath(filemame)));
+    public static FBB generateFBBTestRes(String filemame) {
+        try {
+            return FBBView.visit(FBBView.getParser(GenericTest.addPath(filemame)));
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ParameterizedTest
     @MethodSource("argsProviderFactory")
     void visit(String filemame) {
-        FBB block = null;
-        try {
-            block = generateFBBTestRes(filemame);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(FBBIO.dumpAsText("", block));
+        System.out.println(FBBIO.dumpAsText("", generateFBBTestRes(filemame)));
         Assert.assrt(true);
     }
     static Stream<String> argsProviderFactory() {

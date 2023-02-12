@@ -16,13 +16,7 @@ class LLVMIRTest {
     @ParameterizedTest
     @MethodSource("argsProviderFactory")
     void visit(String filemame) {
-        IR4 block = null;
-        try {
-            block = generateIr4TestRes(filemame);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(LLVMIR.doJob(block).ir);
+        System.out.println(LLVMIR.doJob(generateIr4TestRes(filemame)).ir);
         //IR4IO.dumpAsGraph(block, "/tmp/" + filemame + "_ir4.svg", "SVG");
         Assert.assrt(true);
     }
