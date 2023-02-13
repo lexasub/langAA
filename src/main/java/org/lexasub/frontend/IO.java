@@ -14,7 +14,7 @@ public class IO {
         // TreeDumper.jsonize = true;
         TreeDumper.compact = true;
         //Asm.print(
-        FBB block = FBBView.visit(FBBView.getParser("test"));
+        FBB block = generateFBB("test");
         StringBuilder sb = FBBIO.dumpAsText("", block);
         // FBBIO.dumpAsGraph(ll, "graph.svg", "SVG");
         sb.setLength(sb.length() - 2);
@@ -28,6 +28,10 @@ public class IO {
         StringBuilder sb2 = FBBIO.dumpAsText("", newBlock);
         sb2.setLength(sb2.length() - 2);
         //System.out.println(sb2);
+    }
+
+    public static FBB generateFBB(String filename) throws IOException {
+        return FBBView.visit(FBBView.getParser(filename));
     }
 
 }
