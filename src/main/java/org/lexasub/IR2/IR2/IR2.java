@@ -26,22 +26,16 @@ public class IR2 {
     }
 
     private static void relinkNodeIn(IR1 ir1Block, IR1 ifScope) {
-        ifScope.nodesIn.forEach(i -> {
-            ListIterator<IR1> il = i.nodesOutListIterator();
-            while (il.hasNext())
-                if (il.next() == ir1Block) {
-                    il.previous();
-                    il.set(ifScope);
-                }
-        });
-        ifScope.nodesInParents.forEach(i -> {
-            ListIterator<IR1> il = i.nodesOutChildsListIterator();
-            while (il.hasNext())
-                if (il.next() == ir1Block) {
-                    il.previous();
-                    il.set(ifScope);
-                }
-        });
+        ifScope.nodesIn.stream().map(IR1::nodesOutListIterator).forEach(i -> relinkNodeInPart(ir1Block, ifScope, i));
+        ifScope.nodesInParents.stream().map(IR1::nodesOutChildsListIterator).forEach(i -> relinkNodeInPart(ir1Block, ifScope, i));
+    }
+
+    private static void relinkNodeInPart(IR1 ir1Block, IR1 ifScope, ListIterator<IR1> il) {
+        while (il.hasNext())
+            if (il.next() == ir1Block) {
+                il.previous();
+                il.set(ifScope);
+            }
     }
 
     private static void introducePhisJob(IR1 block, LinkedList<IR1> visitedBlocks) {
@@ -75,6 +69,7 @@ public class IR2 {
             return true;
         }
         if (block.typeIs(TYPE.IF)) {
+            //TODO сгенерировать condition с присвоением(call ..-> %sss = call ...)//как для аргументов для вызова функции//как в IR3.modifyCallFunc
             relinkNodeIn(block, IfConvert.ifConvert(block, visitedBlocks));
         }
         return false;

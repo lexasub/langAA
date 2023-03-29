@@ -7,9 +7,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class FunctionGenerators {
-    public static Function IF(FBB myBlock, FBB newIf) {
+    public static Function<Stream<FBB>, FBB> IF(FBB myBlock, FBB newIf) {
         return (s) -> {
-            Iterator<FBB> v = ((Stream<FBB>) s).iterator();
+            Iterator<FBB> v = s.iterator();
             newIf.setParent(myBlock);
             newIf.type = FBB.TYPE.IF;
             newIf.fullLinkWith(v.next());//expr
@@ -36,9 +36,9 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function WHILE(FBB myBlock, FBB newWhile) {
+    public static Function<Stream<FBB>, FBB> WHILE(FBB myBlock, FBB newWhile) {
         return (s) -> {
-            Iterator<FBB> v = ((Stream<FBB>) s).iterator();
+            Iterator<FBB> v = s.iterator();
 
             newWhile.setParent(myBlock);
             newWhile.type = FBB.TYPE.WHILE;
@@ -62,15 +62,15 @@ public class FunctionGenerators {
         };
     }
 
-    public static Function ID(String funcName, FBB myBlock, FBB newFunCall) {
+    public static Function<Stream<FBB>, FBB> ID(String funcName, FBB myBlock, FBB newFunCall) {
         return (s) -> {
             newFunCall.setParent(myBlock);
-            Asm.call(funcName, (Stream<FBB>) s, newFunCall);
+            Asm.call(funcName, s, newFunCall);
             return newFunCall;
         };
     }
 
-    public static Function visitFun_name(langosParser.Fun_nameContext ctx, FBB myBlock, FBB newPart) {
+    public static Function<Stream<FBB>, FBB> visitFun_name(langosParser.Fun_nameContext ctx, FBB myBlock, FBB newPart) {
         //pairmap,map,set,swap
         if (ctx.IF() != null) return FunctionGenerators.IF(myBlock, newPart);
         if (ctx.WHILE() != null) return FunctionGenerators.WHILE(myBlock, newPart);

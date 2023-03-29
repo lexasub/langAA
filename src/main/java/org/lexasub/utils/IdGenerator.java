@@ -1,4 +1,4 @@
-package org.lexasub.frontend.utils;
+package org.lexasub.utils;
 
 import java.util.LinkedList;
 import java.util.Objects;

@@ -99,10 +99,11 @@ public class myLangosVisitor implements myLangosVisitorInterface {
     }
 
     static public FBB visitFunction_call(langosParser.Function_callContext ctx, FBB myBlock) {
-        FBB newPart = new FBB();
-        Function funName = FunctionGenerators.visitFun_name(ctx.fun_name(), myBlock, newPart);//->lambda
-        Stream<FBB> args = visitCallArgs(ctx.callArgs(), newPart);//newPart or myBlock??
-        return (FBB) funName.apply(args);
+        FBB newPart = new FBB();//создается объект Frontend Building Block
+        //получаем лямбда-функцию, преобразующую вызов специальных функций(if к примеру) или пользовательских функций
+        Function<Stream<FBB>, FBB> funName = FunctionGenerators.visitFun_name(ctx.fun_name(), myBlock, newPart);
+        Stream<FBB> args = visitCallArgs(ctx.callArgs(), newPart);//обрабатываем аргументы функции
+        return funName.apply(args);//генерирум результирующий объект
     }
 
     static public FBB visitFunction_call2(langosParser.Function_call2Context ctx, FBB myBlock) {
@@ -135,8 +136,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
                         ? Stream.of(visitExpr(ctx.expr(), newBlock))
                         : ctx.body().element().stream().map(ctx1 -> visitElement(ctx1, newBlock));
         //visitElem - visitExpr || visitFunc
-        LinkedList<FBB> bodyList = new LinkedList<>(body.toList());
-        bodyList.forEach(newBlock::fullLinkWith);
+        new LinkedList<>(body.toList()).forEach(newBlock::fullLinkWith);
         return newBlock;
     }
 
@@ -162,7 +162,7 @@ public class myLangosVisitor implements myLangosVisitorInterface {
         return visitElement(ctx.element(), myBlock);
     }
 
-    static public Stream visitEntry_point(langosParser.Entry_pointContext ctx, FBB myBlock) {
+    static public Stream<FBB> visitEntry_point(langosParser.Entry_pointContext ctx, FBB myBlock) {
         return ctx.program().stream().map(ctx1 -> visitProgram(ctx1, myBlock));
     }
 

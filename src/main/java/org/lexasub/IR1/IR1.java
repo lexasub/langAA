@@ -1,7 +1,7 @@
 package org.lexasub.IR1;
 
 import org.lexasub.frontend.utils.FBB;
-import org.lexasub.frontend.utils.IdGenerator;
+import org.lexasub.utils.IdGenerator;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -49,9 +49,6 @@ public class IR1 {
         HashMap<String, IR1> decls = (HashMap<String, IR1>) _decls.clone();
         List<FBB> fbChilds = frontendBlock.childs;
         int cnt = 0;
-        /* if (Objects.equals(frontendBlock.blockId, "zlJ5kusc6q")) {
-            System.out.println(frontendBlock.name);
-        }*/
         if (ir1BB.typeIs(FBB.TYPE.CODE)) {
             codeBlock(ir1BB, decls, fbChilds);
             return ir1BB;
@@ -63,10 +60,7 @@ public class IR1 {
     }
 
     private static IR1 findOrCreateBlock(HashMap<String, IR1> decls, FBB i) {
-        IR1 ir1BaseBlock = decls.get(i.name);
-        if (ir1BaseBlock == null)
-            ir1BaseBlock = makeFromFBB(i, decls);
-        return ir1BaseBlock;
+        return Optional.ofNullable(decls.get(i.name)).orElseGet(() -> makeFromFBB(i, decls));
         //may be dependence with orig var
     }
 

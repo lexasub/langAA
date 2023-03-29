@@ -2,7 +2,7 @@ package org.lexasub.IR3;
 
 import org.lexasub.IR1.IR1;
 import org.lexasub.frontend.utils.FBB;
-import org.lexasub.frontend.utils.IdGenerator;
+import org.lexasub.utils.IdGenerator;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -52,7 +52,7 @@ public class IR3 {
         return new IR3(Type.PHI, block.blockId);//.addChild(new IR3(Type.ID).setName("zzz"));
     }
 
-    private static IR3 jmpCondPart(IR1 block) {//TODO
+    private static IR3 jmpCondPart(IR1 block) {//TODO replace block.blockId to result
         return new IR3(Type.COND_JMP, block.blockId)
                 .addChild(doJob_(block.nodesOutChilds.get(0)))
                 .addChild(doJob_(block.nodesOutChilds.get(1)));
@@ -111,7 +111,7 @@ public class IR3 {
         return IR3Asm.thenConcat(newBlock, retBlock.addChild(newBlock.getRes()));
     }
 
-    private static IR3 modifyCallFunc(List<IR1> childs) {
+    private static IR3 modifyCallFunc(List<IR1> childs) {//TODO сделать что-то похожее для if condition
         //else it's userFunc
         // may be TODO force seqence strong
         LinkedList<IR3> argsExt = new LinkedList<>();
@@ -191,7 +191,7 @@ public class IR3 {
         return assign.childsGet(0);
     }
 
-    private static IR3 assignGen(IR3 child, IR3 obj) {
+    public static IR3 assignGen(IR3 child, IR3 obj) {
         return obj.setType(Type.ASSIGN).addTwoChilds(new IR3(Type.ID).setName(IdGenerator.id()), child);
     }
 
@@ -227,7 +227,7 @@ public class IR3 {
         return null;
     }
 
-    private IR3 getResForCall() {
+    public IR3 getResForCall() {
         assert parent == null;
         IR3 child = new IR3(type, blockId)
                 .setName(name).moveChildsFrom(this);
@@ -235,7 +235,7 @@ public class IR3 {
         return childsGet(0);
     }
 
-    private IR3 getResForBlock() {
+    public IR3 getResForBlock() {
         IR3 cur = this;
         while (cur.childs.getLast().typeIs(Type.BLOCK))//не учитываем пока jmps
             cur = cur.childs.getLast();
@@ -243,14 +243,14 @@ public class IR3 {
         return getResPart(child, cur, cur.childs.size() - 1);
     }
 
-    private IR3 moveChildsFrom(IR3 ir3) {
+    public IR3 moveChildsFrom(IR3 ir3) {
         childs = ir3.childs;//copy childs
         ir3.childs = new LinkedList<>();//nulling prevowner child's
         childs.forEach(i -> i.parent = this);//link
         return this;
     }
 
-    private IR3 setType(Type _type) {
+    public IR3 setType(Type _type) {
         type = _type;
         return this;
     }

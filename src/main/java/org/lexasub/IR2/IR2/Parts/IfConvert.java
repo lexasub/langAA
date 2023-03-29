@@ -26,17 +26,17 @@ public class IfConvert {
         return ifScope;
     }
 
-    private static void ifBodyConnect(IR1 trueExpr, Optional<IR1> falseExprO, IR1 condJmp, IR1 endIf) {
-        ifJumper(trueExpr, condJmp, endIf);
-        falseExprO.ifPresentOrElse(falseExpr->ifJumper(falseExpr, condJmp, endIf), ()->connectDependence(endIf, condJmp));
-    }
-
-    private static void ifCondConnect(IR1 cond, IR1 ifScope, IR1 condJmp) {
+    private static void ifCondConnect(IR1 cond, IR1 ifScope, IR1 condJmp) {//TODO?? get Res of cond and send to ifBodyConnect
         IR1 condScope = new IR1();
         //condJmp.add(cond_res//TODO
         connectToChilds(cond, condScope);
         connectToChilds(condJmp, condScope);//jump - is last element of block
         connectToChilds(condScope, ifScope);
+    }
+
+    private static void ifBodyConnect(IR1 trueExpr, Optional<IR1> falseExprO, IR1 condJmp, IR1 endIf) {
+        ifJumper(trueExpr, condJmp, endIf);
+        falseExprO.ifPresentOrElse(falseExpr->ifJumper(falseExpr, condJmp, endIf), ()->connectDependence(endIf, condJmp));
     }
 
     private static void ifJumper(IR1 body, IR1 condJmp, IR1 endIf) {

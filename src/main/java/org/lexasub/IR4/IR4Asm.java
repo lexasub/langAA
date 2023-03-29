@@ -29,6 +29,15 @@ public class IR4Asm {
                 .addChild(spawnCodePart(")"));
     }
 
+    public static IR4 JMPCond(IR4 truePart, IR4 falsePart, IR4 condRes) {
+        return thenConcat(thenConcatCode("br",
+                spawnId("i1")
+        ).addChild(spawnComa().addChild(spawnLocalRegister(condRes.name))
+                .addTwoChilds(IR4AsmUtils.spawnTypedLabelOfObject(beginOf(truePart)),
+                        IR4AsmUtils.spawnTypedLabelOfObject(beginOf(falsePart)))
+        ), truePart).addChild(falsePart);
+    }
+
     public static IR4 Assign(String regName, IR4 expr) {
         //mb some part of expr before assign, and some part after '='
         return new IR4(IR4.Type.CODE).addTwoChilds(spawnLocalRegister(regName), spawnCodePart("=")).addChild(expr);
@@ -92,15 +101,6 @@ public class IR4Asm {
 
     private static IR4 transformToTypedRegister(String type, IR4 arg) {
         return thenConcatCode(type, spawnLocalRegister(arg.name));
-    }
-
-    public static IR4 JMPCond(IR4 truePart, IR4 falsePart, IR4 condRes) {
-        return thenConcat(thenConcatCode("br",
-                spawnId("i1")
-        ).addChild(spawnComa().addChild(spawnLocalRegister(condRes.name))
-                .addTwoChilds(IR4AsmUtils.spawnTypedLabelOfObject(beginOf(truePart)),
-                        IR4AsmUtils.spawnTypedLabelOfObject(beginOf(falsePart)))
-        ), truePart).addChild(falsePart);
     }
 
 

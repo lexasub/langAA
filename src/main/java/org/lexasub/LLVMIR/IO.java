@@ -11,7 +11,7 @@ import static org.lexasub.IR4.IO.generateIr4;
 
 public class IO {
     public static void main(String[] args) throws IOException {
-        LLVMIR ll = generateLLVMIR();
+        LLVMIR ll = generateLLVMIR("test");
         //  IR4IO.jsonize = true;
         //   IR4IO.compact = true;
         // IR4IO.dumpAsText(ll);
@@ -28,8 +28,8 @@ public class IO {
         }
     }
 
-    private static LLVMIR generateLLVMIR() throws IOException {
-        return LLVMIR.doJob(generateIr4("test"));
+    private static LLVMIR generateLLVMIR(String filename) throws IOException {
+        return LLVMIR.doJob(generateIr4(filename));
     }
 
 }

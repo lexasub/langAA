@@ -1,10 +1,14 @@
 package org.lexasub.frontend.utils;
 
+import org.lexasub.utils.IdGenerator;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 public class FBB {
+
+    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, PHI_PART, PHI, AFTER, LAMBDA}//ID or variable??//TODO
     public FBB parent = null;
     public String name = "";
     public TYPE type = TYPE.BLOCK;
@@ -14,7 +18,6 @@ public class FBB {
     public FBB() {
 
     }
-
 
     public FBB(String name, String blockId, String type) {
         setName(name);
@@ -31,12 +34,6 @@ public class FBB {
         fbb.setParent(myBlock);
         return fbb;
     }
- /*   public FrontendBaseBlock(FrontendBaseBlock obj) {//blockId
-        this.parent = obj.parent;
-        this.name = obj.name;
-        this.type = obj.type;
-        this.childs = new LinkedList<>(obj.childs.stream().map(i -> new FrontendBaseBlock(i)).toList());
-    }*/
 
     public void setName(String name) {
         this.name = name;
@@ -70,7 +67,4 @@ public class FBB {
     public void setParent(FBB parent) {
         this.parent = parent;
     }
-
-
-    public enum TYPE {FUNC, BLOCK, CODE, ID, IF, WHILE, COND_JMP, JMP, PHI_PART, PHI, AFTER, LAMBDA}//ID or variable??//TODO
 }

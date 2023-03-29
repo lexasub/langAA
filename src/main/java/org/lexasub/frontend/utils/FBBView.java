@@ -22,7 +22,7 @@ public class FBBView {
 
     public static FBB visit(langosParser parser) {
         FBB myBlock = new FBB();
-        visitEntry_point(parser.entry_point(), myBlock).forEach(i -> myBlock.fullLinkWith((FBB) i));
+        visitEntry_point(parser.entry_point(), myBlock).forEach(myBlock::fullLinkWith);
         return myBlock;
     }
 }

@@ -1,7 +1,7 @@
 package org.lexasub.IR4;
 
 import org.lexasub.IR3.IR3;
-import org.lexasub.frontend.utils.IdGenerator;
+import org.lexasub.utils.IdGenerator;
 
 import java.util.LinkedList;
 import java.util.stream.Stream;
